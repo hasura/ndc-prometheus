@@ -1,0 +1,18 @@
+packagingDefinition:
+  type: PrebuiltDockerImage
+  dockerImage: ghcr.io/hasura/ndc-prometheus:{{VERSION}}
+documentationPage: https://github.com/hasura/ndc-prometheus
+supportedEnvironmentVariables:
+  - name: CONNECTION_URL
+    description: The connection URL to the Prometheus server
+    required: true
+commands:
+  update: ndc-prometheus update
+cliPlugin:
+  name: ndc-prometheus
+  version: {{.Version}} 
+dockerComposeWatch:
+  # copy config files into the existing container and restart it
+  - path: ./configuration.yaml
+    target: /etc/connector/configuration.yaml
+    action: sync+restart

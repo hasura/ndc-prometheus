@@ -1,0 +1,50 @@
+VERSION ?= $(shell date +"%Y%m%d")
+OUTPUT_DIR := _output
+
+.PHONY: format
+format:
+	gofmt -w -s .
+
+.PHONY: test
+test:
+	go test -v -race -timeout 3m ./...
+
+# Install golangci-lint tool to run lint locally
+# https://golangci-lint.run/usage/install
+.PHONY: lint
+lint:
+	golangci-lint run
+
+# clean the output directory
+.PHONY: clean
+clean:
+	rm -rf "$(OUTPUT_DIR)"
+
+.PHONY: build-configuration
+build-configuration:
+	go build -o _output/ndc-prometheus-configuration .
+	
+.PHONY: build-jsonschema
+build-jsonschema:
+	cd jsonschema && go run .
+
+# build the configuration tool for all given platform/arch
+.PHONY: ci-build-configuration
+ci-build-configuration: clean
+	export CGO_ENABLED=0 && \
+	go get github.com/mitchellh/gox && \
+	go run github.com/mitchellh/gox -ldflags '-X github.com/hasura/ndc-prometheus/version.BuildVersion=$(VERSION) -s -w -extldflags "-static"' \
+		-osarch="linux/amd64 linux/arm64 darwin/amd64 windows/amd64 darwin/arm64" \
+		-output="$(OUTPUT_DIR)/$(VERSION)/ndc-prometheus-{{.OS}}-{{.Arch}}" \
+		.
+
+.PHONY: ci-build
+build-supergraph-test:
+	cd tests/engine && \
+		ddn connector-link update prometheus --add-all-resources --subgraph ./app/subgraph.yaml && \
+		ddn supergraph build local
+
+
+.PHONY: generate-test-config
+generate-test-config:
+	CONNECTION_URL=http://localhost:9090 go run ./configuration update -d ./tests/configuration --log-level debug

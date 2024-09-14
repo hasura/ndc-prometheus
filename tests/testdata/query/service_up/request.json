@@ -1,0 +1,44 @@
+{
+  "collection": "service_up",
+  "query": {
+    "fields": {
+      "__value": {
+        "type": "column",
+        "column": "__value",
+        "fields": {
+          "type": "array",
+          "fields": {
+            "type": "object",
+            "fields": {
+              "labels": {
+                "type": "column",
+                "column": "labels",
+                "fields": null
+              },
+              "value": {
+                "type": "column",
+                "column": "value",
+                "fields": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "arguments": {
+    "instance": {
+      "type": "literal",
+      "value": "localhost:9090"
+    },
+    "job": {
+      "type": "literal",
+      "value": "node"
+    },
+    "start": {
+      "type": "literal",
+      "value": "2024-09-14T00:00:00Z"
+    }
+  },
+  "collection_relationships": {}
+}

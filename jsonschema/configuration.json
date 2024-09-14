@@ -1,0 +1,497 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hasura/ndc-prometheus/connector/metadata/configuration",
+  "$ref": "#/$defs/Configuration",
+  "$defs": {
+    "Authorization": {
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "credentials": {
+          "type": "string"
+        },
+        "credentials_file": {
+          "type": "string"
+        },
+        "credentials_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "BasicAuth": {
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "username_file": {
+          "type": "string"
+        },
+        "username_ref": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "password_file": {
+          "type": "string"
+        },
+        "password_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "username"
+      ]
+    },
+    "ClientSettings": {
+      "properties": {
+        "url": {
+          "$ref": "#/$defs/EnvironmentValue"
+        },
+        "timeout": {
+          "type": "integer"
+        },
+        "keep_alive": {
+          "type": "integer"
+        },
+        "basic_auth": {
+          "$ref": "#/$defs/BasicAuth"
+        },
+        "authorization": {
+          "$ref": "#/$defs/Authorization"
+        },
+        "oauth2": {
+          "$ref": "#/$defs/OAuth2"
+        },
+        "tls_config": {
+          "$ref": "#/$defs/TLSConfig"
+        },
+        "follow_redirects": {
+          "type": "boolean"
+        },
+        "enable_http2": {
+          "type": "boolean"
+        },
+        "proxy_url": {
+          "$ref": "#/$defs/URL"
+        },
+        "no_proxy": {
+          "type": "string"
+        },
+        "proxy_from_environment": {
+          "type": "boolean"
+        },
+        "proxy_connect_header": {
+          "$ref": "#/$defs/ProxyHeader"
+        },
+        "http_headers": {
+          "$ref": "#/$defs/Headers"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "url"
+      ]
+    },
+    "Configuration": {
+      "properties": {
+        "connection_settings": {
+          "$ref": "#/$defs/ClientSettings"
+        },
+        "generator": {
+          "$ref": "#/$defs/GeneratorSettings"
+        },
+        "metadata": {
+          "$ref": "#/$defs/Metadata"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "connection_settings",
+        "generator",
+        "metadata"
+      ]
+    },
+    "EnvironmentValue": {
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "variable": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "GeneratorSettings": {
+      "properties": {
+        "metrics": {
+          "$ref": "#/$defs/MetricsGeneratorSettings"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "metrics"
+      ]
+    },
+    "Header": {
+      "properties": {
+        "values": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "secrets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Headers": {
+      "properties": {
+        "Headers": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Header"
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "Headers"
+      ]
+    },
+    "LabelInfo": {
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Metadata": {
+      "properties": {
+        "metrics": {
+          "additionalProperties": {
+            "$ref": "#/$defs/MetricInfo"
+          },
+          "type": "object"
+        },
+        "native_operations": {
+          "$ref": "#/$defs/NativeOperations"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "metrics",
+        "native_operations"
+      ]
+    },
+    "MetricInfo": {
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": {
+            "$ref": "#/$defs/LabelInfo"
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "type",
+        "labels"
+      ]
+    },
+    "MetricsGeneratorSettings": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "include": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "exclude": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "enabled",
+        "include",
+        "exclude"
+      ]
+    },
+    "NativeOperations": {
+      "properties": {
+        "queries": {
+          "additionalProperties": {
+            "$ref": "#/$defs/NativeQuery"
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "queries"
+      ]
+    },
+    "NativeQuery": {
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": {
+            "$ref": "#/$defs/LabelInfo"
+          },
+          "type": "object"
+        },
+        "arguments": {
+          "additionalProperties": {
+            "$ref": "#/$defs/NativeQueryArgumentInfo"
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "query",
+        "labels",
+        "arguments"
+      ]
+    },
+    "NativeQueryArgumentInfo": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Int64",
+            "Float64",
+            "String",
+            "Duration"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "type"
+      ]
+    },
+    "OAuth2": {
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        },
+        "client_secret_file": {
+          "type": "string"
+        },
+        "client_secret_ref": {
+          "type": "string"
+        },
+        "scopes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "token_url": {
+          "type": "string"
+        },
+        "endpoint_params": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "TLSConfig": {
+          "$ref": "#/$defs/TLSConfig"
+        },
+        "proxy_url": {
+          "$ref": "#/$defs/URL"
+        },
+        "no_proxy": {
+          "type": "string"
+        },
+        "proxy_from_environment": {
+          "type": "boolean"
+        },
+        "proxy_connect_header": {
+          "$ref": "#/$defs/ProxyHeader"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "client_id",
+        "client_secret",
+        "client_secret_file",
+        "client_secret_ref",
+        "token_url",
+        "TLSConfig"
+      ]
+    },
+    "ProxyHeader": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "type": "object"
+    },
+    "TLSConfig": {
+      "properties": {
+        "ca": {
+          "type": "string"
+        },
+        "cert": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "ca_file": {
+          "type": "string"
+        },
+        "cert_file": {
+          "type": "string"
+        },
+        "key_file": {
+          "type": "string"
+        },
+        "ca_ref": {
+          "type": "string"
+        },
+        "cert_ref": {
+          "type": "string"
+        },
+        "key_ref": {
+          "type": "string"
+        },
+        "server_name": {
+          "type": "string"
+        },
+        "insecure_skip_verify": {
+          "type": "boolean"
+        },
+        "min_version": {
+          "type": "integer"
+        },
+        "max_version": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "insecure_skip_verify"
+      ]
+    },
+    "URL": {
+      "properties": {
+        "Scheme": {
+          "type": "string"
+        },
+        "Opaque": {
+          "type": "string"
+        },
+        "User": {
+          "$ref": "#/$defs/Userinfo"
+        },
+        "Host": {
+          "type": "string"
+        },
+        "Path": {
+          "type": "string"
+        },
+        "RawPath": {
+          "type": "string"
+        },
+        "OmitHost": {
+          "type": "boolean"
+        },
+        "ForceQuery": {
+          "type": "boolean"
+        },
+        "RawQuery": {
+          "type": "string"
+        },
+        "Fragment": {
+          "type": "string"
+        },
+        "RawFragment": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "Scheme",
+        "Opaque",
+        "User",
+        "Host",
+        "Path",
+        "RawPath",
+        "OmitHost",
+        "ForceQuery",
+        "RawQuery",
+        "Fragment",
+        "RawFragment"
+      ]
+    },
+    "Userinfo": {
+      "properties": {},
+      "additionalProperties": false,
+      "type": "object"
+    }
+  }
+}

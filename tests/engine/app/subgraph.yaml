@@ -1,0 +1,14 @@
+kind: Subgraph
+version: v2
+definition:
+  name: app
+  generator:
+    rootPath: .
+    namingConvention: none
+  includePaths:
+    - metadata
+  envMapping:
+    APP_PROMETHEUS_READ_URL:
+      fromEnv: APP_PROMETHEUS_READ_URL
+    APP_PROMETHEUS_WRITE_URL:
+      fromEnv: APP_PROMETHEUS_WRITE_URL

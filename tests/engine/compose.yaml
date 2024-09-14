@@ -1,0 +1,21 @@
+services:
+  engine:
+    build:
+      context: engine
+      dockerfile_inline: |-
+        FROM ghcr.io/hasura/v3-engine:f601b0141821e65c44e4199db195d850a19172a4
+        COPY ./build /md/
+    develop:
+      watch:
+        - path: engine/build
+          action: sync+restart
+          target: /md/
+    env_file:
+      - engine/.env.engine
+    extra_hosts:
+      - local.hasura.dev=host-gateway
+    ports:
+      - mode: ingress
+        target: 3000
+        published: "3000"
+        protocol: tcp

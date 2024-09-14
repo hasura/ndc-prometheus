@@ -1,0 +1,68 @@
+name: Unit tests
+
+on:
+  workflow_call:
+  pull_request:
+  push:
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
+      - ".github/workflows/*.yaml"
+
+jobs:
+  test-go:
+    name: Run Go lint and unit tests
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Format
+        run: diff -u <(echo -n) <(gofmt -d -s .)
+      - name: Vet
+        run: go vet ./...
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          only-new-issues: true
+          skip-cache: true
+      - name: Run Go unit tests
+        run: |
+          go test -v -coverpkg=./... -race -timeout 3m -coverprofile=coverage.out.tmp ./...
+          cat coverage.out.tmp | grep -v "main.go" > coverage.out
+      - name: Run Go unit tests
+        run: |
+          ./scripts/test.sh
+      - name: Go coverage format
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          go get github.com/boumenot/gocover-cobertura
+          go install github.com/boumenot/gocover-cobertura
+          gocover-cobertura < coverage.out > coverage.xml
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          filename: coverage.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "50 70"
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          path: code-coverage-results.md
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2

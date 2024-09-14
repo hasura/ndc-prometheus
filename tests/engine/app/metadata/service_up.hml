@@ -1,0 +1,45 @@
+---
+kind: Command
+version: v1
+definition:
+  name: service_up
+  outputType: "[QueryResultValues!]!"
+  arguments:
+    - name: end
+      type: Timestamp
+      description: End timestamp. Use this argument if you want to run an range query
+    - name: instance
+      type: String!
+    - name: job
+      type: String!
+    - name: start
+      type: Timestamp
+      description: Start timestamp. Use this argument if you want to run an range query
+    - name: step
+      type: Duration
+      description: Query resolution step width in duration format or float number of
+        seconds.
+    - name: time
+      type: Timestamp
+      description: Evaluation timestamp. Use this argument if you want to run an
+        instant query
+    - name: timeout
+      type: Duration
+      description: Evaluation timeout
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: service_up
+  graphql:
+    rootFieldName: service_up
+    rootFieldKind: Query
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: service_up
+  permissions:
+    - role: admin
+      allowExecution: true
+

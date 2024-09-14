@@ -1,0 +1,18 @@
+[
+  {
+    "rows": [
+      {
+        "__value": [
+          {
+            "labels": {
+              "__name__": "up",
+              "instance": "localhost:9090",
+              "job": "node"
+            },
+            "value": "1"
+          }
+        ]
+      }
+    ]
+  }
+]

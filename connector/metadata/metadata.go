@@ -1,8 +1,16 @@
 package metadata
 
 import (
+	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/prometheus/common/model"
+	"go.opentelemetry.io/otel/trace"
 )
+
+// State the shared state of the connector
+type State struct {
+	Client *client.Client
+	Tracer trace.Tracer
+}
 
 // Metadata the metadata configuration
 type Metadata struct {

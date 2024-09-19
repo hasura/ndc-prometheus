@@ -27,28 +27,17 @@ type NativeQueryExecutor struct {
 	Tracer      trace.Tracer
 	Request     *schema.QueryRequest
 	NativeQuery *metadata.NativeQuery
-	Variables   map[string]any
+	Arguments   map[string]any
 
-	arguments map[string]any
 	selection schema.NestedField
 }
 
 // Explain explains the query request
 func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*nativeQueryParameters, string, error) {
-	span := trace.SpanFromContext(ctx)
-
-	arguments, err := utils.ResolveArgumentVariables(nqe.Request.Arguments, nqe.Variables)
-	if err != nil {
-		return nil, "", schema.UnprocessableContentError("failed to resolve argument variables", map[string]any{
-			"cause": err.Error(),
-		})
-	}
-	nqe.arguments = arguments
-	span.SetAttributes(utils.JSONAttribute("arguments", nqe.arguments))
-
+	var err error
 	params := &nativeQueryParameters{}
 	queryString := nqe.NativeQuery.Query
-	for key, arg := range nqe.arguments {
+	for key, arg := range nqe.Arguments {
 		switch key {
 		case metadata.ArgumentKeyStart:
 			params.Start = arg
@@ -108,20 +97,10 @@ func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*nativeQueryParame
 
 // ExplainRaw explains the raw promQL query request
 func (nqe *NativeQueryExecutor) ExplainRaw(ctx context.Context) (*nativeQueryParameters, string, error) {
-	span := trace.SpanFromContext(ctx)
-
-	arguments, err := utils.ResolveArgumentVariables(nqe.Request.Arguments, nqe.Variables)
-	if err != nil {
-		return nil, "", schema.UnprocessableContentError("failed to resolve argument variables", map[string]any{
-			"cause": err.Error(),
-		})
-	}
-	nqe.arguments = arguments
-	span.SetAttributes(utils.JSONAttribute("arguments", nqe.arguments))
-
 	params := &nativeQueryParameters{}
+	var err error
 	var queryString string
-	for key, arg := range nqe.arguments {
+	for key, arg := range nqe.Arguments {
 		switch key {
 		case metadata.ArgumentKeyStart:
 			params.Start = arg
@@ -178,7 +157,7 @@ func (nqe *NativeQueryExecutor) execute(ctx context.Context, params *nativeQuery
 	}
 
 	var rawResults []map[string]any
-	if _, ok := nqe.arguments[metadata.ArgumentKeyTime]; ok {
+	if _, ok := nqe.Arguments[metadata.ArgumentKeyTime]; ok {
 		rawResults, err = nqe.queryInstant(ctx, queryString, params)
 	} else {
 		rawResults, err = nqe.queryRange(ctx, queryString, params)

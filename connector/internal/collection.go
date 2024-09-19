@@ -29,24 +29,12 @@ type QueryCollectionExecutor struct {
 	Request   *schema.QueryRequest
 	Metric    metadata.MetricInfo
 	Variables map[string]any
-
-	arguments map[string]any
+	Arguments map[string]any
 }
 
 // Explain explains the query request
 func (qce *QueryCollectionExecutor) Explain(ctx context.Context) (*CollectionRequest, string, error) {
-	span := trace.SpanFromContext(ctx)
-
-	args, err := utils.ResolveArgumentVariables(qce.Request.Arguments, qce.Variables)
-	if err != nil {
-		return nil, "", schema.UnprocessableContentError("failed to resolve argument variables", map[string]any{
-			"cause": err.Error(),
-		})
-	}
-	span.SetAttributes(utils.JSONAttribute("arguments", args))
-	qce.arguments = args
-
-	expressions, err := EvalCollectionRequest(qce.Request, args)
+	expressions, err := EvalCollectionRequest(qce.Request, qce.Arguments)
 	if err != nil {
 		return nil, "", schema.UnprocessableContentError(err.Error(), map[string]any{
 			"collection": qce.Request.Collection,
@@ -97,7 +85,7 @@ func (qce *QueryCollectionExecutor) Execute(ctx context.Context) (*schema.RowSet
 }
 
 func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryString string, predicate *CollectionRequest) ([]map[string]any, error) {
-	timeout := qce.arguments[metadata.ArgumentKeyTimeout]
+	timeout := qce.Arguments[metadata.ArgumentKeyTimeout]
 	timestamp, err := qce.getComparisonValue(predicate.Timestamp)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), map[string]any{
@@ -127,8 +115,8 @@ func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryStrin
 }
 
 func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString string, predicate *CollectionRequest) ([]map[string]any, error) {
-	step := qce.arguments[metadata.ArgumentKeyStep]
-	timeout := qce.arguments[metadata.ArgumentKeyTimeout]
+	step := qce.Arguments[metadata.ArgumentKeyStep]
+	timeout := qce.Arguments[metadata.ArgumentKeyTimeout]
 
 	start, err := qce.getComparisonValue(predicate.Start)
 	if err != nil {
@@ -204,7 +192,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 	if len(conditions) > 0 {
 		query = fmt.Sprintf("%s{%s}", qce.Request.Collection, strings.Join(conditions, ","))
 	}
-	rawOffset, ok := qce.arguments[metadata.ArgumentKeyOffset]
+	rawOffset, ok := qce.Arguments[metadata.ArgumentKeyOffset]
 	if ok {
 		offset, err := client.ParseDuration(rawOffset)
 		if err != nil {

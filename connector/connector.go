@@ -5,30 +5,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 
+	"github.com/hasura/ndc-prometheus/connector/api"
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
-	"go.opentelemetry.io/otel/trace"
+	"github.com/hasura/ndc-sdk-go/utils"
 )
-
-// State the shared state of the connector
-type State struct {
-	Client *client.Client
-	Tracer trace.Tracer
-}
 
 // PrometheusConnector implements a data connector for Prometheus API
 type PrometheusConnector struct {
 	capabilities *schema.RawCapabilitiesResponse
 	rawSchema    *schema.RawSchemaResponse
 	metadata     *metadata.Metadata
+	apiHandler   api.DataConnectorHandler
 }
 
 // NewPrometheusConnector creates a Prometheus connector instance
 func NewPrometheusConnector() *PrometheusConnector {
-	return &PrometheusConnector{}
+	return &PrometheusConnector{
+		apiHandler: api.DataConnectorHandler{},
+	}
 }
 
 // ParseConfiguration validates the configuration files provided by the user, returning a validated 'Configuration',
@@ -68,14 +67,19 @@ func (c *PrometheusConnector) ParseConfiguration(ctx context.Context, configurat
 //
 // In addition, this function should register any
 // connector-specific metrics with the metrics registry.
-func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.Configuration, metrics *connector.TelemetryState) (*State, error) {
+func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.Configuration, metrics *connector.TelemetryState) (*metadata.State, error) {
 	_, span := metrics.Tracer.StartInternal(ctx, "Initialize")
 	defer span.End()
 
-	ndcSchema, err := metadata.BuildConnectorSchema(&conf.Metadata)
+	promSchema, err := metadata.BuildConnectorSchema(&conf.Metadata)
 	if err != nil {
 		return nil, err
 	}
+	ndcSchema, errs := utils.MergeSchemas(*promSchema, api.GetConnectorSchema())
+	for _, e := range errs {
+		slog.Warn(e.Error())
+	}
+
 	rawSchema, err := json.Marshal(ndcSchema)
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode schema to json: %s", err)
@@ -89,18 +93,18 @@ func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.C
 	if endpoint == "" {
 		return nil, errors.New("the endpoint setting is empty")
 	}
-	client, err := client.NewClient(endpoint, conf.ConnectionSettings.ToHTTPClientConfig(), metrics.Tracer)
+	client, err := client.NewClient(endpoint, conf.ConnectionSettings.ToHTTPClientConfig(), metrics.Tracer, conf.ConnectionSettings.Timeout)
 	if err != nil {
 		return nil, err
 	}
-	return &State{
+	return &metadata.State{
 		Client: client,
 		Tracer: metrics.Tracer,
 	}, nil
 }
 
 // GetSchema gets the connector's schema.
-func (c *PrometheusConnector) GetSchema(ctx context.Context, configuration *metadata.Configuration, _ *State) (schema.SchemaResponseMarshaler, error) {
+func (c *PrometheusConnector) GetSchema(ctx context.Context, configuration *metadata.Configuration, _ *metadata.State) (schema.SchemaResponseMarshaler, error) {
 	return c.rawSchema, nil
 }
 
@@ -110,7 +114,7 @@ func (c *PrometheusConnector) GetSchema(ctx context.Context, configuration *meta
 // is able to reach its data source over the network.
 //
 // Should throw if the check fails, else resolve.
-func (c *PrometheusConnector) HealthCheck(ctx context.Context, conf *metadata.Configuration, state *State) error {
+func (c *PrometheusConnector) HealthCheck(ctx context.Context, conf *metadata.Configuration, state *metadata.State) error {
 	// return state.Client.Healthy(ctx)
 	return nil
 }
@@ -121,12 +125,12 @@ func (c *PrometheusConnector) GetCapabilities(conf *metadata.Configuration) sche
 }
 
 // MutationExplain explains a mutation by creating an execution plan.
-func (c *PrometheusConnector) MutationExplain(ctx context.Context, conf *metadata.Configuration, state *State, request *schema.MutationRequest) (*schema.ExplainResponse, error) {
+func (c *PrometheusConnector) MutationExplain(ctx context.Context, conf *metadata.Configuration, state *metadata.State, request *schema.MutationRequest) (*schema.ExplainResponse, error) {
 	return nil, schema.NotSupportedError("mutation explain has not been supported yet", nil)
 }
 
 // Mutation executes a mutation.
-func (c *PrometheusConnector) Mutation(ctx context.Context, configuration *metadata.Configuration, state *State, request *schema.MutationRequest) (*schema.MutationResponse, error) {
+func (c *PrometheusConnector) Mutation(ctx context.Context, configuration *metadata.Configuration, state *metadata.State, request *schema.MutationRequest) (*schema.MutationResponse, error) {
 	operationResults := make([]schema.MutationOperationResults, len(request.Operations))
 	for _, operation := range request.Operations {
 		switch operation.Type {

@@ -14,7 +14,7 @@ import (
 //
 // [NDC Go SDK]: https://github.com/hasura/ndc-sdk-go
 func main() {
-	if err := connector.Start[metadata.Configuration, prom.State](
+	if err := connector.Start[metadata.Configuration, metadata.State](
 		prom.NewPrometheusConnector(),
 		connector.WithMetricsPrefix("ndc_prometheus"),
 		connector.WithDefaultServiceName("ndc_prometheus"),

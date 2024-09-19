@@ -46,7 +46,7 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 		return err
 	}
 
-	apiClient, err := client.NewClient(endpoint, originalConfig.ConnectionSettings.ToHTTPClientConfig(), clientTracer)
+	apiClient, err := client.NewClient(endpoint, originalConfig.ConnectionSettings.ToHTTPClientConfig(), clientTracer, nil)
 	if err != nil {
 		return err
 	}

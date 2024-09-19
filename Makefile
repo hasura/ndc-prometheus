@@ -28,6 +28,10 @@ build-configuration:
 build-jsonschema:
 	cd jsonschema && go run .
 
+.PHONY: generate-api-types
+generate-api-types:
+	hasura-ndc-go update --directories ./connector/api --connector-dir ./connector/api --schema-format go --style snake-case --type-only
+
 # build the configuration tool for all given platform/arch
 .PHONY: ci-build-configuration
 ci-build-configuration: clean
@@ -43,7 +47,6 @@ build-supergraph-test:
 	cd tests/engine && \
 		ddn connector-link update prometheus --add-all-resources --subgraph ./app/subgraph.yaml && \
 		ddn supergraph build local
-
 
 .PHONY: generate-test-config
 generate-test-config:

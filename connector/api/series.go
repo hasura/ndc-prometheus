@@ -9,24 +9,28 @@ import (
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
-// PrometheusSeriesArguments the arguments for the prometheus_series function
+// PrometheusSeriesArguments common api arguments for the prometheus series and labels functions
 type PrometheusSeriesArguments struct {
 	// Repeated series selector argument that selects the series to return. At least one match[] argument must be provided
-	Match []string   `json:"match"`
+	Match []string `json:"match"`
+	// Start timestamp
 	Start *time.Time `json:"start"`
-	End   *time.Time `json:"end"`
-	Limit *uint64    `json:"limit"`
+	// End timestamp
+	End *time.Time `json:"end"`
+	// Maximum number of returned series. Optional. 0 means disabled
+	Limit *uint64 `json:"limit"`
 }
 
-// FunctionPrometheusSeries find series by label matchers
-func FunctionPrometheusSeries(ctx context.Context, state *metadata.State, arguments *PrometheusSeriesArguments) ([]map[string]any, error) {
-	ctx, span := state.Tracer.Start(ctx, "Prometheus Series")
-	defer span.End()
-
+// Validate validates arguments and options
+func (psa *PrometheusSeriesArguments) Validate(state *metadata.State, span trace.Span) (*PrometheusSeriesArguments, []v1.Option, error) {
 	var startTime time.Time
 	endTime := time.Now()
+	arguments := PrometheusSeriesArguments{
+		Match: psa.Match,
+	}
 	if arguments.Start != nil {
 		startTime = *arguments.Start
 	}
@@ -40,19 +44,31 @@ func FunctionPrometheusSeries(ctx context.Context, state *metadata.State, argume
 	if len(arguments.Match) == 0 {
 		errorMsg := "At least one match[] argument must be provided"
 		span.SetStatus(codes.Error, errorMsg)
-		return nil, schema.UnprocessableContentError(errorMsg, nil)
+		return nil, nil, schema.UnprocessableContentError(errorMsg, nil)
 	}
 
 	opts, err := state.Client.ApplyOptions(span, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if arguments.Limit != nil {
 		span.SetAttributes(attribute.Int64("limit", int64(*arguments.Limit)))
 		opts = append(opts, v1.WithLimit(*arguments.Limit))
 	}
 
-	labelSets, warnings, err := state.Client.Series(ctx, arguments.Match, startTime, endTime, opts...)
+	return &arguments, opts, nil
+}
+
+// FunctionPrometheusSeries find series by label matchers
+func FunctionPrometheusSeries(ctx context.Context, state *metadata.State, arguments *PrometheusSeriesArguments) ([]map[string]any, error) {
+	ctx, span := state.Tracer.Start(ctx, "Prometheus Series")
+	defer span.End()
+
+	args, opts, err := arguments.Validate(state, span)
+	if err != nil {
+		return nil, err
+	}
+	labelSets, warnings, err := state.Client.Series(ctx, args.Match, *args.Start, *args.End, opts...)
 	if len(warnings) > 0 {
 		span.SetAttributes(attribute.StringSlice("warnings", warnings))
 	}

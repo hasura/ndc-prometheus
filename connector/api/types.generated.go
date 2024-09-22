@@ -15,6 +15,20 @@ import (
 var api_Decoder = utils.NewDecoder()
 
 // FromValue decodes values from map
+func (j *PrometheusLabelValuesArguments) FromValue(input map[string]any) error {
+	var err error
+	err = functions_Decoder.DecodeObject(&j.PrometheusSeriesArguments, input)
+	if err != nil {
+		return err
+	}
+	j.LabelName, err = utils.GetString(input, "label_name")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
 func (j *PrometheusSeriesArguments) FromValue(input map[string]any) error {
 	var err error
 	j.End, err = utils.GetNullableDateTime(input, "end")
@@ -36,6 +50,17 @@ func (j *PrometheusSeriesArguments) FromValue(input map[string]any) error {
 	return nil
 }
 
+// ToMap encodes the struct to a value map
+func (j PrometheusSeriesArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["end"] = j.End
+	r["limit"] = j.Limit
+	r["match"] = j.Match
+	r["start"] = j.Start
+
+	return r
+}
+
 // DataConnectorHandler implements the data connector handler
 type DataConnectorHandler struct{}
 
@@ -54,7 +79,7 @@ func (dch DataConnectorHandler) Query(ctx context.Context, state *metadata.State
 
 	result, err := dch.execQuery(ctx, state, request, queryFields, rawArgs)
 	if err != nil {
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
+		return nil, err
 	}
 
 	return &schema.RowSet{
@@ -71,6 +96,40 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 	span := trace.SpanFromContext(ctx)
 	logger := connector.GetLogger(ctx)
 	switch request.Collection {
+	case "prometheus_label_names":
+
+		if len(queryFields) > 0 {
+			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
+		}
+		var args PrometheusSeriesArguments
+		if parseErr := args.FromValue(rawArgs); parseErr != nil {
+			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
+				"cause": parseErr.Error(),
+			})
+		}
+
+		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
+			"arguments": args,
+		})
+		return FunctionPrometheusLabelNames(ctx, state, &args)
+
+	case "prometheus_label_values":
+
+		if len(queryFields) > 0 {
+			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
+		}
+		var args PrometheusLabelValuesArguments
+		if parseErr := args.FromValue(rawArgs); parseErr != nil {
+			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
+				"cause": parseErr.Error(),
+			})
+		}
+
+		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
+			"arguments": args,
+		})
+		return FunctionPrometheusLabelValues(ctx, state, &args)
+
 	case "prometheus_series":
 
 		if len(queryFields) > 0 {
@@ -93,7 +152,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 	}
 }
 
-var enumValues_FunctionName = []string{"prometheus_series"}
+var enumValues_FunctionName = []string{"prometheus_label_names", "prometheus_label_values", "prometheus_series"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

@@ -31,7 +31,7 @@ func (c *PrometheusConnector) Query(ctx context.Context, configuration *metadata
 		rowSets[i] = *result
 	}
 
-	return nil, schema.UnprocessableContentError(fmt.Sprintf("invalid query `%s`", request.Collection), nil)
+	return rowSets, nil
 }
 
 func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.State, request *schema.QueryRequest, variables map[string]any, index int) (*schema.RowSet, error) {
@@ -140,7 +140,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 		requestVars = []schema.QueryRequestVariablesElem{make(schema.QueryRequestVariablesElem)}
 	}
 
-	if slices.Contains([]string{metadata.FunctionPromQLQuery}, request.Collection) {
+	if slices.Contains([]string{metadata.FunctionPromQLQuery}, request.Collection) || c.apiHandler.QueryExists(request.Collection) {
 		return &schema.ExplainResponse{
 			Details: schema.ExplainResponseDetails{},
 		}, nil

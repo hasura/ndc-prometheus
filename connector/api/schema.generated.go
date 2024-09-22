@@ -7,11 +7,70 @@ import (
 )
 
 // GetConnectorSchema gets the generated connector schema
-func GetConnectorSchema() schema.SchemaResponse {
-	return schema.SchemaResponse{
+func GetConnectorSchema() *schema.SchemaResponse {
+	return &schema.SchemaResponse{
 		Collections: []schema.CollectionInfo{},
-		ObjectTypes: schema.SchemaResponseObjectTypes{},
+		ObjectTypes: schema.SchemaResponseObjectTypes{
+			"PrometheusSeriesArguments": schema.ObjectType{
+				Description: utils.ToPtr("common api arguments for the prometheus series and labels functions"),
+				Fields: schema.ObjectTypeFields{
+					"end": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"limit": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
+					},
+					"match": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+					},
+					"start": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+				},
+			},
+		},
 		Functions: []schema.FunctionInfo{
+			{
+				Name:        "prometheus_label_names",
+				Description: utils.ToPtr("return a list of label names"),
+				ResultType:  schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"end": {
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"limit": {
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
+					},
+					"match": {
+						Type: schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+					},
+					"start": {
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "prometheus_label_values",
+				Description: utils.ToPtr("return a list of label values for a provided label name"),
+				ResultType:  schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"end": {
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"label_name": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"limit": {
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
+					},
+					"match": {
+						Type: schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+					},
+					"start": {
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+				},
+			},
 			{
 				Name:        "prometheus_series",
 				Description: utils.ToPtr("find series by label matchers"),

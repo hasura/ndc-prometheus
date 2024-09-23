@@ -26,20 +26,22 @@ type PrometheusSeriesArguments struct {
 
 // Validate validates arguments and options
 func (psa *PrometheusSeriesArguments) Validate(state *metadata.State, span trace.Span) (*PrometheusSeriesArguments, []v1.Option, error) {
-	var startTime time.Time
 	endTime := time.Now()
 	arguments := PrometheusSeriesArguments{
 		Match: psa.Match,
+		End:   &endTime,
+		Start: &time.Time{},
+		Limit: psa.Limit,
 	}
-	if arguments.Start != nil {
-		startTime = *arguments.Start
+	if psa.Start != nil {
+		arguments.Start = psa.Start
 	}
-	if arguments.End != nil {
-		endTime = *arguments.End
+	if psa.End != nil {
+		arguments.End = psa.End
 	}
 	span.SetAttributes(attribute.StringSlice("matches", arguments.Match))
-	span.SetAttributes(attribute.String("start", startTime.String()))
-	span.SetAttributes(attribute.String("end", endTime.String()))
+	span.SetAttributes(attribute.String("start", arguments.Start.String()))
+	span.SetAttributes(attribute.String("end", arguments.End.String()))
 
 	if len(arguments.Match) == 0 {
 		errorMsg := "At least one match[] argument must be provided"
@@ -51,9 +53,9 @@ func (psa *PrometheusSeriesArguments) Validate(state *metadata.State, span trace
 	if err != nil {
 		return nil, nil, err
 	}
-	if arguments.Limit != nil {
-		span.SetAttributes(attribute.Int64("limit", int64(*arguments.Limit)))
-		opts = append(opts, v1.WithLimit(*arguments.Limit))
+	if psa.Limit != nil {
+		span.SetAttributes(attribute.Int64("limit", int64(*psa.Limit)))
+		opts = append(opts, v1.WithLimit(*psa.Limit))
 	}
 
 	return &arguments, opts, nil

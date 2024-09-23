@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AlertManager
+  fields:
+    - name: url
+      type: String!
+  graphql:
+    typeName: AlertManager
+    inputTypeName: AlertManager_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: AlertManager
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AlertManager
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - url
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AlertManagersResult
+  fields:
+    - name: activeAlertManagers
+      type: "[AlertManager!]!"
+    - name: droppedAlertManagers
+      type: "[AlertManager!]!"
+  graphql:
+    typeName: AlertManagersResult
+    inputTypeName: AlertManagersResult_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: AlertManagersResult
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AlertManagersResult
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - activeAlertManagers
+          - droppedAlertManagers
+
+---
+kind: Command
+version: v1
+definition:
+  name: prometheus_alertmanagers
+  outputType: AlertManagersResult!
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: prometheus_alertmanagers
+  graphql:
+    rootFieldName: prometheus_alertmanagers
+    rootFieldKind: Query
+  description: return an overview of the current state of the Prometheus
+    alertmanager discovery
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: prometheus_alertmanagers
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -11,6 +11,100 @@ func GetConnectorSchema() *schema.SchemaResponse {
 	return &schema.SchemaResponse{
 		Collections: []schema.CollectionInfo{},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
+			"ActiveTarget": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"discoveredLabels": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+					"globalUrl": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"health": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"labels": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+					"lastError": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"lastScrape": schema.ObjectField{
+						Type: schema.NewNamedType("TimestampTZ").Encode(),
+					},
+					"lastScrapeDuration": schema.ObjectField{
+						Type: schema.NewNamedType("Float64").Encode(),
+					},
+					"scrapePool": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"scrapeUrl": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+				},
+			},
+			"Alert": schema.ObjectType{
+				Description: utils.ToPtr("models an active alert."),
+				Fields: schema.ObjectTypeFields{
+					"activeAt": schema.ObjectField{
+						Type: schema.NewNamedType("TimestampTZ").Encode(),
+					},
+					"annotations": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+					"labels": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+					"state": schema.ObjectField{
+						Type: schema.NewNamedType("AlertState").Encode(),
+					},
+					"value": schema.ObjectField{
+						Type: schema.NewNamedType("Decimal").Encode(),
+					},
+				},
+			},
+			"AlertManager": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"url": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+				},
+			},
+			"AlertManagersResult": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"activeAlertManagers": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("AlertManager")).Encode(),
+					},
+					"droppedAlertManagers": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("AlertManager")).Encode(),
+					},
+				},
+			},
+			"DroppedTarget": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"discoveredLabels": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+				},
+			},
+			"MetricMetadata": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"help": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"metric": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"target": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+					"type": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"unit": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+				},
+			},
 			"PrometheusSeriesArguments": schema.ObjectType{
 				Description: utils.ToPtr("common api arguments for the prometheus series and labels functions"),
 				Fields: schema.ObjectTypeFields{
@@ -28,8 +122,52 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"RuleGroup": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"file": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"interval": schema.ObjectField{
+						Type: schema.NewNamedType("Float64").Encode(),
+					},
+					"name": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"rules": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("JSON")).Encode(),
+					},
+				},
+			},
+			"RulesResult": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"groups": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("RuleGroup")).Encode(),
+					},
+				},
+			},
+			"TargetsResult": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"activeTargets": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("ActiveTarget")).Encode(),
+					},
+					"droppedTargets": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("DroppedTarget")).Encode(),
+					},
+				},
+			},
 		},
 		Functions: []schema.FunctionInfo{
+			{
+				Name:        "prometheus_alertmanagers",
+				Description: utils.ToPtr("return an overview of the current state of the Prometheus alertmanager discovery"),
+				ResultType:  schema.NewNamedType("AlertManagersResult").Encode(),
+				Arguments:   map[string]schema.ArgumentInfo{},
+			},
+			{
+				Name:       "prometheus_alerts",
+				ResultType: schema.NewArrayType(schema.NewNamedType("Alert")).Encode(),
+				Arguments:  map[string]schema.ArgumentInfo{},
+			},
 			{
 				Name:        "prometheus_label_names",
 				Description: utils.ToPtr("return a list of label names"),
@@ -72,6 +210,12 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
+				Name:        "prometheus_rules",
+				Description: utils.ToPtr("return a list of all active alerts"),
+				ResultType:  schema.NewNamedType("RulesResult").Encode(),
+				Arguments:   map[string]schema.ArgumentInfo{},
+			},
+			{
 				Name:        "prometheus_series",
 				Description: utils.ToPtr("find series by label matchers"),
 				ResultType:  schema.NewArrayType(schema.NewNamedType("JSON")).Encode(),
@@ -90,9 +234,46 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			{
+				Name:        "prometheus_targets",
+				Description: utils.ToPtr("returns an overview of the current state of the Prometheus target discovery"),
+				ResultType:  schema.NewNamedType("TargetsResult").Encode(),
+				Arguments:   map[string]schema.ArgumentInfo{},
+			},
+			{
+				Name:        "prometheus_targets_metadata",
+				Description: utils.ToPtr("returns metadata about metrics currently scraped from targets"),
+				ResultType:  schema.NewArrayType(schema.NewNamedType("MetricMetadata")).Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"limit": {
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
+					},
+					"match_target": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"metric": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
 		},
 		Procedures: []schema.ProcedureInfo{},
 		ScalarTypes: schema.SchemaResponseScalarTypes{
+			"AlertState": schema.ScalarType{
+				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
+				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
+				Representation:      schema.NewTypeRepresentationEnum([]string{"firing", "inactive", "pending"}).Encode(),
+			},
+			"Decimal": schema.ScalarType{
+				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
+				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
+				Representation:      schema.NewTypeRepresentationString().Encode(),
+			},
+			"Float64": schema.ScalarType{
+				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
+				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
+				Representation:      schema.NewTypeRepresentationFloat64().Encode(),
+			},
 			"Int64": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},

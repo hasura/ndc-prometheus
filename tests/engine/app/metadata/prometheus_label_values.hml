@@ -1,0 +1,35 @@
+---
+kind: Command
+version: v1
+definition:
+  name: prometheus_label_values
+  outputType: "[String!]!"
+  arguments:
+    - name: end
+      type: TimestampTZ
+    - name: label_name
+      type: String!
+    - name: limit
+      type: Int64
+    - name: match
+      type: "[String!]!"
+    - name: start
+      type: TimestampTZ
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: prometheus_label_values
+  graphql:
+    rootFieldName: prometheus_label_values
+    rootFieldKind: Query
+  description: return a list of label values for a provided label name
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: prometheus_label_values
+  permissions:
+    - role: admin
+      allowExecution: true
+

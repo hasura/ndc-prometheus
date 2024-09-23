@@ -18,7 +18,7 @@ func FunctionPrometheusLabelNames(ctx context.Context, state *metadata.State, ar
 	if err != nil {
 		return nil, err
 	}
-	results, warnings, err := state.Client.LabelNames(ctx, arguments.Match, *args.Start, *args.End, opts...)
+	results, warnings, err := state.Client.LabelNames(ctx, args.Match, *args.Start, *args.End, opts...)
 	if len(warnings) > 0 {
 		span.SetAttributes(attribute.StringSlice("warnings", warnings))
 	}

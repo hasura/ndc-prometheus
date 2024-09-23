@@ -1,0 +1,85 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: RuleGroup
+  fields:
+    - name: file
+      type: String!
+    - name: interval
+      type: Float64!
+    - name: name
+      type: String!
+    - name: rules
+      type: "[JSON!]!"
+  graphql:
+    typeName: RuleGroup
+    inputTypeName: RuleGroup_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: RuleGroup
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: RuleGroup
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - file
+          - interval
+          - name
+          - rules
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: RulesResult
+  fields:
+    - name: groups
+      type: "[RuleGroup!]!"
+  graphql:
+    typeName: RulesResult
+    inputTypeName: RulesResult_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: RulesResult
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: RulesResult
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - groups
+
+---
+kind: Command
+version: v1
+definition:
+  name: prometheus_rules
+  outputType: RulesResult!
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: prometheus_rules
+  graphql:
+    rootFieldName: prometheus_rules
+    rootFieldKind: Query
+  description: return a list of all active alerts
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: prometheus_rules
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -55,6 +55,7 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 			Client:      state.Client,
 			Request:     request,
 			NativeQuery: &metadata.NativeQuery{},
+			Arguments:   arguments,
 		}
 		result, err := executor.ExecuteRaw(ctx)
 		if err != nil {
@@ -83,6 +84,7 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 			Client:      state.Client,
 			Request:     request,
 			NativeQuery: &nativeQuery,
+			Arguments:   arguments,
 		}
 		result, err := executor.Execute(ctx)
 		if err != nil {

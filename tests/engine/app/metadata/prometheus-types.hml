@@ -7038,3 +7038,39 @@ definition:
   graphql:
     comparisonExpressionTypeName: JSON_comparison_exp
 
+---
+kind: ScalarType
+version: v1
+definition:
+  name: AlertState
+  graphql:
+    typeName: AlertState
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: BigDecimal
+  graphql:
+    typeName: BigDecimal
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: AlertState
+  representation: AlertState
+  graphql:
+    comparisonExpressionTypeName: AlertState_comparison_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: BigDecimal
+  representation: BigDecimal
+  graphql:
+    comparisonExpressionTypeName: BigDecimal_comparison_exp
+

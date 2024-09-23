@@ -1,0 +1,129 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ActiveTarget
+  fields:
+    - name: discoveredLabels
+      type: JSON!
+    - name: globalUrl
+      type: String!
+    - name: health
+      type: String!
+    - name: labels
+      type: JSON!
+    - name: lastError
+      type: String!
+    - name: lastScrape
+      type: TimestampTZ!
+    - name: lastScrapeDuration
+      type: Float64!
+    - name: scrapePool
+      type: String!
+    - name: scrapeUrl
+      type: String!
+  graphql:
+    typeName: ActiveTarget
+    inputTypeName: ActiveTarget_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: ActiveTarget
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ActiveTarget
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - discoveredLabels
+          - globalUrl
+          - health
+          - labels
+          - lastError
+          - lastScrape
+          - lastScrapeDuration
+          - scrapePool
+          - scrapeUrl
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DroppedTarget
+  fields:
+    - name: discoveredLabels
+      type: JSON!
+  graphql:
+    typeName: DroppedTarget
+    inputTypeName: DroppedTarget_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: DroppedTarget
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DroppedTarget
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - discoveredLabels
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: TargetsResult
+  fields:
+    - name: activeTargets
+      type: "[ActiveTarget!]!"
+    - name: droppedTargets
+      type: "[DroppedTarget!]!"
+  graphql:
+    typeName: TargetsResult
+    inputTypeName: TargetsResult_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: TargetsResult
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: TargetsResult
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - activeTargets
+          - droppedTargets
+
+---
+kind: Command
+version: v1
+definition:
+  name: prometheus_targets
+  outputType: TargetsResult!
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: prometheus_targets
+  graphql:
+    rootFieldName: prometheus_targets
+    rootFieldKind: Query
+  description: returns an overview of the current state of the Prometheus target discovery
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: prometheus_targets
+  permissions:
+    - role: admin
+      allowExecution: true
+

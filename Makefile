@@ -44,6 +44,9 @@ build-supergraph-test:
 		ddn connector-link update prometheus --add-all-resources --subgraph ./app/subgraph.yaml && \
 		ddn supergraph build local
 
+.PHONY: generate-api-types
+generate-api-types:
+	hasura-ndc-go update --directories ./connector/api --connector-dir ./connector/api --schema-format go --style snake-case --type-only
 
 .PHONY: generate-test-config
 generate-test-config:

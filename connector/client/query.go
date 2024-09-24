@@ -26,18 +26,9 @@ func (c *Client) Query(ctx context.Context, queryString string, timestamp any, t
 	span.SetAttributes(attribute.String("timestamp", fmt.Sprint(timestamp)))
 	span.SetAttributes(attribute.String("timeout", fmt.Sprint(timeout)))
 
-	var opts []v1.Option
-	timeoutDuration, err := ParseDuration(timeout)
+	opts, err := c.ApplyOptions(span, timeout)
 	if err != nil {
-		span.SetStatus(codes.Error, "failed to parse timeout")
-		span.RecordError(err)
-		return nil, nil, fmt.Errorf("failed to decode the timeout parameter: %s", err)
-	}
-	if timeoutDuration > 0 {
-		newCtx, cancel := context.WithTimeout(ctx, timeoutDuration)
-		defer cancel()
-		ctx = newCtx
-		opts = append(opts, v1.WithTimeout(timeoutDuration))
+		return nil, nil, err
 	}
 
 	ts, err := ParseTimestamp(timestamp)
@@ -86,18 +77,9 @@ func (c *Client) QueryRange(ctx context.Context, queryString string, start any, 
 	span.SetAttributes(attribute.String("step", fmt.Sprint(step)))
 	span.SetAttributes(attribute.String("timeout", fmt.Sprint(timeout)))
 
-	var opts []v1.Option
-	timeoutDuration, err := ParseDuration(timeout)
+	opts, err := c.ApplyOptions(span, timeout)
 	if err != nil {
-		span.SetStatus(codes.Error, "failed to parse timeout")
-		span.RecordError(err)
-		return nil, nil, fmt.Errorf("failed to decode timeout parameter: %s", err)
-	}
-	if timeoutDuration > 0 {
-		newCtx, cancel := context.WithTimeout(ctx, timeoutDuration)
-		defer cancel()
-		ctx = newCtx
-		opts = append(opts, v1.WithTimeout(timeoutDuration))
+		return nil, nil, err
 	}
 
 	r, err := c.getRange(start, end, step)

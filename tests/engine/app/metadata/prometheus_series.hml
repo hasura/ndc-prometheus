@@ -1,0 +1,33 @@
+---
+kind: Command
+version: v1
+definition:
+  name: prometheus_series
+  outputType: "[JSON!]!"
+  arguments:
+    - name: end
+      type: TimestampTZ
+    - name: limit
+      type: Int64
+    - name: match
+      type: "[String!]!"
+    - name: start
+      type: TimestampTZ
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: prometheus_series
+  graphql:
+    rootFieldName: prometheus_series
+    rootFieldKind: Query
+  description: find series by label matchers
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: prometheus_series
+  permissions:
+    - role: admin
+      allowExecution: true
+

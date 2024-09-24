@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"gotest.tools/v3/assert"
 )
 
@@ -25,7 +26,7 @@ var testCases = []struct {
 						"sum": []string{"job"},
 					},
 					{
-						"max": nil,
+						"max": []string{},
 					},
 					{
 						"abs": true,
@@ -54,20 +55,24 @@ var testCases = []struct {
 			},
 			Functions: []KeyValue{
 				{Key: "sum", Value: []string{"job"}},
-				{Key: "max", Value: nil},
+				{Key: "max", Value: []string{}},
 				{Key: "abs", Value: true},
 			},
 		},
-		QueryString: `abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))) >= 0`,
+		QueryString: `abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))) >= 0.000000`,
 	},
 }
 
 func TestCollectionQueryExplain(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
+			arguments, err := utils.ResolveArgumentVariables(tc.Request.Arguments, map[string]any{})
+			assert.NilError(t, err)
+
 			executor := &QueryCollectionExecutor{
 				Request:   &tc.Request,
-				Variables: nil,
+				Variables: map[string]any{},
+				Arguments: arguments,
 			}
 
 			request, queryString, err := executor.Explain(context.TODO())

@@ -27,9 +27,7 @@ scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: "prometheus"
   - job_name: "node"
-
-    # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
+    scrape_interval: 1s
 
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
@@ -40,9 +38,7 @@ scrape_configs:
           - node-exporter:9100
 
   - job_name: "ndc-prometheus"
-
-    # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
+    scrape_interval: 1s
 
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.

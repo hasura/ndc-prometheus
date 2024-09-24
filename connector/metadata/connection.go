@@ -5,17 +5,15 @@ import (
 	"fmt"
 
 	"github.com/prometheus/common/config"
+	"github.com/prometheus/common/model"
 )
 
 // ClientSettings contain information for the Prometheus server that the client connects to
 type ClientSettings struct {
 	// The endpoint of the Prometheus server.
 	URL EnvironmentValue `json:"url" yaml:"url"`
-	// The maximum amount of seconds a dial will wait for a connect to complete. The default is no timeout.
-	Timeout int `json:"timeout,omitempty" yaml:"timeout,omitempty"`
-	// Specifies the interval in seconds between keep-alive probes for an active network connection. The default is 15 seconds.
-	KeepAlive int `json:"keep_alive,omitempty" yaml:"keep_alive,omitempty"`
-
+	// The default timeout in seconds for Prometheus requests. The default is no timeout.
+	Timeout *model.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
 	// The HTTP basic authentication credentials for the targets.
 	BasicAuth *config.BasicAuth `yaml:"basic_auth,omitempty" json:"basic_auth,omitempty"`
 	// The HTTP authorization credentials for the targets.

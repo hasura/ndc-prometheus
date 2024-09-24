@@ -42,16 +42,6 @@ var defaultScalars = map[string]schema.ScalarType{
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
 		Representation:      schema.NewTypeRepresentationBoolean().Encode(),
 	},
-	string(ScalarInt64): {
-		AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
-		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-		Representation:      schema.NewTypeRepresentationInt64().Encode(),
-	},
-	string(ScalarFloat64): {
-		AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
-		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-		Representation:      schema.NewTypeRepresentationFloat64().Encode(),
-	},
 	string(ScalarString): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
@@ -68,11 +58,11 @@ var defaultScalars = map[string]schema.ScalarType{
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
 			Equal:          schema.NewComparisonOperatorEqual().Encode(),
-			NotEqual:       schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
-			Least:          schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
-			LeastOrEqual:   schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
-			Greater:        schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
-			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
+			NotEqual:       schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
+			Least:          schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
+			LeastOrEqual:   schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
+			Greater:        schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
+			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
 		},
 		Representation: schema.NewTypeRepresentationBigDecimal().Encode(),
 	},

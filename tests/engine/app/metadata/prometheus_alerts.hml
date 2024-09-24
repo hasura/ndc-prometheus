@@ -1,0 +1,62 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Alert
+  description: models an active alert.
+  fields:
+    - name: activeAt
+      type: TimestampTZ!
+    - name: annotations
+      type: JSON!
+    - name: labels
+      type: JSON!
+    - name: state
+      type: AlertState!
+    - name: value
+      type: Decimal!
+  graphql:
+    typeName: Alert
+    inputTypeName: Alert_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: Alert
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Alert
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - activeAt
+          - annotations
+          - labels
+          - state
+          - value
+
+---
+kind: Command
+version: v1
+definition:
+  name: prometheus_alerts
+  outputType: "[Alert!]!"
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: prometheus_alerts
+  graphql:
+    rootFieldName: prometheus_alerts
+    rootFieldKind: Query
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: prometheus_alerts
+  permissions:
+    - role: admin
+      allowExecution: true
+

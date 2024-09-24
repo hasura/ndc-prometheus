@@ -1,0 +1,69 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetricMetadata
+  fields:
+    - name: help
+      type: String!
+    - name: metric
+      type: String!
+    - name: target
+      type: JSON!
+    - name: type
+      type: String!
+    - name: unit
+      type: String!
+  graphql:
+    typeName: MetricMetadata
+    inputTypeName: MetricMetadata_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: MetricMetadata
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetricMetadata
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - help
+          - metric
+          - target
+          - type
+          - unit
+
+---
+kind: Command
+version: v1
+definition:
+  name: prometheus_targets_metadata
+  outputType: "[MetricMetadata!]!"
+  arguments:
+    - name: limit
+      type: Int64
+    - name: match_target
+      type: String
+    - name: metric
+      type: String
+  source:
+    dataConnectorName: prometheus
+    dataConnectorCommand:
+      function: prometheus_targets_metadata
+  graphql:
+    rootFieldName: prometheus_targets_metadata
+    rootFieldKind: Query
+  description: returns metadata about metrics currently scraped from targets
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: prometheus_targets_metadata
+  permissions:
+    - role: admin
+      allowExecution: true
+

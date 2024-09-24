@@ -14,7 +14,7 @@ definition:
     - name: state
       type: AlertState!
     - name: value
-      type: BigDecimal!
+      type: Decimal!
   graphql:
     typeName: Alert
     inputTypeName: Alert_input

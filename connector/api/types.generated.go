@@ -70,32 +70,6 @@ func (j *PrometheusTargetsMetadataArguments) FromValue(input map[string]any) err
 	return nil
 }
 
-// FromValue decodes values from map
-func (j *Alert) FromValue(input map[string]any) error {
-	var err error
-	j.ActiveAt, err = utils.GetDateTime(input, "activeAt")
-	if err != nil {
-		return err
-	}
-	err = connector_Decoder.DecodeObjectValue(&j.Annotations, input, "annotations")
-	if err != nil {
-		return err
-	}
-	err = connector_Decoder.DecodeObjectValue(&j.Labels, input, "labels")
-	if err != nil {
-		return err
-	}
-	err = connector_Decoder.DecodeObjectValue(&j.State, input, "state")
-	if err != nil {
-		return err
-	}
-	err = connector_Decoder.DecodeObjectValue(&j.Value, input, "value")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // ToMap encodes the struct to a value map
 func (j Alert) ToMap() map[string]any {
 	r := make(map[string]any)

@@ -3,8 +3,11 @@ package api
 
 import (
 	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
 )
+
+func toPtr[V any](value V) *V {
+	return &value
+}
 
 // GetConnectorSchema gets the generated connector schema
 func GetConnectorSchema() *schema.SchemaResponse {
@@ -43,7 +46,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			"Alert": schema.ObjectType{
-				Description: utils.ToPtr("models an active alert."),
+				Description: toPtr("models an active alert."),
 				Fields: schema.ObjectTypeFields{
 					"activeAt": schema.ObjectField{
 						Type: schema.NewNamedType("TimestampTZ").Encode(),
@@ -106,7 +109,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			"PrometheusSeriesArguments": schema.ObjectType{
-				Description: utils.ToPtr("common api arguments for the prometheus series and labels functions"),
+				Description: toPtr("common api arguments for the prometheus series and labels functions"),
 				Fields: schema.ObjectTypeFields{
 					"end": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
@@ -159,7 +162,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 		Functions: []schema.FunctionInfo{
 			{
 				Name:        "prometheus_alertmanagers",
-				Description: utils.ToPtr("return an overview of the current state of the Prometheus alertmanager discovery"),
+				Description: toPtr("return an overview of the current state of the Prometheus alertmanager discovery"),
 				ResultType:  schema.NewNamedType("AlertManagersResult").Encode(),
 				Arguments:   map[string]schema.ArgumentInfo{},
 			},
@@ -170,7 +173,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			},
 			{
 				Name:        "prometheus_label_names",
-				Description: utils.ToPtr("return a list of label names"),
+				Description: toPtr("return a list of label names"),
 				ResultType:  schema.NewArrayType(schema.NewNamedType("String")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"end": {
@@ -189,7 +192,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			},
 			{
 				Name:        "prometheus_label_values",
-				Description: utils.ToPtr("return a list of label values for a provided label name"),
+				Description: toPtr("return a list of label values for a provided label name"),
 				ResultType:  schema.NewArrayType(schema.NewNamedType("String")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"end": {
@@ -211,13 +214,13 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			},
 			{
 				Name:        "prometheus_rules",
-				Description: utils.ToPtr("return a list of all active alerts"),
+				Description: toPtr("return a list of all active alerts"),
 				ResultType:  schema.NewNamedType("RulesResult").Encode(),
 				Arguments:   map[string]schema.ArgumentInfo{},
 			},
 			{
 				Name:        "prometheus_series",
-				Description: utils.ToPtr("find series by label matchers"),
+				Description: toPtr("find series by label matchers"),
 				ResultType:  schema.NewArrayType(schema.NewNamedType("JSON")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"end": {
@@ -236,13 +239,13 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			},
 			{
 				Name:        "prometheus_targets",
-				Description: utils.ToPtr("returns an overview of the current state of the Prometheus target discovery"),
+				Description: toPtr("returns an overview of the current state of the Prometheus target discovery"),
 				ResultType:  schema.NewNamedType("TargetsResult").Encode(),
 				Arguments:   map[string]schema.ArgumentInfo{},
 			},
 			{
 				Name:        "prometheus_targets_metadata",
-				Description: utils.ToPtr("returns metadata about metrics currently scraped from targets"),
+				Description: toPtr("returns metadata about metrics currently scraped from targets"),
 				ResultType:  schema.NewArrayType(schema.NewNamedType("MetricMetadata")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"limit": {

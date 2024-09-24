@@ -399,7 +399,7 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(operator *schem
 	if !ok {
 		return "", fmt.Errorf("value: unsupported comparison operator `%s`", operator)
 	}
-	return fmt.Sprintf(" %s %s", op, value), nil
+	return fmt.Sprintf(" %s %f", op, *v), nil
 }
 
 func (qce *QueryCollectionExecutor) evalStringCondition(name string, operator string, value any) (string, bool, error) {

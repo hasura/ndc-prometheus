@@ -35,6 +35,8 @@ github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 h1:asbCHRVmodnJTuQ3qamDwqVOIjw
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0/go.mod h1:ggCgvZ2r7uOoQjOyu2Y1NhHmEPPzzuhWgcza5M1Ji1I=
 github.com/hasura/ndc-sdk-go v1.3.1-0.20240922072552-9808dacbcee4 h1:iAHA7iUI6U24OlM2EZR+gk6lj1rxFyxwZnnXNmhtWbI=
 github.com/hasura/ndc-sdk-go v1.3.1-0.20240922072552-9808dacbcee4/go.mod h1:HYlvIl0qvoUupwb0MfDY9JZnltab+qSDQapEeSC70jY=
+github.com/hasura/ndc-sdk-go v1.3.1-0.20240924031613-bf965d014b44 h1:2sjWUqUlhiGsn4OaoAGKWyleq0ArWDBB33M6rEyWNpg=
+github.com/hasura/ndc-sdk-go v1.3.1-0.20240924031613-bf965d014b44/go.mod h1:HYlvIl0qvoUupwb0MfDY9JZnltab+qSDQapEeSC70jY=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
 github.com/iancoleman/strcase v0.3.0 h1:nTXanmYxhfFAMjZL34Ov6gkzEsSJZ5DbhxWjvSASxEI=

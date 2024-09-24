@@ -75,7 +75,7 @@ func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.C
 	if err != nil {
 		return nil, err
 	}
-	ndcSchema, errs := utils.MergeSchemas(promSchema, api.GetConnectorSchema())
+	ndcSchema, errs := utils.MergeSchemas(api.GetConnectorSchema(), promSchema)
 	for _, e := range errs {
 		slog.Debug(e.Error())
 	}

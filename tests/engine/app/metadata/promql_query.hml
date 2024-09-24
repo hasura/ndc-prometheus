@@ -1,4 +1,44 @@
 ---
+kind: ObjectType
+version: v1
+definition:
+  name: QueryResultValues
+  description: A general query result with values and labels
+  fields:
+    - name: labels
+      type: LabelSet!
+      description: Labels of the metric
+    - name: timestamp
+      type: Timestamp!
+      description: An instant timestamp or the last timestamp of a range query result
+    - name: value
+      type: Decimal!
+      description: Value of the instant query or the last value of a range query
+    - name: values
+      type: "[QueryResultValue!]!"
+      description: An array of query result values
+  graphql:
+    typeName: QueryResultValues
+    inputTypeName: QueryResultValues_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: QueryResultValues
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: QueryResultValues
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - labels
+          - timestamp
+          - value
+          - values
+
+---
 kind: Command
 version: v1
 definition:

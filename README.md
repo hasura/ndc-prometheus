@@ -10,7 +10,7 @@ This connector is built using the [Go Data Connector SDK](https://github.com/has
 
 #### How it works
 
-The connector can introspect and automatically transform available metrics on the Prometheus server to collection queries. Each collection has the common structure:
+The connector can introspect and automatically transform available metrics on the Prometheus server to collection queries. Each collection has a common structure:
 
 ```gql
 {
@@ -60,12 +60,12 @@ The configuration plugin introspects labels of each metric and defines them as c
 }
 ```
 
-The connector can detect if you want to request instant or range query via the `timestamp` column:
+The connector can detect if you want to request an instant query or range query via the `timestamp` column:
 
 - `_eq`: instant query at the exact timestamp.
 - `_gt` < `_lt`: range query.
 
-The range query mode is default If none of timestamp operator is set.
+The range query mode is default If none of the timestamp operators is set.
 
 #### Common arguments
 
@@ -157,7 +157,7 @@ The native query is exposed as a read-only function with 2 required fields `job`
 
 #### Raw PromQL query
 
-Execute a raw PromQL query directly. This API should be used by admin only. The result contains labels and values only.
+Execute a raw PromQL query directly. This API should be used by the admin only. The result contains labels and values only.
 
 ```gql
 {

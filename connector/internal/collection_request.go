@@ -29,7 +29,7 @@ type CollectionRequest struct {
 	Start            schema.ComparisonValue
 	End              schema.ComparisonValue
 	Value            *schema.ExpressionBinaryComparisonOperator
-	LabelExpressions map[string]*schema.ExpressionBinaryComparisonOperator
+	LabelExpressions map[string]*LabelExpression
 	Functions        []KeyValue
 	OrderBy          []ColumnOrder
 }
@@ -37,7 +37,7 @@ type CollectionRequest struct {
 // EvalCollectionRequest evaluates the requested collection data of the query request
 func EvalCollectionRequest(request *schema.QueryRequest, arguments map[string]any) (*CollectionRequest, error) {
 	result := &CollectionRequest{
-		LabelExpressions: make(map[string]*schema.ExpressionBinaryComparisonOperator),
+		LabelExpressions: make(map[string]*LabelExpression),
 	}
 	if len(request.Query.Predicate) == 0 {
 		return result, nil
@@ -128,11 +128,14 @@ func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) er
 			}
 			pr.Value = expr
 		default:
-			// this is a label predicate field
-			if _, ok := pr.LabelExpressions[expr.Column.Name]; ok {
-				return fmt.Errorf("%s: unsupported multiple comparisons for a single label", expr.Column.Name)
+			if le, ok := pr.LabelExpressions[expr.Column.Name]; ok {
+				le.Expressions = append(le.Expressions, *expr)
+			} else {
+				pr.LabelExpressions[expr.Column.Name] = &LabelExpression{
+					Name:        expr.Column.Name,
+					Expressions: []schema.ExpressionBinaryComparisonOperator{*expr},
+				}
 			}
-			pr.LabelExpressions[expr.Column.Name] = expr
 		}
 	default:
 		return fmt.Errorf("unsupported expression: %+v", expression)

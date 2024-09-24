@@ -17,6 +17,7 @@ const (
 	ScalarLabelSet        ScalarName = "LabelSet"
 	ScalarDuration        ScalarName = "Duration"
 	ScalarRangeResolution ScalarName = "RangeResolution"
+	ScalarJSON            ScalarName = "JSON"
 )
 
 const (
@@ -46,7 +47,7 @@ var defaultScalars = map[string]schema.ScalarType{
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
 			Equal:    schema.NewComparisonOperatorEqual().Encode(),
-			In:       schema.NewComparisonOperatorIn().Encode(),
+			In:       schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarJSON))).Encode(),
 			NotEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
 			Regex:    schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
 			NotRegex: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),

@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"gotest.tools/v3/assert"
@@ -49,9 +50,19 @@ var testCases = []struct {
 			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
 			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
 			Value: schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("value", nil, nil), "_gte", schema.NewComparisonValueScalar("0")),
-			LabelExpressions: map[string]*schema.ExpressionBinaryComparisonOperator{
-				"job":      schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
-				"instance": schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("instance", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
+					},
+				},
+				"instance": {
+					Name: "instance",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("instance", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
+					},
+				},
 			},
 			Functions: []KeyValue{
 				{Key: "sum", Value: []string{"job"}},
@@ -60,6 +71,244 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))) >= 0.000000`,
+	},
+	{
+		Name: "label_expressions_empty",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"offset": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionAnd(
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
+					),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
+			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
+					},
+				},
+			},
+		},
+		QueryString: "",
+	},
+	{
+		Name: "label_expressions_equal",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"step": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionAnd(
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+					),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
+			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job="node"}`,
+	},
+	{
+		Name: "label_expressions_in",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionAnd(
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"node", "localhost:9090", "prometheus"})),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+					),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
+			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"node", "localhost:9090", "prometheus"})),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job=~"node|localhost:9090"}`,
+	},
+	{
+		Name: "label_expressions_nin",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments:  schema.QueryRequestArguments{},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionAnd(
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_nin", schema.NewComparisonValueScalar([]string{"node", "localhost:9090", "prometheus"})),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_nin", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+					),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
+			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_nin", schema.NewComparisonValueScalar([]string{"node", "localhost:9090", "prometheus"})),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_nin", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job!~"localhost:9090|node|prometheus"}`,
+	},
+	{
+		Name: "label_expressions_nin",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments:  schema.QueryRequestArguments{},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionAnd(
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), metadata.Regex, schema.NewComparisonValueScalar("node.*")),
+					),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
+			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), metadata.Regex, schema.NewComparisonValueScalar("node.*")),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job=~"node.*"}`,
+	},
+	{
+		Name: "label_expressions_nin",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments:  schema.QueryRequestArguments{},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionAnd(
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp", nil, nil), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), metadata.NotRegex, schema.NewComparisonValueScalar("node.*")),
+					),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
+			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), metadata.NotRegex, schema.NewComparisonValueScalar("node.*")),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job!~"node.*"}`,
+	},
+	{
+		Name: "label_expressions_in_string",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar(`["ndc-prometheus", "node", "prometheus"]`)),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar(`["ndc-prometheus", "node", "prometheus"]`)),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job=~"ndc-prometheus|node|prometheus"}`,
+	},
+	{
+		Name: "label_expressions_in_string_pg",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar(`{ndc-prometheus,node,prometheus}`)),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar(`{ndc-prometheus,node,prometheus}`)),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job=~"ndc-prometheus|node|prometheus"}`,
 	},
 }
 
@@ -75,7 +324,7 @@ func TestCollectionQueryExplain(t *testing.T) {
 				Arguments: arguments,
 			}
 
-			request, queryString, err := executor.Explain(context.TODO())
+			request, queryString, _, err := executor.Explain(context.TODO())
 			assert.NilError(t, err)
 			assert.DeepEqual(t, tc.Predicate, *request)
 			assert.Equal(t, tc.QueryString, queryString)

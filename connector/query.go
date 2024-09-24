@@ -191,7 +191,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 				Arguments: arguments,
 			}
 
-			_, queryString, err := executor.Explain(ctx)
+			_, queryString, _, err := executor.Explain(ctx)
 			if err != nil {
 				return nil, err
 			}

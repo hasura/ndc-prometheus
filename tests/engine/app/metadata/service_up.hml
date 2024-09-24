@@ -3,7 +3,7 @@ kind: Command
 version: v1
 definition:
   name: service_up
-  outputType: "[QueryResultValues!]!"
+  outputType: "[ServiceUpResult!]!"
   arguments:
     - name: end
       type: Timestamp
@@ -42,4 +42,49 @@ definition:
   permissions:
     - role: admin
       allowExecution: true
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ServiceUpResult
+  fields:
+    - name: instance
+      type: String!
+    - name: job
+      type: String!
+    - name: labels
+      type: LabelSet!
+      description: Labels of the metric
+    - name: timestamp
+      type: Timestamp!
+      description: An instant timestamp or the last timestamp of a range query result
+    - name: value
+      type: Decimal!
+      description: Value of the instant query or the last value of a range query
+    - name: values
+      type: "[QueryResultValue!]!"
+      description: An array of query result values
+  graphql:
+    typeName: ServiceUpResult
+    inputTypeName: ServiceUpResult_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: ServiceUpResult
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ServiceUpResult
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - instance
+          - job
+          - labels
+          - timestamp
+          - value
+          - values
 

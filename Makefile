@@ -35,7 +35,7 @@ ci-build-configuration: clean
 	go get github.com/mitchellh/gox && \
 	go run github.com/mitchellh/gox -ldflags '-X github.com/hasura/ndc-prometheus/configuration/version.BuildVersion=$(VERSION) -s -w -extldflags "-static"' \
 		-osarch="linux/amd64 linux/arm64 darwin/amd64 windows/amd64 darwin/arm64" \
-		-output="$(OUTPUT_DIR)/$(VERSION)/ndc-prometheus-{{.OS}}-{{.Arch}}" \
+		-output="$(OUTPUT_DIR)/ndc-prometheus-{{.OS}}-{{.Arch}}" \
 		./configuration
 
 .PHONY: ci-build

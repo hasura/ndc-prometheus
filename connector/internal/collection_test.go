@@ -59,7 +59,7 @@ var testCases = []struct {
 				{Key: "abs", Value: true},
 			},
 		},
-		QueryString: `abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))) >= 0`,
+		QueryString: `abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))) >= 0.000000`,
 	},
 }
 

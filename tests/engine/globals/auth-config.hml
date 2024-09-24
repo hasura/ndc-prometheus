@@ -4,4 +4,5 @@ definition:
   mode:
     noAuth:
       role: admin
-      sessionVariables: {}
+      sessionVariables:
+        x-hasura-jobs: '["ndc-prometheus", "node", "prometheus"]'

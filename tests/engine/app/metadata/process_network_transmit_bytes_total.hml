@@ -2,77 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: ValueBoundaryInput
-  description: Boundary input arguments
-  fields:
-    - name: max
-      type: Float64!
-      description: The upper limit of values
-    - name: min
-      type: Float64!
-      description: The lower limit of values
-  graphql:
-    typeName: ValueBoundaryInput
-    inputTypeName: ValueBoundaryInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: ValueBoundaryInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: ValueBoundaryInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - max
-          - min
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: HoltWintersInput
-  description: Input arguments for the holt_winters function
-  fields:
-    - name: range
-      type: RangeResolution!
-      description: The range value
-    - name: sf
-      type: Float64!
-      description: The lower the smoothing factor sf, the more importance is given to
-        old data. Must be between 0 and 1
-    - name: tf
-      type: Float64!
-      description: The higher the trend factor tf, the more trends in the data is
-        considered. Must be between 0 and 1
-  graphql:
-    typeName: HoltWintersInput
-    inputTypeName: HoltWintersInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: HoltWintersInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: HoltWintersInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - range
-          - sf
-          - tf
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: NetConntrackDialerConnAttemptedTotalLabelJoinInput
+  name: ProcessNetworkTransmitBytesTotalLabelJoinInput
   description: Input arguments for the label_join function
   fields:
     - name: dest_label
@@ -82,20 +12,20 @@ definition:
       type: String!
       description: The separator between source labels
     - name: source_labels
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]!"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]!"
       description: Source labels
   graphql:
-    typeName: NetConntrackDialerConnAttemptedTotalLabelJoinInput
-    inputTypeName: NetConntrackDialerConnAttemptedTotalLabelJoinInput_input
+    typeName: ProcessNetworkTransmitBytesTotalLabelJoinInput
+    inputTypeName: ProcessNetworkTransmitBytesTotalLabelJoinInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackDialerConnAttemptedTotalLabelJoinInput
+      dataConnectorObjectType: ProcessNetworkTransmitBytesTotalLabelJoinInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackDialerConnAttemptedTotalLabelJoinInput
+  typeName: ProcessNetworkTransmitBytesTotalLabelJoinInput
   permissions:
     - role: admin
       output:
@@ -108,7 +38,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackDialerConnAttemptedTotalLabelReplaceInput
+  name: ProcessNetworkTransmitBytesTotalLabelReplaceInput
   description: Input arguments for the label_replace function
   fields:
     - name: dest_label
@@ -121,20 +51,20 @@ definition:
       type: String!
       description: The replacement value
     - name: source_label
-      type: NetConntrackDialerConnAttemptedTotalLabel!
+      type: ProcessNetworkTransmitBytesTotalLabel!
       description: Source label
   graphql:
-    typeName: NetConntrackDialerConnAttemptedTotalLabelReplaceInput
-    inputTypeName: NetConntrackDialerConnAttemptedTotalLabelReplaceInput_input
+    typeName: ProcessNetworkTransmitBytesTotalLabelReplaceInput
+    inputTypeName: ProcessNetworkTransmitBytesTotalLabelReplaceInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackDialerConnAttemptedTotalLabelReplaceInput
+      dataConnectorObjectType: ProcessNetworkTransmitBytesTotalLabelReplaceInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackDialerConnAttemptedTotalLabelReplaceInput
+  typeName: ProcessNetworkTransmitBytesTotalLabelReplaceInput
   permissions:
     - role: admin
       output:
@@ -148,71 +78,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: PredictLinearInput
-  description: Input arguments for the predict_linear function
-  fields:
-    - name: range
-      type: RangeResolution!
-      description: The range value
-    - name: t
-      type: Float64!
-      description: Number of seconds from now
-  graphql:
-    typeName: PredictLinearInput
-    inputTypeName: PredictLinearInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: PredictLinearInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: PredictLinearInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - range
-          - t
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: QuantileOverTimeInput
-  description: Input arguments for the quantile_over_time function
-  fields:
-    - name: quantile
-      type: Float64!
-      description: The φ-quantile (0 ≤ φ ≤ 1) of the values
-    - name: range
-      type: RangeResolution!
-      description: The range value
-  graphql:
-    typeName: QuantileOverTimeInput
-    inputTypeName: QuantileOverTimeInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: QuantileOverTimeInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: QuantileOverTimeInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - quantile
-          - range
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: NetConntrackDialerConnAttemptedTotalFunctions
+  name: ProcessNetworkTransmitBytesTotalFunctions
   fields:
     - name: abs
       type: Boolean
@@ -247,7 +113,7 @@ definition:
       type: Boolean
       description: Calculates the inverse hyperbolic tangent of all elements in v
     - name: avg
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: avg_over_time
       type: RangeResolution
       description: The average value of all points in the specified interval
@@ -281,12 +147,12 @@ definition:
       type: Boolean
       description: Calculates the hyperbolic cosine of all elements in v
     - name: count
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: count_over_time
       type: RangeResolution
       description: The count of all values in the specified interval
     - name: count_values
-      type: NetConntrackDialerConnAttemptedTotalLabel
+      type: ProcessNetworkTransmitBytesTotalLabel
     - name: deg
       type: Boolean
       description: Converts radians to degrees for all elements in v
@@ -307,7 +173,7 @@ definition:
       description: Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: histogram_avg
       type: Boolean
       description: Returns the arithmetic average of observed values stored in a
@@ -358,12 +224,12 @@ definition:
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
-      type: NetConntrackDialerConnAttemptedTotalLabelJoinInput
+      type: ProcessNetworkTransmitBytesTotalLabelJoinInput
       description: Joins all the values of all the src_labels using separator and
         returns the timeseries with the label dst_label containing the joined
         value
     - name: label_replace
-      type: NetConntrackDialerConnAttemptedTotalLabelReplaceInput
+      type: ProcessNetworkTransmitBytesTotalLabelReplaceInput
       description: Matches the regular expression regex against the value of the label
         src_label. If it matches, the value of the label dst_label in the
         returned timeseries will be the expansion of replacement, together with
@@ -391,12 +257,12 @@ definition:
       type: RangeResolution
       description: The median absolute deviation of all points in the specified interval
     - name: max
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: max_over_time
       type: RangeResolution
       description: The maximum value of all points in the specified interval
     - name: min
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: min_over_time
       type: RangeResolution
       description: The minimum value of all points in the specified interval
@@ -446,11 +312,11 @@ definition:
       description: Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
       description: Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
       description: Same as sort_by_label, but sorts in descending order
     - name: sort_desc
       type: Boolean
@@ -459,17 +325,17 @@ definition:
       type: Boolean
       description: Calculates the square root of all elements in v
     - name: stddev
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: stddev_over_time
       type: RangeResolution
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: stdvar_over_time
       type: RangeResolution
       description: The population standard variance of the values in the specified interval
     - name: sum
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: sum_over_time
       type: RangeResolution
       description: The sum of all values in the specified interval
@@ -488,17 +354,17 @@ definition:
       type: Int64
       description: Largest k elements by sample value
   graphql:
-    typeName: NetConntrackDialerConnAttemptedTotalFunctions
-    inputTypeName: NetConntrackDialerConnAttemptedTotalFunctions_input
+    typeName: ProcessNetworkTransmitBytesTotalFunctions
+    inputTypeName: ProcessNetworkTransmitBytesTotalFunctions_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackDialerConnAttemptedTotalFunctions
+      dataConnectorObjectType: ProcessNetworkTransmitBytesTotalFunctions
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackDialerConnAttemptedTotalFunctions
+  typeName: ProcessNetworkTransmitBytesTotalFunctions
   permissions:
     - role: admin
       output:
@@ -587,42 +453,8 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: QueryResultValue
-  description: A value of the query result
+  name: ProcessNetworkTransmitBytesTotal
   fields:
-    - name: timestamp
-      type: Timestamp!
-      description: The timestamp when the value is calculated
-    - name: value
-      type: Decimal!
-      description: The metric value
-  graphql:
-    typeName: QueryResultValue
-    inputTypeName: QueryResultValue_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: QueryResultValue
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: QueryResultValue
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - timestamp
-          - value
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: NetConntrackDialerConnAttemptedTotal
-  fields:
-    - name: dialer_name
-      type: String!
     - name: instance
       type: String!
     - name: job
@@ -640,22 +472,21 @@ definition:
       type: "[QueryResultValue!]!"
       description: An array of query result values
   graphql:
-    typeName: NetConntrackDialerConnAttemptedTotal
-    inputTypeName: NetConntrackDialerConnAttemptedTotal_input
+    typeName: ProcessNetworkTransmitBytesTotal
+    inputTypeName: ProcessNetworkTransmitBytesTotal_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackDialerConnAttemptedTotal
+      dataConnectorObjectType: ProcessNetworkTransmitBytesTotal
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackDialerConnAttemptedTotal
+  typeName: ProcessNetworkTransmitBytesTotal
   permissions:
     - role: admin
       output:
         allowedFields:
-          - dialer_name
           - instance
           - job
           - labels
@@ -667,14 +498,11 @@ definition:
 kind: ObjectBooleanExpressionType
 version: v1
 definition:
-  name: NetConntrackDialerConnAttemptedTotal_bool_exp
-  objectType: NetConntrackDialerConnAttemptedTotal
+  name: ProcessNetworkTransmitBytesTotal_bool_exp
+  objectType: ProcessNetworkTransmitBytesTotal
   dataConnectorName: prometheus
-  dataConnectorObjectType: NetConntrackDialerConnAttemptedTotal
+  dataConnectorObjectType: ProcessNetworkTransmitBytesTotal
   comparableFields:
-    - fieldName: dialer_name
-      operators:
-        enableAll: true
     - fieldName: instance
       operators:
         enableAll: true
@@ -694,19 +522,19 @@ definition:
       operators:
         enableAll: true
   graphql:
-    typeName: NetConntrackDialerConnAttemptedTotal_bool_exp
+    typeName: ProcessNetworkTransmitBytesTotal_bool_exp
 
 ---
 kind: Model
 version: v1
 definition:
-  name: net_conntrack_dialer_conn_attempted_total
-  objectType: NetConntrackDialerConnAttemptedTotal
+  name: process_network_transmit_bytes_total
+  objectType: ProcessNetworkTransmitBytesTotal
   arguments:
     - name: fn
-      type: "[NetConntrackDialerConnAttemptedTotalFunctions!]"
+      type: "[ProcessNetworkTransmitBytesTotalFunctions!]"
       description: PromQL aggregation operators and functions for
-        net_conntrack_dialer_conn_attempted_total
+        process_network_transmit_bytes_total
     - name: offset
       type: Duration
       description: The offset modifier allows changing the time offset for individual
@@ -720,12 +548,9 @@ definition:
       description: Evaluation timeout
   source:
     dataConnectorName: prometheus
-    collection: net_conntrack_dialer_conn_attempted_total
-  filterExpressionType: NetConntrackDialerConnAttemptedTotal_bool_exp
+    collection: process_network_transmit_bytes_total
+  filterExpressionType: ProcessNetworkTransmitBytesTotal_bool_exp
   orderableFields:
-    - fieldName: dialer_name
-      orderByDirections:
-        enableAll: true
     - fieldName: instance
       orderByDirections:
         enableAll: true
@@ -746,17 +571,17 @@ definition:
         enableAll: true
   graphql:
     selectMany:
-      queryRootField: net_conntrack_dialer_conn_attempted_total
+      queryRootField: process_network_transmit_bytes_total
     selectUniques: []
-    argumentsInputType: net_conntrack_dialer_conn_attempted_total_arguments
-    orderByExpressionType: net_conntrack_dialer_conn_attempted_total_order_by
-  description: Total number of connections attempted by the given dialer a given name.
+    argumentsInputType: process_network_transmit_bytes_total_arguments
+    orderByExpressionType: process_network_transmit_bytes_total_order_by
+  description: Number of bytes sent by the process over the network.
 
 ---
 kind: ModelPermissions
 version: v1
 definition:
-  modelName: net_conntrack_dialer_conn_attempted_total
+  modelName: process_network_transmit_bytes_total
   permissions:
     - role: admin
       select:

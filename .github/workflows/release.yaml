@@ -27,7 +27,7 @@ jobs:
           VERSION="$GITHUB_REF_NAME" make ci-build-configuration
           mkdir release
           .github/scripts/plugin-manifest.sh
-          mv _output/* release
+          mv _output/$VERSION/* release
 
       - uses: actions/upload-artifact@v4
         with:

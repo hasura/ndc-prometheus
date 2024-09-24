@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -380,35 +379,6 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(operator *schem
 		return "", fmt.Errorf("value: unsupported comparison operator `%s`", operator)
 	}
 	return fmt.Sprintf(" %s %f", op, *v), nil
-}
-
-func (qce *QueryCollectionExecutor) evalStringCondition(name string, operator string, value any) (string, bool, error) {
-	strValue, err := utils.DecodeNullableString(value)
-	if err != nil {
-		return "", false, err
-	}
-	if strValue == nil {
-		return "", false, nil
-	}
-	return fmt.Sprintf(`%s%s"%s"`, name, operator, value), true, nil
-}
-
-func (qce *QueryCollectionExecutor) evalStringSliceCondition(name string, operator string, value any) (string, bool, error) {
-	var err error
-	var sliceValue []string
-	if str, ok := value.(string); ok {
-		// try to parse the slice from the json string
-		err = json.Unmarshal([]byte(str), &sliceValue)
-	} else {
-		sliceValue, err = utils.DecodeStringSlice(value)
-	}
-	if err != nil {
-		return "", false, err
-	}
-	if len(sliceValue) == 0 {
-		return "", false, nil
-	}
-	return fmt.Sprintf(`%s%s"%s"`, name, operator, strings.Join(sliceValue, "|")), true, nil
 }
 
 func (qce *QueryCollectionExecutor) getComparisonValue(input schema.ComparisonValue) (any, error) {

@@ -10,7 +10,7 @@ commands:
   update: ndc-prometheus update
 cliPlugin:
   name: ndc-prometheus
-  version: {{.Version}} 
+  version: {{VERSION}} 
 dockerComposeWatch:
   # copy config files into the existing container and restart it
   - path: ./configuration.yaml

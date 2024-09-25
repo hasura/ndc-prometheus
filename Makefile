@@ -50,4 +50,7 @@ generate-api-types:
 
 .PHONY: generate-test-config
 generate-test-config:
-	CONNECTION_URL=http://localhost:9090 go run ./configuration update -d ./tests/configuration --log-level debug
+	CONNECTION_URL=http://localhost:9090 \
+	PROMETHEUS_USERNAME=admin \
+	PROMETHEUS_PASSWORD=test \
+		go run ./configuration update -d ./tests/configuration --log-level debug

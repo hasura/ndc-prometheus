@@ -2,13 +2,16 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
-	"github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
@@ -26,8 +29,17 @@ type Client struct {
 }
 
 // NewClient creates a new Prometheus client instance
-func NewClient(endpoint string, clientConfig config.HTTPClientConfig, tracer trace.Tracer, timeout *model.Duration) (*Client, error) {
-	httpClient, err := config.NewClientFromConfig(clientConfig, "ndc-prometheus")
+func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, timeout *model.Duration) (*Client, error) {
+
+	endpoint, err := cfg.URL.Get()
+	if err != nil {
+		return nil, fmt.Errorf("url: %s", err)
+	}
+	if endpoint == "" {
+		return nil, errors.New("the endpoint setting is empty")
+	}
+
+	httpClient, err := cfg.createHttpClient(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -87,5 +99,19 @@ func createHTTPClient(c api.Client) *httpClient {
 // Do wraps the api.Client with trace context headers injection
 func (ac *httpClient) Do(ctx context.Context, req *http.Request) (*http.Response, []byte, error) {
 	ac.propagator.Inject(ctx, propagation.HeaderCarrier(req.Header))
-	return ac.Client.Do(ctx, req)
+	r, bs, err := ac.Client.Do(ctx, req)
+	if utils.IsDebug(slog.Default()) {
+		attrs := []any{}
+		if r != nil {
+			attrs = append(attrs, slog.Int("status_code", r.StatusCode))
+		}
+		if len(bs) > 0 {
+			attrs = append(attrs, slog.String("response", string(bs)))
+		}
+		if err != nil {
+			attrs = append(attrs, slog.String("error", err.Error()))
+		}
+		slog.Debug(fmt.Sprintf("%s %s", strings.ToUpper(req.Method), req.RequestURI), attrs...)
+	}
+	return r, bs, err
 }

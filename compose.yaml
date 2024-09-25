@@ -12,6 +12,8 @@ services:
       - local.hasura.dev=host-gateway
     environment:
       CONNECTION_URL: http://prometheus:9090
+      PROMETHEUS_USERNAME: admin
+      PROMETHEUS_PASSWORD: test
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4317
       OTEL_METRICS_EXPORTER: prometheus
       HASURA_LOG_LEVEL: debug
@@ -27,6 +29,7 @@ services:
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
       - "--web.enable-lifecycle"
+      - "--web.config.file=/etc/prometheus/web.yml"
       - "--enable-feature=promql-experimental-functions"
     ports:
       - 9090:9090

@@ -14,6 +14,7 @@ import (
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
+	"github.com/hasura/ndc-prometheus/connector/types"
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel"
 	"gopkg.in/yaml.v3"
@@ -41,12 +42,7 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 		originalConfig = &defaultConfiguration
 	}
 
-	endpoint, err := originalConfig.ConnectionSettings.URL.Get()
-	if err != nil {
-		return err
-	}
-
-	apiClient, err := client.NewClient(endpoint, originalConfig.ConnectionSettings.ToHTTPClientConfig(), clientTracer, nil)
+	apiClient, err := client.NewClient(ctx, originalConfig.ConnectionSettings, clientTracer, nil)
 	if err != nil {
 		return err
 	}
@@ -76,19 +72,22 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 }
 
 func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
-	metricsInfo, err := uc.Client.API.Metadata(ctx, "", "")
+	metricsInfo, err := uc.Client.Metadata(ctx, "", "10000000")
 	if err != nil {
 		return err
 	}
 
 	newMetrics := map[string]metadata.MetricInfo{}
 	for key, info := range metricsInfo {
+		if len(info) == 0 {
+			continue
+		}
 		if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) ||
 			validateRegularExpressions(uc.Exclude, key) ||
 			len(info) == 0 {
 			continue
 		}
-		slog.Debug(key, slog.String("type", "metrics"))
+		slog.Info(key, slog.String("type", string(info[0].Type)))
 		labels, err := uc.getAllLabelsOfMetric(ctx, key)
 		if err != nil {
 			return fmt.Errorf("error when fetching labels for metric `%s`: %s", key, err)
@@ -170,8 +169,8 @@ func (uc *updateCommand) writeConfigFile() error {
 }
 
 var defaultConfiguration = metadata.Configuration{
-	ConnectionSettings: metadata.ClientSettings{
-		URL: metadata.NewEnvironmentVariable("CONNECTION_URL"),
+	ConnectionSettings: client.ClientSettings{
+		URL: types.NewEnvironmentVariable("CONNECTION_URL"),
 	},
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{

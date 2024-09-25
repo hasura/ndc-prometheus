@@ -1,4 +1,4 @@
-package metadata
+package types
 
 import (
 	"errors"
@@ -7,8 +7,8 @@ import (
 
 // EnvironmentValue represents either a literal string or an environment reference
 type EnvironmentValue struct {
-	Value    *string `json:"value,omitempty" yaml:"value,omitempty"`
-	Variable *string `json:"variable,omitempty" yaml:"variable,omitempty"`
+	Value    *string `json:"value,omitempty" yaml:"value,omitempty" jsonschema:"oneof_required=value"`
+	Variable *string `json:"env,omitempty" yaml:"env,omitempty" jsonschema:"oneof_required=env"`
 }
 
 // NewEnvironmentValue create an EnvironmentValue with a literal value

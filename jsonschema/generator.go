@@ -23,6 +23,9 @@ func jsonSchemaConfiguration() error {
 	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/metadata", "../connector/metadata"); err != nil {
 		return err
 	}
+	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/types", "../connector/types"); err != nil {
+		return err
+	}
 
 	reflectSchema := r.Reflect(&metadata.Configuration{})
 

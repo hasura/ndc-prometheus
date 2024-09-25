@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-prometheus/main/jsonschema/configuration.json
 connection_settings:
   url:
-    variable: CONNECTION_URL
+    env: CONNECTION_URL
 generator:
   metrics:
     enabled: true

@@ -273,6 +273,10 @@
             "$ref": "#/$defs/ExcludeLabelsSetting"
           },
           "type": "array"
+        },
+        "start_at": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "additionalProperties": false,
@@ -281,7 +285,8 @@
         "enabled",
         "include",
         "exclude",
-        "exclude_labels"
+        "exclude_labels",
+        "start_at"
       ]
     },
     "NativeOperations": {

@@ -25,7 +25,7 @@ type PrometheusSeriesArguments struct {
 }
 
 // Validate validates arguments and options
-func (psa *PrometheusSeriesArguments) Validate(state *metadata.State, span trace.Span) (*PrometheusSeriesArguments, []v1.Option, error) {
+func (psa PrometheusSeriesArguments) Validate(state *metadata.State, span trace.Span) (*PrometheusSeriesArguments, []v1.Option, error) {
 	endTime := time.Now()
 	arguments := PrometheusSeriesArguments{
 		Match: psa.Match,
@@ -66,11 +66,15 @@ func FunctionPrometheusSeries(ctx context.Context, state *metadata.State, argume
 	ctx, span := state.Tracer.Start(ctx, "Prometheus Series")
 	defer span.End()
 
-	args, opts, err := arguments.Validate(state, span)
+	args, _, err := arguments.Validate(state, span)
 	if err != nil {
 		return nil, err
 	}
-	labelSets, warnings, err := state.Client.Series(ctx, args.Match, *args.Start, *args.End, opts...)
+	var limit uint64
+	if args.Limit != nil {
+		limit = *args.Limit
+	}
+	labelSets, warnings, err := state.Client.Series(ctx, args.Match, *args.Start, *args.End, limit)
 	if len(warnings) > 0 {
 		span.SetAttributes(attribute.StringSlice("warnings", warnings))
 	}

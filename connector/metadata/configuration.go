@@ -3,6 +3,7 @@ package metadata
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"gopkg.in/yaml.v3"
@@ -25,6 +26,8 @@ type MetricsGeneratorSettings struct {
 	Exclude []string `json:"exclude" yaml:"exclude"`
 	// Exclude unnecessary labels
 	ExcludeLabels []ExcludeLabelsSetting `json:"exclude_labels" yaml:"exclude_labels"`
+	// The minimum timestamp that the plugin uses to query metadata
+	StartAt time.Time `json:"start_at" yaml:"start_at"`
 }
 
 // ExcludeLabelsSetting the setting to exclude labels

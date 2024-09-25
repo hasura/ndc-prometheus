@@ -123,28 +123,30 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 }
 
 func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string) (map[string]metadata.LabelInfo, error) {
-	labels, warnings, err := uc.Client.LabelNames(ctx, []string{name}, time.Time{}, time.Now())
+	labels, warnings, err := uc.Client.Series(ctx, []string{name}, uc.Config.Generator.Metrics.StartAt, time.Now(), 1)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(warnings) > 0 {
-		slog.Warn(fmt.Sprintf("warning when fetching labels for metric `%s`", name), slog.Any("warnings", warnings))
+		slog.Debug(fmt.Sprintf("warning when fetching labels for metric `%s`", name), slog.Any("warnings", warnings))
 	}
-
+	results := make(map[string]metadata.LabelInfo)
+	if len(labels) == 0 {
+		return results, nil
+	}
 	excludedLabels := bannedLabels
 	for _, el := range uc.ExcludeLabels {
 		if el.Regex.MatchString(name) {
 			excludedLabels = append(excludedLabels, el.Labels...)
 		}
 	}
-	results := make(map[string]metadata.LabelInfo)
-	for _, label := range labels {
-		if slices.Contains(excludedLabels, label) {
+	for key := range labels[0] {
+		if !key.IsValid() || slices.Contains(excludedLabels, string(key)) {
 			continue
 		}
 
-		results[label] = metadata.LabelInfo{}
+		results[string(key)] = metadata.LabelInfo{}
 	}
 	return results, nil
 }
@@ -200,9 +202,11 @@ var defaultConfiguration = metadata.Configuration{
 	},
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{
-			Enabled: true,
-			Include: []string{},
-			Exclude: []string{},
+			Enabled:       true,
+			Include:       []string{},
+			Exclude:       []string{},
+			ExcludeLabels: []metadata.ExcludeLabelsSetting{},
+			StartAt:       time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
 		},
 	},
 	Metadata: metadata.Metadata{

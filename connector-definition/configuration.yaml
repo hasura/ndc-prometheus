@@ -8,6 +8,7 @@ generator:
     include: []
     exclude: []
     exclude_labels: []
+    start_at: "2024-01-01T00:00:00Z"
 metadata:
   metrics: {}
   native_operations:

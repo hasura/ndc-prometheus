@@ -20,6 +20,7 @@ generator:
       - pattern: ^net_.+
         labels:
           - dialer_name
+    start_at: 2024-09-01T00:00:00Z
 metadata:
   metrics:
     net_conntrack_dialer_conn_attempted_total:

@@ -23,6 +23,16 @@ type MetricsGeneratorSettings struct {
 	// Exclude metrics with regular expression matching.
 	// Note: exclude is higher priority than include
 	Exclude []string `json:"exclude" yaml:"exclude"`
+	// Exclude unnecessary labels
+	ExcludeLabels []ExcludeLabelsSetting `json:"exclude_labels" yaml:"exclude_labels"`
+}
+
+// ExcludeLabelsSetting the setting to exclude labels
+type ExcludeLabelsSetting struct {
+	// The regular expression pattern of metric names
+	Pattern string `json:"pattern" yaml:"pattern"`
+	// List of labels to be excluded
+	Labels []string `json:"labels" yaml:"labels"`
 }
 
 // GeneratorSettings contain settings for the configuration generator

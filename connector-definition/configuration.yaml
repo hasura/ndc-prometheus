@@ -7,6 +7,7 @@ generator:
     enabled: true
     include: []
     exclude: []
+    exclude_labels: []
 metadata:
   metrics: {}
   native_operations:

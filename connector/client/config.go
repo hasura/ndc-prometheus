@@ -2,9 +2,11 @@ package client
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/hasura/ndc-prometheus/connector/types"
 	"github.com/prometheus/common/config"
@@ -31,11 +33,11 @@ type ClientSettings struct {
 	// The omitempty flag is not set, because it would be hidden from the
 	// marshalled configuration when set to false.
 	EnableHTTP2 bool `yaml:"enable_http2,omitempty" json:"enable_http2,omitempty"`
-	// Proxy configuration.
-	config.ProxyConfig `yaml:",inline"`
 	// HTTPHeaders specify headers to inject in the requests. Those headers
 	// could be marshalled back to the users.
-	HTTPHeaders *config.Headers `yaml:"http_headers,omitempty" json:"http_headers,omitempty"`
+	HTTPHeaders http.Header `yaml:"http_headers,omitempty" json:"http_headers,omitempty"`
+	// Proxy configuration.
+	*ProxyConfig `yaml:",inline"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -61,10 +63,16 @@ func (cs ClientSettings) getHTTPClientConfig() (*config.HTTPClientConfig, error)
 		TLSConfig:       cs.TLSConfig,
 		FollowRedirects: cs.FollowRedirects,
 		EnableHTTP2:     cs.EnableHTTP2,
-		ProxyConfig:     cs.ProxyConfig,
-		HTTPHeaders:     cs.HTTPHeaders,
+		HTTPHeaders:     cs.getHTTPHeaders(),
 	}
 
+	if cs.ProxyConfig != nil {
+		pc, err := cs.ProxyConfig.toClientConfig()
+		if err != nil {
+			return nil, err
+		}
+		result.ProxyConfig = *pc
+	}
 	if cs.Authentication == nil {
 		return result, nil
 	}
@@ -91,6 +99,18 @@ func (cs ClientSettings) getHTTPClientConfig() (*config.HTTPClientConfig, error)
 	}
 
 	return result, nil
+}
+
+func (cs ClientSettings) getHTTPHeaders() *config.Headers {
+	result := config.Headers{
+		Headers: make(map[string]config.Header),
+	}
+	for k, v := range cs.HTTPHeaders {
+		result.Headers[k] = config.Header{
+			Values: v,
+		}
+	}
+	return &result
 }
 
 func (cs ClientSettings) createHttpClient(ctx context.Context) (*http.Client, error) {
@@ -123,6 +143,13 @@ func (cs ClientSettings) createGoogleHttpClient(ctx context.Context) (*http.Clie
 			return nil, err
 		}
 		if credJSON != "" {
+			if cs.Authentication.Google.Encoding != nil && *cs.Authentication.Google.Encoding == CredentialsEncodingBase64 {
+				credByte, err := base64.StdEncoding.DecodeString(credJSON)
+				if err != nil {
+					return nil, err
+				}
+				credJSON = string(credByte)
+			}
 			opts = append(opts, option.WithCredentialsJSON([]byte(credJSON)))
 		}
 	} else if cs.Authentication.Google.CredentialsFile != nil {
@@ -138,9 +165,8 @@ func (cs ClientSettings) createGoogleHttpClient(ctx context.Context) (*http.Clie
 	rt, err := config.NewRoundTripperFromConfigWithContext(ctx, config.HTTPClientConfig{
 		TLSConfig:       cs.TLSConfig,
 		EnableHTTP2:     cs.EnableHTTP2,
-		ProxyConfig:     cs.ProxyConfig,
 		FollowRedirects: cs.FollowRedirects,
-		HTTPHeaders:     cs.HTTPHeaders,
+		HTTPHeaders:     cs.getHTTPHeaders(),
 	}, "ndc-prometheus")
 	if err != nil {
 		return nil, err
@@ -212,13 +238,14 @@ func (hac AuthorizationConfig) toClientConfig() (*config.Authorization, error) {
 
 // OAuth2Config the OAuth2 client credentials used to fetch a token for the targets
 type OAuth2Config struct {
-	ClientID           types.EnvironmentValue `yaml:"client_id" json:"client_id"`
-	ClientSecret       types.EnvironmentValue `yaml:"client_secret" json:"client_secret"`
-	TokenURL           types.EnvironmentValue `yaml:"token_url" json:"token_url"`
-	Scopes             []string               `yaml:"scopes,omitempty" json:"scopes,omitempty"`
-	EndpointParams     map[string]string      `yaml:"endpoint_params,omitempty" json:"endpoint_params,omitempty"`
-	TLSConfig          config.TLSConfig       `yaml:"tls_config,omitempty"`
-	config.ProxyConfig `yaml:",inline"`
+	ClientID       types.EnvironmentValue `yaml:"client_id" json:"client_id"`
+	ClientSecret   types.EnvironmentValue `yaml:"client_secret" json:"client_secret"`
+	TokenURL       types.EnvironmentValue `yaml:"token_url" json:"token_url"`
+	Scopes         []string               `yaml:"scopes,omitempty" json:"scopes,omitempty"`
+	EndpointParams map[string]string      `yaml:"endpoint_params,omitempty" json:"endpoint_params,omitempty"`
+	TLSConfig      config.TLSConfig       `yaml:"tls_config,omitempty"`
+
+	*ProxyConfig `yaml:",inline"`
 }
 
 func (oc OAuth2Config) toClientConfig() (*config.OAuth2, error) {
@@ -235,21 +262,69 @@ func (oc OAuth2Config) toClientConfig() (*config.OAuth2, error) {
 		return nil, err
 	}
 
-	return &config.OAuth2{
+	result := &config.OAuth2{
 		ClientID:       clientId,
 		ClientSecret:   config.Secret(clientSecret),
 		TokenURL:       tokenURL,
 		Scopes:         oc.Scopes,
 		EndpointParams: oc.EndpointParams,
 		TLSConfig:      oc.TLSConfig,
-		ProxyConfig:    oc.ProxyConfig,
-	}, nil
+	}
+	if oc.ProxyConfig != nil {
+		pc, err := oc.ProxyConfig.toClientConfig()
+		if err != nil {
+			return nil, err
+		}
+		result.ProxyConfig = *pc
+	}
+	return result, nil
 }
+
+// CredentialsEncoding the encoding of credentials string
+type CredentialsEncoding string
+
+const (
+	CredentialsEncodingPlainText CredentialsEncoding = "plaintext"
+	CredentialsEncodingBase64    CredentialsEncoding = "base64"
+)
 
 // GoogleAuth the Google client credentials used to fetch a token for the targets
 type GoogleAuthConfig struct {
+	Encoding *CredentialsEncoding `yaml:"encoding,omitempty" json:"encoding,omitempty" jsonschema:"enum=plaintext,enum=base64,default=plaintext"`
 	// Text of the Google credential JSON
 	Credentials *types.EnvironmentValue `yaml:"credentials,omitempty" json:"credentials,omitempty"`
 	// Path of the Google credential file
 	CredentialsFile *types.EnvironmentValue `yaml:"credentials_file,omitempty" json:"credentials_file,omitempty"`
+}
+
+// ProxyConfig the proxy configuration
+type ProxyConfig struct {
+	// HTTP proxy server to use to connect to the targets.
+	ProxyURL string `yaml:"proxy_url,omitempty" json:"proxy_url,omitempty"`
+	// NoProxy contains addresses that should not use a proxy.
+	NoProxy string `yaml:"no_proxy,omitempty" json:"no_proxy,omitempty"`
+	// ProxyFromEnvironment makes use of net/http ProxyFromEnvironment function
+	// to determine proxies.
+	ProxyFromEnvironment bool `yaml:"proxy_from_environment,omitempty" json:"proxy_from_environment,omitempty"`
+	// ProxyConnectHeader optionally specifies headers to send to
+	// proxies during CONNECT requests. Assume that at least _some_ of
+	// these headers are going to contain secrets and use Secret as the
+	// value type instead of string.
+	ProxyConnectHeader config.ProxyHeader `yaml:"proxy_connect_header,omitempty" json:"proxy_connect_header,omitempty"`
+}
+
+func (oc ProxyConfig) toClientConfig() (*config.ProxyConfig, error) {
+	result := &config.ProxyConfig{
+		NoProxy:              oc.NoProxy,
+		ProxyFromEnvironment: oc.ProxyFromEnvironment,
+		ProxyConnectHeader:   oc.ProxyConnectHeader,
+	}
+	if oc.ProxyURL != "" {
+		u, err := url.Parse(oc.ProxyURL)
+		if err != nil {
+			return nil, err
+		}
+		result.ProxyURL = config.URL{URL: u}
+	}
+	return result, nil
 }

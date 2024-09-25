@@ -16,58 +16,37 @@ generator:
       - ^prometheus_+
       - ^go_+
       - ^node_+
+    exclude_labels:
+      - pattern: ^net_.+
+        labels:
+          - dialer_name
 metadata:
   metrics:
-    ndc_prometheus_query_total:
-      type: counter
-      description: Total number of query requests
-      labels:
-        collection: {}
-        http_status: {}
-        instance: {}
-        job: {}
-        otel_scope_name: {}
-        status: {}
-    ndc_prometheus_query_total_time:
-      type: histogram
-      description: Total time taken to plan and execute a query, in seconds
-      labels: {}
     net_conntrack_dialer_conn_attempted_total:
       type: counter
       description: Total number of connections attempted by the given dialer a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
     net_conntrack_dialer_conn_closed_total:
       type: counter
       description: Total number of connections closed which originated from the dialer of a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
     net_conntrack_dialer_conn_established_total:
       type: counter
       description: Total number of connections successfully established by the given dialer a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
     net_conntrack_dialer_conn_failed_total:
       type: counter
       description: Total number of connections failed to dial by the dialer a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
         reason: {}
-    otel_scope_info:
-      type: gauge
-      description: Instrumentation Scope metadata
-      labels:
-        instance: {}
-        job: {}
-        otel_scope_name: {}
     process_cpu_seconds_total:
       type: counter
       description: Total user and system CPU time spent in seconds.

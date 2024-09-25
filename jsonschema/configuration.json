@@ -73,8 +73,11 @@
         "enable_http2": {
           "type": "boolean"
         },
+        "http_headers": {
+          "$ref": "#/$defs/Header"
+        },
         "proxy_url": {
-          "$ref": "#/$defs/URL"
+          "type": "string"
         },
         "no_proxy": {
           "type": "string"
@@ -84,9 +87,6 @@
         },
         "proxy_connect_header": {
           "$ref": "#/$defs/ProxyHeader"
-        },
-        "http_headers": {
-          "$ref": "#/$defs/Headers"
         }
       },
       "additionalProperties": false,
@@ -141,6 +141,25 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "ExcludeLabelsSetting": {
+      "properties": {
+        "pattern": {
+          "type": "string"
+        },
+        "labels": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "pattern",
+        "labels"
+      ]
+    },
     "GeneratorSettings": {
       "properties": {
         "metrics": {
@@ -155,6 +174,14 @@
     },
     "GoogleAuthConfig": {
       "properties": {
+        "encoding": {
+          "type": "string",
+          "enum": [
+            "plaintext",
+            "base64"
+          ],
+          "default": "plaintext"
+        },
         "credentials": {
           "$ref": "#/$defs/EnvironmentValue"
         },
@@ -166,43 +193,13 @@
       "type": "object"
     },
     "Header": {
-      "properties": {
-        "values": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+      "additionalProperties": {
+        "items": {
+          "type": "string"
         },
-        "secrets": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "files": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        }
+        "type": "array"
       },
-      "additionalProperties": false,
       "type": "object"
-    },
-    "Headers": {
-      "properties": {
-        "Headers": {
-          "additionalProperties": {
-            "$ref": "#/$defs/Header"
-          },
-          "type": "object"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "Headers"
-      ]
     },
     "LabelInfo": {
       "properties": {
@@ -270,6 +267,12 @@
             "type": "string"
           },
           "type": "array"
+        },
+        "exclude_labels": {
+          "items": {
+            "$ref": "#/$defs/ExcludeLabelsSetting"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -277,7 +280,8 @@
       "required": [
         "enabled",
         "include",
-        "exclude"
+        "exclude",
+        "exclude_labels"
       ]
     },
     "NativeOperations": {
@@ -372,7 +376,7 @@
           "$ref": "#/$defs/TLSConfig"
         },
         "proxy_url": {
-          "$ref": "#/$defs/URL"
+          "type": "string"
         },
         "no_proxy": {
           "type": "string"
@@ -449,63 +453,6 @@
       "required": [
         "insecure_skip_verify"
       ]
-    },
-    "URL": {
-      "properties": {
-        "Scheme": {
-          "type": "string"
-        },
-        "Opaque": {
-          "type": "string"
-        },
-        "User": {
-          "$ref": "#/$defs/Userinfo"
-        },
-        "Host": {
-          "type": "string"
-        },
-        "Path": {
-          "type": "string"
-        },
-        "RawPath": {
-          "type": "string"
-        },
-        "OmitHost": {
-          "type": "boolean"
-        },
-        "ForceQuery": {
-          "type": "boolean"
-        },
-        "RawQuery": {
-          "type": "string"
-        },
-        "Fragment": {
-          "type": "string"
-        },
-        "RawFragment": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "Scheme",
-        "Opaque",
-        "User",
-        "Host",
-        "Path",
-        "RawPath",
-        "OmitHost",
-        "ForceQuery",
-        "RawQuery",
-        "Fragment",
-        "RawFragment"
-      ]
-    },
-    "Userinfo": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
     }
   }
 }

@@ -23,12 +23,18 @@ import (
 var clientTracer = otel.Tracer("PrometheusClient")
 var bannedLabels = []string{"__name__"}
 
+type ExcludeLabels struct {
+	Regex  *regexp.Regexp
+	Labels []string
+}
+
 type updateCommand struct {
-	Client    *client.Client
-	OutputDir string
-	Config    *metadata.Configuration
-	Include   []*regexp.Regexp
-	Exclude   []*regexp.Regexp
+	Client        *client.Client
+	OutputDir     string
+	Config        *metadata.Configuration
+	Include       []*regexp.Regexp
+	Exclude       []*regexp.Regexp
+	ExcludeLabels []ExcludeLabels
 }
 
 func introspectSchema(ctx context.Context, args *UpdateArguments) error {
@@ -56,6 +62,19 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	}
 
 	if originalConfig.Generator.Metrics.Enabled {
+		for _, el := range originalConfig.Generator.Metrics.ExcludeLabels {
+			if len(el.Labels) == 0 {
+				continue
+			}
+			rg, err := regexp.Compile(el.Pattern)
+			if err != nil {
+				return fmt.Errorf("invalid exclude_labels pattern `%s`: %s", el.Pattern, err)
+			}
+			cmd.ExcludeLabels = append(cmd.ExcludeLabels, ExcludeLabels{
+				Regex:  rg,
+				Labels: el.Labels,
+			})
+		}
 		if err := cmd.updateMetricsMetadata(ctx); err != nil {
 			return err
 		}
@@ -113,11 +132,18 @@ func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string) 
 		slog.Warn(fmt.Sprintf("warning when fetching labels for metric `%s`", name), slog.Any("warnings", warnings))
 	}
 
+	excludedLabels := bannedLabels
+	for _, el := range uc.ExcludeLabels {
+		if el.Regex.MatchString(name) {
+			excludedLabels = append(excludedLabels, el.Labels...)
+		}
+	}
 	results := make(map[string]metadata.LabelInfo)
 	for _, label := range labels {
-		if slices.Contains(bannedLabels, label) {
+		if slices.Contains(excludedLabels, label) {
 			continue
 		}
+
 		results[label] = metadata.LabelInfo{}
 	}
 	return results, nil

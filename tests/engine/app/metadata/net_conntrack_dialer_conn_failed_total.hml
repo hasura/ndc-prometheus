@@ -455,8 +455,6 @@ version: v1
 definition:
   name: NetConntrackDialerConnFailedTotal
   fields:
-    - name: dialer_name
-      type: String!
     - name: instance
       type: String!
     - name: job
@@ -491,7 +489,6 @@ definition:
     - role: admin
       output:
         allowedFields:
-          - dialer_name
           - instance
           - job
           - labels
@@ -501,38 +498,31 @@ definition:
           - values
 
 ---
-kind: ObjectBooleanExpressionType
+kind: BooleanExpressionType
 version: v1
 definition:
   name: NetConntrackDialerConnFailedTotal_bool_exp
-  objectType: NetConntrackDialerConnFailedTotal
-  dataConnectorName: prometheus
-  dataConnectorObjectType: NetConntrackDialerConnFailedTotal
-  comparableFields:
-    - fieldName: dialer_name
-      operators:
-        enableAll: true
-    - fieldName: instance
-      operators:
-        enableAll: true
-    - fieldName: job
-      operators:
-        enableAll: true
-    - fieldName: labels
-      operators:
-        enableAll: true
-    - fieldName: reason
-      operators:
-        enableAll: true
-    - fieldName: timestamp
-      operators:
-        enableAll: true
-    - fieldName: value
-      operators:
-        enableAll: true
-    - fieldName: values
-      operators:
-        enableAll: true
+  operand:
+    object:
+      type: NetConntrackDialerConnFailedTotal
+      comparableFields:
+        - fieldName: instance
+          booleanExpressionType: String_bool_exp
+        - fieldName: job
+          booleanExpressionType: String_bool_exp
+        - fieldName: labels
+          booleanExpressionType: LabelSet_bool_exp
+        - fieldName: reason
+          booleanExpressionType: String_bool_exp
+        - fieldName: timestamp
+          booleanExpressionType: Timestamp_bool_exp
+        - fieldName: value
+          booleanExpressionType: Decimal_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
   graphql:
     typeName: NetConntrackDialerConnFailedTotal_bool_exp
 
@@ -563,9 +553,6 @@ definition:
     collection: net_conntrack_dialer_conn_failed_total
   filterExpressionType: NetConntrackDialerConnFailedTotal_bool_exp
   orderableFields:
-    - fieldName: dialer_name
-      orderByDirections:
-        enableAll: true
     - fieldName: instance
       orderByDirections:
         enableAll: true
@@ -582,9 +569,6 @@ definition:
       orderByDirections:
         enableAll: true
     - fieldName: value
-      orderByDirections:
-        enableAll: true
-    - fieldName: values
       orderByDirections:
         enableAll: true
   graphql:

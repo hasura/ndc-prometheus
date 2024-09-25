@@ -67,6 +67,8 @@ The connector can detect if you want to request an instant query or range query 
 
 The range query mode is default If none of the timestamp operators is set.
 
+The `timestamp` and `value` fields are the result of the instant query. If the request is a range query, `timestamp` and `value` are picked the last item of the `values` series.
+
 #### Common arguments
 
 - `step`: the query resolution step width in duration format or float number of seconds. The step should be explicitly set for range queries. Even though the connector can estimate the approximate step width the result may be empty due to too far interval.
@@ -187,6 +189,62 @@ Execute a raw PromQL query directly. This API should be used by the admin only. 
 | prometheus_series           | [/api/v1/series](https://prometheus.io/docs/prometheus/latest/querying/api/#finding-series-by-label-matchers)         |
 | prometheus_targets          | [/api/v1/targets](https://prometheus.io/docs/prometheus/latest/querying/api/#targets)                                 |
 | prometheus_targets_metadata | [/api/v1/targets/metadata](https://prometheus.io/docs/prometheus/latest/querying/api/#querying-target-metadata)       |
+
+## Configuration
+
+### Authentication
+
+#### Basic Authentication
+
+```yaml
+connection_settings:
+  authentication:
+    basic:
+      username:
+        env: PROMETHEUS_USERNAME
+      password:
+        env: PROMETHEUS_PASSWORD
+```
+
+#### HTTP Authorization
+
+```yaml
+connection_settings:
+  authentication:
+    authorization:
+      type:
+        value: Bearer
+      credentials:
+        env: PROMETHEUS_AUTH_TOKEN
+```
+
+#### OAuth2
+
+```yaml
+connection_settings:
+  authentication:
+    oauth2:
+      token_url:
+        value: http://example.com/oauth2/token
+      client_id:
+        env: PROMETHEUS_OAUTH2_CLIENT_ID
+      client_secret:
+        env: PROMETHEUS_OAUTH2_CLIENT_SECRET
+```
+
+#### Google Cloud
+
+The configuration accepts either the Google application credentials JSON string or file path. If the object is empty the client automatically loads the credential file from the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
+
+```yaml
+connection_settings:
+  authentication:
+    google:
+      # credentials:
+      #   env: GOOGLE_APPLICATION_CREDENTIALS_JSON
+      # credentials_file:
+      #   env: GOOGLE_APPLICATION_CREDENTIALS
+```
 
 ## Development
 

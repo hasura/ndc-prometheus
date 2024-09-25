@@ -2,13 +2,13 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
-	"github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
@@ -26,8 +26,17 @@ type Client struct {
 }
 
 // NewClient creates a new Prometheus client instance
-func NewClient(endpoint string, clientConfig config.HTTPClientConfig, tracer trace.Tracer, timeout *model.Duration) (*Client, error) {
-	httpClient, err := config.NewClientFromConfig(clientConfig, "ndc-prometheus")
+func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, timeout *model.Duration) (*Client, error) {
+
+	endpoint, err := cfg.URL.Get()
+	if err != nil {
+		return nil, fmt.Errorf("url: %s", err)
+	}
+	if endpoint == "" {
+		return nil, errors.New("the endpoint setting is empty")
+	}
+
+	httpClient, err := cfg.createHttpClient(ctx)
 	if err != nil {
 		return nil, err
 	}

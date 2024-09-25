@@ -3,49 +3,54 @@
   "$id": "https://github.com/hasura/ndc-prometheus/connector/metadata/configuration",
   "$ref": "#/$defs/Configuration",
   "$defs": {
-    "Authorization": {
+    "AuthConfig": {
       "properties": {
-        "type": {
-          "type": "string"
+        "basic": {
+          "$ref": "#/$defs/BasicAuthConfig"
         },
-        "credentials": {
-          "type": "string"
+        "authorization": {
+          "$ref": "#/$defs/AuthorizationConfig"
         },
-        "credentials_file": {
-          "type": "string"
+        "oauth2": {
+          "$ref": "#/$defs/OAuth2Config"
         },
-        "credentials_ref": {
-          "type": "string"
+        "google": {
+          "$ref": "#/$defs/GoogleAuthConfig"
         }
       },
       "additionalProperties": false,
       "type": "object"
     },
-    "BasicAuth": {
+    "AuthorizationConfig": {
       "properties": {
-        "username": {
-          "type": "string"
+        "type": {
+          "$ref": "#/$defs/EnvironmentValue"
         },
-        "username_file": {
-          "type": "string"
-        },
-        "username_ref": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "password_file": {
-          "type": "string"
-        },
-        "password_ref": {
-          "type": "string"
+        "credentials": {
+          "$ref": "#/$defs/EnvironmentValue"
         }
       },
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "username"
+        "type",
+        "credentials"
+      ]
+    },
+    "BasicAuthConfig": {
+      "properties": {
+        "username": {
+          "$ref": "#/$defs/EnvironmentValue"
+        },
+        "password": {
+          "$ref": "#/$defs/EnvironmentValue"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "username",
+        "password"
       ]
     },
     "ClientSettings": {
@@ -53,20 +58,11 @@
         "url": {
           "$ref": "#/$defs/EnvironmentValue"
         },
+        "authentication": {
+          "$ref": "#/$defs/AuthConfig"
+        },
         "timeout": {
           "type": "integer"
-        },
-        "keep_alive": {
-          "type": "integer"
-        },
-        "basic_auth": {
-          "$ref": "#/$defs/BasicAuth"
-        },
-        "authorization": {
-          "$ref": "#/$defs/Authorization"
-        },
-        "oauth2": {
-          "$ref": "#/$defs/OAuth2"
         },
         "tls_config": {
           "$ref": "#/$defs/TLSConfig"
@@ -120,11 +116,25 @@
       ]
     },
     "EnvironmentValue": {
+      "oneOf": [
+        {
+          "required": [
+            "value"
+          ],
+          "title": "value"
+        },
+        {
+          "required": [
+            "env"
+          ],
+          "title": "env"
+        }
+      ],
       "properties": {
         "value": {
           "type": "string"
         },
-        "variable": {
+        "env": {
           "type": "string"
         }
       },
@@ -142,6 +152,18 @@
       "required": [
         "metrics"
       ]
+    },
+    "GoogleAuthConfig": {
+      "properties": {
+        "credentials": {
+          "$ref": "#/$defs/EnvironmentValue"
+        },
+        "credentials_file": {
+          "$ref": "#/$defs/EnvironmentValue"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
     },
     "Header": {
       "properties": {
@@ -323,28 +345,22 @@
         "type"
       ]
     },
-    "OAuth2": {
+    "OAuth2Config": {
       "properties": {
         "client_id": {
-          "type": "string"
+          "$ref": "#/$defs/EnvironmentValue"
         },
         "client_secret": {
-          "type": "string"
+          "$ref": "#/$defs/EnvironmentValue"
         },
-        "client_secret_file": {
-          "type": "string"
-        },
-        "client_secret_ref": {
-          "type": "string"
+        "token_url": {
+          "$ref": "#/$defs/EnvironmentValue"
         },
         "scopes": {
           "items": {
             "type": "string"
           },
           "type": "array"
-        },
-        "token_url": {
-          "type": "string"
         },
         "endpoint_params": {
           "additionalProperties": {
@@ -373,8 +389,6 @@
       "required": [
         "client_id",
         "client_secret",
-        "client_secret_file",
-        "client_secret_ref",
         "token_url",
         "TLSConfig"
       ]

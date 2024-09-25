@@ -3,7 +3,6 @@ package connector
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -68,7 +67,7 @@ func (c *PrometheusConnector) ParseConfiguration(ctx context.Context, configurat
 // In addition, this function should register any
 // connector-specific metrics with the metrics registry.
 func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.Configuration, metrics *connector.TelemetryState) (*metadata.State, error) {
-	_, span := metrics.Tracer.StartInternal(ctx, "Initialize")
+	ctx, span := metrics.Tracer.StartInternal(ctx, "Initialize")
 	defer span.End()
 
 	promSchema, err := metadata.BuildConnectorSchema(&conf.Metadata)
@@ -86,14 +85,7 @@ func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.C
 	}
 	c.rawSchema = schema.NewRawSchemaResponseUnsafe(rawSchema)
 
-	endpoint, err := conf.ConnectionSettings.URL.Get()
-	if err != nil {
-		return nil, fmt.Errorf("url: %s", err)
-	}
-	if endpoint == "" {
-		return nil, errors.New("the endpoint setting is empty")
-	}
-	client, err := client.NewClient(endpoint, conf.ConnectionSettings.ToHTTPClientConfig(), metrics.Tracer, conf.ConnectionSettings.Timeout)
+	client, err := client.NewClient(ctx, conf.ConnectionSettings, metrics.Tracer, conf.ConnectionSettings.Timeout)
 	if err != nil {
 		return nil, err
 	}

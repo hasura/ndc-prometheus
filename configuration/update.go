@@ -14,6 +14,7 @@ import (
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
+	"github.com/hasura/ndc-prometheus/connector/types"
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel"
 	"gopkg.in/yaml.v3"
@@ -41,12 +42,7 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 		originalConfig = &defaultConfiguration
 	}
 
-	endpoint, err := originalConfig.ConnectionSettings.URL.Get()
-	if err != nil {
-		return err
-	}
-
-	apiClient, err := client.NewClient(endpoint, originalConfig.ConnectionSettings.ToHTTPClientConfig(), clientTracer, nil)
+	apiClient, err := client.NewClient(ctx, originalConfig.ConnectionSettings, clientTracer, nil)
 	if err != nil {
 		return err
 	}
@@ -170,8 +166,8 @@ func (uc *updateCommand) writeConfigFile() error {
 }
 
 var defaultConfiguration = metadata.Configuration{
-	ConnectionSettings: metadata.ClientSettings{
-		URL: metadata.NewEnvironmentVariable("CONNECTION_URL"),
+	ConnectionSettings: client.ClientSettings{
+		URL: types.NewEnvironmentVariable("CONNECTION_URL"),
 	},
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{

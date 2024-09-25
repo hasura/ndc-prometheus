@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/hasura/ndc-prometheus/connector/client"
 	"gopkg.in/yaml.v3"
 )
 
 // Configuration the configuration of Prometheus connector
 type Configuration struct {
-	ConnectionSettings ClientSettings    `json:"connection_settings" yaml:"connection_settings"`
-	Generator          GeneratorSettings `json:"generator" yaml:"generator"`
-	Metadata           Metadata          `json:"metadata" yaml:"metadata"`
+	ConnectionSettings client.ClientSettings `json:"connection_settings" yaml:"connection_settings"`
+	Generator          GeneratorSettings     `json:"generator" yaml:"generator"`
+	Metadata           Metadata              `json:"metadata" yaml:"metadata"`
 }
 
 // MetricsGeneratorSettings contain settings for the metrics generation

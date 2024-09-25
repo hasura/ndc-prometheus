@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -31,19 +30,22 @@ func main() {
 	defer stop()
 
 	cmd := kong.Parse(&cli, kong.UsageOnError())
-	_, err := initLogger(cli.LogLevel)
+	logger, err := initLogger(cli.LogLevel)
 	if err != nil {
-		log.Fatalf("failed to initialize: %s", err)
+		logger.Error(fmt.Sprintf("failed to initialize: %s", err))
+		os.Exit(1)
 	}
 	switch cmd.Command() {
 	case "update":
 		if err := introspectSchema(ctx, &cli.Update); err != nil {
-			log.Fatalf("failed to update configuration: %s", err)
+			logger.Error(fmt.Sprintf("failed to update configuration: %s", err))
+			os.Exit(1)
 		}
 	case "version":
 		_, _ = fmt.Print(version.BuildVersion)
 	default:
-		log.Fatalf("unknown command <%s>", cmd.Command())
+		logger.Error(fmt.Sprintf("unknown command <%s>", cmd.Command()))
+		os.Exit(1)
 	}
 }
 

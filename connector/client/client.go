@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
@@ -96,5 +99,19 @@ func createHTTPClient(c api.Client) *httpClient {
 // Do wraps the api.Client with trace context headers injection
 func (ac *httpClient) Do(ctx context.Context, req *http.Request) (*http.Response, []byte, error) {
 	ac.propagator.Inject(ctx, propagation.HeaderCarrier(req.Header))
-	return ac.Client.Do(ctx, req)
+	r, bs, err := ac.Client.Do(ctx, req)
+	if utils.IsDebug(slog.Default()) {
+		attrs := []any{}
+		if r != nil {
+			attrs = append(attrs, slog.Int("status_code", r.StatusCode))
+		}
+		if len(bs) > 0 {
+			attrs = append(attrs, slog.String("response", string(bs)))
+		}
+		if err != nil {
+			attrs = append(attrs, slog.String("error", err.Error()))
+		}
+		slog.Debug(fmt.Sprintf("%s %s", strings.ToUpper(req.Method), req.RequestURI), attrs...)
+	}
+	return r, bs, err
 }

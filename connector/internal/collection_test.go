@@ -15,6 +15,7 @@ var testCases = []struct {
 	Request     schema.QueryRequest
 	Predicate   CollectionRequest
 	QueryString string
+	IsEmpty     bool
 }{
 	{
 		Name: "nested_expressions",
@@ -104,6 +105,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: "",
+		IsEmpty:     true,
 	},
 	{
 		Name: "label_expressions_equal",
@@ -310,6 +312,64 @@ var testCases = []struct {
 		},
 		QueryString: `go_gc_duration_seconds{job=~"ndc-prometheus|node|prometheus"}`,
 	},
+	{
+		Name: "label_expressions_eq_neq",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_neq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_neq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+					},
+				},
+			},
+		},
+		QueryString: ``,
+		IsEmpty:     true,
+	},
+	{
+		Name: "label_expressions_eq_in_neq",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{`ndc-prometheus`, "node"})),
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_neq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{`ndc-prometheus`, "node"})),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_neq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+					},
+				},
+			},
+		},
+		QueryString: ``,
+		IsEmpty:     true,
+	},
 }
 
 func TestCollectionQueryExplain(t *testing.T) {
@@ -324,10 +384,11 @@ func TestCollectionQueryExplain(t *testing.T) {
 				Arguments: arguments,
 			}
 
-			request, queryString, _, err := executor.Explain(context.TODO())
+			request, queryString, ok, err := executor.Explain(context.TODO())
 			assert.NilError(t, err)
 			assert.DeepEqual(t, tc.Predicate, *request)
 			assert.Equal(t, tc.QueryString, queryString)
+			assert.Equal(t, !tc.IsEmpty, ok)
 		})
 	}
 }

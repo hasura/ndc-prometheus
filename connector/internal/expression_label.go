@@ -62,9 +62,12 @@ func (le *LabelExpressionBuilder) Evaluate(variables map[string]any) (string, bo
 		isIncludeRegex = isIncludeRegex || inc.IsRegex
 	}
 	if len(includes) == 0 && len(le.excludes) == 0 {
-		return "", true, nil
+		// all equal and not-equal labels are matched together,
+		// so the result is always empty
+		return "", false, nil
 	}
 
+	// if the label equals A or B but not C => equals A or B
 	if len(includes) > 0 {
 		operator := "="
 		if len(includes) > 1 || isIncludeRegex {
@@ -73,6 +76,7 @@ func (le *LabelExpressionBuilder) Evaluate(variables map[string]any) (string, bo
 		return fmt.Sprintf(`%s%s"%s"`, le.Name, operator, strings.Join(includes, "|")), true, nil
 	}
 
+	// exclude only
 	var isExcludeRegex bool
 	excludes := make([]string, 0, len(le.excludes))
 	for ev := range le.excludes {

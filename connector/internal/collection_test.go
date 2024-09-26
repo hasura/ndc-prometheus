@@ -370,6 +370,90 @@ var testCases = []struct {
 		QueryString: ``,
 		IsEmpty:     true,
 	},
+	{
+		Name: "label_expressions_eq_regex",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_regex", schema.NewComparisonValueScalar(`.+`)),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_regex", schema.NewComparisonValueScalar(`.+`)),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job="ndc-prometheus"}`,
+	},
+	{
+		Name: "label_expressions_in_regex",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"})),
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_regex", schema.NewComparisonValueScalar(`ndc-.+`)),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"})),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_regex", schema.NewComparisonValueScalar(`ndc-.+`)),
+					},
+				},
+			},
+		},
+		QueryString: `go_gc_duration_seconds{job="ndc-prometheus"}`,
+	},
+	{
+		Name: "label_expressions_in_eq_regex",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"timeout": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"})),
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
+					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_regex", schema.NewComparisonValueScalar(`ndc-.+`)),
+				).Encode(),
+			},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{
+				"job": {
+					Name: "job",
+					Expressions: []schema.ExpressionBinaryComparisonOperator{
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"})),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_eq", schema.NewComparisonValueScalar("node")),
+						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_regex", schema.NewComparisonValueScalar(`ndc-.+`)),
+					},
+				},
+			},
+		},
+		QueryString: ``,
+		IsEmpty:     true,
+	},
 }
 
 func TestCollectionQueryExplain(t *testing.T) {

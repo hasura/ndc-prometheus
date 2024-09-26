@@ -14,11 +14,15 @@ func FunctionPrometheusLabelNames(ctx context.Context, state *metadata.State, ar
 	ctx, span := state.Tracer.Start(ctx, "Prometheus Label Names")
 	defer span.End()
 
-	args, opts, err := arguments.Validate(state, span)
+	args, _, err := arguments.Validate(state, span)
 	if err != nil {
 		return nil, err
 	}
-	results, warnings, err := state.Client.LabelNames(ctx, args.Match, *args.Start, *args.End, opts...)
+	var limit uint64
+	if args.Limit != nil {
+		limit = *args.Limit
+	}
+	results, warnings, err := state.Client.LabelNames(ctx, args.Match, *args.Start, *args.End, limit)
 	if len(warnings) > 0 {
 		span.SetAttributes(attribute.StringSlice("warnings", warnings))
 	}

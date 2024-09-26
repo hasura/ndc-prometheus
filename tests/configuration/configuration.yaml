@@ -24,6 +24,42 @@ generator:
     start_at: 2024-09-01T00:00:00Z
 metadata:
   metrics:
+    http_client_duration_milliseconds:
+      type: histogram
+      description: Measures the duration of outbound HTTP requests.
+      labels:
+        http_method: {}
+        http_status_code: {}
+        instance: {}
+        job: {}
+        net_peer_name: {}
+        net_peer_port: {}
+        otel_scope_name: {}
+        otel_scope_version: {}
+    http_client_request_size_bytes_total:
+      type: counter
+      description: Measures the size of HTTP request messages.
+      labels:
+        http_method: {}
+        http_status_code: {}
+        instance: {}
+        job: {}
+        net_peer_name: {}
+        net_peer_port: {}
+        otel_scope_name: {}
+        otel_scope_version: {}
+    http_client_response_size_bytes_total:
+      type: counter
+      description: Measures the size of HTTP response messages.
+      labels:
+        http_method: {}
+        http_status_code: {}
+        instance: {}
+        job: {}
+        net_peer_name: {}
+        net_peer_port: {}
+        otel_scope_name: {}
+        otel_scope_version: {}
     ndc_prometheus_query_total:
       type: counter
       description: Total number of query requests

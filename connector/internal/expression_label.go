@@ -30,7 +30,7 @@ type LabelExpressionBuilder struct {
 	LabelExpression
 
 	includes []LabelExpressionField
-	excludes map[LabelExpressionField]bool
+	excludes map[LabelExpressionField]*regexp.Regexp
 }
 
 // Evaluate evaluates the list of expressions and returns the query string
@@ -39,7 +39,7 @@ func (le *LabelExpressionBuilder) Evaluate(variables map[string]any) (string, bo
 		return "", true, nil
 	}
 	le.includes = []LabelExpressionField{}
-	le.excludes = map[LabelExpressionField]bool{}
+	le.excludes = map[LabelExpressionField]*regexp.Regexp{}
 	for _, expr := range le.Expressions {
 		value, err := getComparisonValue(expr.Value, variables)
 		if err != nil {
@@ -54,14 +54,13 @@ func (le *LabelExpressionBuilder) Evaluate(variables map[string]any) (string, bo
 	var isIncludeRegex bool
 	includes := []string{}
 	for _, inc := range le.includes {
-		if _, ok := le.excludes[inc]; ok {
-			delete(le.excludes, inc)
+		if le.excludeField(inc) {
 			continue
 		}
 		includes = append(includes, inc.Value)
 		isIncludeRegex = isIncludeRegex || inc.IsRegex
 	}
-	if len(includes) == 0 && len(le.excludes) == 0 {
+	if (len(le.includes) > 0 && len(includes) == 0) || (len(includes) == 0 && len(le.excludes) == 0) {
 		// all equal and not-equal labels are matched together,
 		// so the result is always empty
 		return "", false, nil
@@ -92,6 +91,18 @@ func (le *LabelExpressionBuilder) Evaluate(variables map[string]any) (string, bo
 	return fmt.Sprintf(`%s%s"%s"`, le.Name, operator, strings.Join(excludes, "|")), true, nil
 }
 
+func (le *LabelExpressionBuilder) excludeField(inc LabelExpressionField) bool {
+
+	for exc, erg := range le.excludes {
+		if (erg == nil && inc.Value == exc.Value) ||
+			(erg != nil && erg.MatchString(inc.Value)) {
+			delete(le.excludes, exc)
+			return true
+		}
+	}
+	return false
+}
+
 func (le *LabelExpressionBuilder) evalLabelComparison(operator string, value any) (bool, error) {
 	switch operator {
 	case metadata.Equal, metadata.Regex:
@@ -102,17 +113,42 @@ func (le *LabelExpressionBuilder) evalLabelComparison(operator string, value any
 		if strValue == nil {
 			return true, nil
 		}
-		if len(le.includes) > 0 && !slices.ContainsFunc(le.includes, func(f LabelExpressionField) bool {
-			return f.Value == *strValue
-		}) {
+
+		isRegex := operator == metadata.Regex
+		if len(le.includes) == 0 {
+			le.includes = []LabelExpressionField{
+				{
+					Value:   *strValue,
+					IsRegex: isRegex,
+				},
+			}
+			return true, nil
+		}
+
+		var includes []LabelExpressionField
+		for _, inc := range le.includes {
+			if inc.Value == *strValue {
+				includes = append(includes, LabelExpressionField{
+					Value:   inc.Value,
+					IsRegex: inc.IsRegex && isRegex,
+				})
+				continue
+			}
+
+			if isRegex {
+				rg, err := regexp.Compile(*strValue)
+				if err != nil {
+					return false, fmt.Errorf("invalid regular expression `%s`: %s", *strValue, err)
+				}
+				if rg.MatchString(inc.Value) {
+					includes = append(includes, inc)
+				}
+			}
+		}
+		if len(includes) == 0 {
 			return false, nil
 		}
-		le.includes = []LabelExpressionField{
-			{
-				Value:   *strValue,
-				IsRegex: operator == metadata.Regex,
-			},
-		}
+		le.includes = includes
 	case metadata.In:
 		strValues, err := decodeStringSlice(value)
 		if err != nil {
@@ -147,10 +183,18 @@ func (le *LabelExpressionBuilder) evalLabelComparison(operator string, value any
 			return true, nil
 		}
 
+		isRegex := operator == metadata.NotRegex
+		var rg *regexp.Regexp
+		if isRegex {
+			rg, err = regexp.Compile(*strValue)
+			if err != nil {
+				return false, fmt.Errorf("invalid regular expression `%s`: %s", *strValue, err)
+			}
+		}
 		le.excludes[LabelExpressionField{
 			Value:   *strValue,
-			IsRegex: operator == metadata.NotRegex,
-		}] = true
+			IsRegex: isRegex,
+		}] = rg
 	case metadata.NotIn:
 		strValues, err := decodeStringSlice(value)
 		if err != nil {
@@ -162,7 +206,7 @@ func (le *LabelExpressionBuilder) evalLabelComparison(operator string, value any
 		for _, v := range strValues {
 			le.excludes[LabelExpressionField{
 				Value: v,
-			}] = true
+			}] = nil
 		}
 	default:
 		return false, fmt.Errorf("unsupported comparison operator `%s`", operator)

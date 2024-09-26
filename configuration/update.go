@@ -141,7 +141,7 @@ func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string, 
 	if metric.Type == v1.MetricTypeHistogram || metric.Type == v1.MetricTypeGaugeHistogram {
 		metricName = fmt.Sprintf("%s_count", metricName)
 	}
-	labels, warnings, err := uc.Client.Series(ctx, []string{metricName}, uc.Config.Generator.Metrics.StartAt, time.Now(), 10)
+	labels, warnings, err := uc.Client.LabelNames(ctx, []string{metricName}, uc.Config.Generator.Metrics.StartAt, time.Now(), 0)
 	if err != nil {
 		return nil, err
 	}
@@ -159,14 +159,12 @@ func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string, 
 			excludedLabels = append(excludedLabels, el.Labels...)
 		}
 	}
-	for _, ls := range labels {
-		for key := range ls {
-			if !key.IsValid() || slices.Contains(excludedLabels, string(key)) {
-				continue
-			}
-
-			results[string(key)] = metadata.LabelInfo{}
+	for _, key := range labels {
+		if slices.Contains(excludedLabels, string(key)) {
+			continue
 		}
+
+		results[string(key)] = metadata.LabelInfo{}
 	}
 	return results, nil
 }

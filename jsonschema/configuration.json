@@ -256,6 +256,13 @@
         "enabled": {
           "type": "boolean"
         },
+        "behavior": {
+          "type": "string",
+          "enum": [
+            "merge",
+            "replace"
+          ]
+        },
         "include": {
           "items": {
             "type": "string"
@@ -283,6 +290,7 @@
       "type": "object",
       "required": [
         "enabled",
+        "behavior",
         "include",
         "exclude",
         "exclude_labels",

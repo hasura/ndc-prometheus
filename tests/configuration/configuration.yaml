@@ -11,6 +11,7 @@ connection_settings:
 generator:
   metrics:
     enabled: true
+    behavior: merge
     include: []
     exclude:
       - ^prometheus_+
@@ -23,6 +24,20 @@ generator:
     start_at: 2024-09-01T00:00:00Z
 metadata:
   metrics:
+    ndc_prometheus_query_total:
+      type: counter
+      description: Total number of query requests
+      labels:
+        collection: {}
+        http_status: {}
+        instance: {}
+        job: {}
+        otel_scope_name: {}
+        status: {}
+    ndc_prometheus_query_total_time:
+      type: histogram
+      description: Total time taken to plan and execute a query, in seconds
+      labels: {}
     net_conntrack_dialer_conn_attempted_total:
       type: counter
       description: Total number of connections attempted by the given dialer a given name.
@@ -48,6 +63,13 @@ metadata:
         instance: {}
         job: {}
         reason: {}
+    otel_scope_info:
+      type: gauge
+      description: Instrumentation Scope metadata
+      labels:
+        instance: {}
+        job: {}
+        otel_scope_name: {}
     process_cpu_seconds_total:
       type: counter
       description: Total user and system CPU time spent in seconds.

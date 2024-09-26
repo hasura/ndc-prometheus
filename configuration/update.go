@@ -39,7 +39,7 @@ type updateCommand struct {
 
 func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	start := time.Now()
-	slog.Info("introspect metrics metadata...", slog.String("dir", args.Dir))
+	slog.Info("introspecting metadata", slog.String("dir", args.Dir))
 	originalConfig, err := metadata.ReadConfiguration(args.Dir)
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -62,6 +62,11 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	}
 
 	if originalConfig.Generator.Metrics.Enabled {
+		slog.Info("introspecting metrics",
+			slog.String("behavior", string(originalConfig.Generator.Metrics.Behavior)),
+			slog.Any("include", originalConfig.Generator.Metrics.Include),
+			slog.Any("exclude", originalConfig.Generator.Metrics.Exclude),
+		)
 		for _, el := range originalConfig.Generator.Metrics.ExcludeLabels {
 			if len(el.Labels) == 0 {
 				continue
@@ -97,6 +102,15 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 	}
 
 	newMetrics := map[string]metadata.MetricInfo{}
+	if uc.Config.Generator.Metrics.Behavior == metadata.MetricsGenerationMerge {
+		for key, metric := range uc.Config.Metadata.Metrics {
+			if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) || validateRegularExpressions(uc.Exclude, key) {
+				continue
+			}
+			newMetrics[key] = metric
+		}
+	}
+
 	for key, info := range metricsInfo {
 		if len(info) == 0 {
 			continue
@@ -117,7 +131,6 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 			Labels:      labels,
 		}
 	}
-
 	uc.Config.Metadata.Metrics = newMetrics
 	return nil
 }
@@ -185,7 +198,7 @@ func (uc *updateCommand) writeConfigFile() error {
 	var buf bytes.Buffer
 	writer := bufio.NewWriter(&buf)
 
-	_, _ = writer.WriteString("# yaml-language-server: $schema=../../jsonschema/configuration.json\n")
+	_, _ = writer.WriteString("# yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-prometheus/main/jsonschema/configuration.json\n")
 	encoder := yaml.NewEncoder(writer)
 	encoder.SetIndent(2)
 	if err := encoder.Encode(uc.Config); err != nil {
@@ -203,6 +216,7 @@ var defaultConfiguration = metadata.Configuration{
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{
 			Enabled:       true,
+			Behavior:      metadata.MetricsGenerationMerge,
 			Include:       []string{},
 			Exclude:       []string{},
 			ExcludeLabels: []metadata.ExcludeLabelsSetting{},

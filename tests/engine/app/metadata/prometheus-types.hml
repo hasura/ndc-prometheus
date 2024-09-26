@@ -804,3 +804,143 @@ definition:
   graphql:
     typeName: AlertState_bool_exp
 
+---
+kind: ScalarType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalLabel
+  graphql:
+    typeName: NdcPrometheusQueryTotalLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: NdcPrometheusQueryTotalLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeBucketLabel
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeBucketLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeBucketLabel_bool_exp
+  operand:
+    scalar:
+      type: NdcPrometheusQueryTotalTimeBucketLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalTimeBucketLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeBucketLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeCountLabel
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeCountLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeCountLabel_bool_exp
+  operand:
+    scalar:
+      type: NdcPrometheusQueryTotalTimeCountLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalTimeCountLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeCountLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeSumLabel
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeSumLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeSumLabel_bool_exp
+  operand:
+    scalar:
+      type: NdcPrometheusQueryTotalTimeSumLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalTimeSumLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeSumLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: OtelScopeInfoLabel
+  graphql:
+    typeName: OtelScopeInfoLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OtelScopeInfoLabel_bool_exp
+  operand:
+    scalar:
+      type: OtelScopeInfoLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: OtelScopeInfoLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OtelScopeInfoLabel_bool_exp
+

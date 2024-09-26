@@ -16,9 +16,19 @@ type Configuration struct {
 	Metadata           Metadata              `json:"metadata" yaml:"metadata"`
 }
 
+// MetricsGenerationBehavior the behavior of metrics generation
+type MetricsGenerationBehavior string
+
+const (
+	MetricsGenerationMerge   = "merge"
+	MetricsGenerationReplace = "replace"
+)
+
 // MetricsGeneratorSettings contain settings for the metrics generation
 type MetricsGeneratorSettings struct {
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	// Enable the metrics generation
+	Enabled  bool                      `json:"enabled" yaml:"enabled"`
+	Behavior MetricsGenerationBehavior `json:"behavior" yaml:"behavior" jsonschema:"enum=merge,enum=replace"`
 	// Include metrics with regular expression matching. Include all metrics by default
 	Include []string `json:"include" yaml:"include"`
 	// Exclude metrics with regular expression matching.

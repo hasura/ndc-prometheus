@@ -84,6 +84,36 @@ definition:
             type: json
           aggregate_functions: {}
           comparison_operators: {}
+        NdcPrometheusQueryTotalLabel:
+          representation:
+            type: enum
+            one_of:
+              - collection
+              - http_status
+              - instance
+              - job
+              - otel_scope_name
+              - status
+          aggregate_functions: {}
+          comparison_operators: {}
+        NdcPrometheusQueryTotalTimeBucketLabel:
+          representation:
+            type: enum
+            one_of: []
+          aggregate_functions: {}
+          comparison_operators: {}
+        NdcPrometheusQueryTotalTimeCountLabel:
+          representation:
+            type: enum
+            one_of: []
+          aggregate_functions: {}
+          comparison_operators: {}
+        NdcPrometheusQueryTotalTimeSumLabel:
+          representation:
+            type: enum
+            one_of: []
+          aggregate_functions: {}
+          comparison_operators: {}
         NetConntrackDialerConnAttemptedTotalLabel:
           representation:
             type: enum
@@ -96,8 +126,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnEstablishedTotalLabel:
@@ -112,9 +142,18 @@ definition:
           representation:
             type: enum
             one_of:
+              - reason
               - instance
               - job
-              - reason
+          aggregate_functions: {}
+          comparison_operators: {}
+        OtelScopeInfoLabel:
+          representation:
+            type: enum
+            one_of:
+              - job
+              - otel_scope_name
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         ProcessCpuSecondsTotalLabel:
@@ -202,8 +241,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         PromhttpMetricHandlerRequestsTotalLabel:
@@ -258,13 +297,13 @@ definition:
           representation:
             type: enum
             one_of:
-              - telemetry_sdk_name
-              - telemetry_sdk_version
               - instance
               - job
               - service_name
               - service_version
               - telemetry_sdk_language
+              - telemetry_sdk_name
+              - telemetry_sdk_version
           aggregate_functions: {}
           comparison_operators: {}
         Timestamp:
@@ -417,6 +456,2562 @@ definition:
               type:
                 type: named
                 name: String
+        NdcPrometheusQueryTotal:
+          fields:
+            collection:
+              type:
+                type: named
+                name: String
+            http_status:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            otel_scope_name:
+              type:
+                type: named
+                name: String
+            status:
+              type:
+                type: named
+                name: String
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        NdcPrometheusQueryTotalFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        NdcPrometheusQueryTotalLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalLabel
+        NdcPrometheusQueryTotalLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: NdcPrometheusQueryTotalLabel
+        NdcPrometheusQueryTotalTimeBucket:
+          fields:
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        NdcPrometheusQueryTotalTimeBucketFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeBucketLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeBucketLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeBucketLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        NdcPrometheusQueryTotalTimeBucketLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeBucketLabel
+        NdcPrometheusQueryTotalTimeBucketLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: NdcPrometheusQueryTotalTimeBucketLabel
+        NdcPrometheusQueryTotalTimeCount:
+          fields:
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        NdcPrometheusQueryTotalTimeCountFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeCountLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeCountLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeCountLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        NdcPrometheusQueryTotalTimeCountLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeCountLabel
+        NdcPrometheusQueryTotalTimeCountLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: NdcPrometheusQueryTotalTimeCountLabel
+        NdcPrometheusQueryTotalTimeSum:
+          fields:
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        NdcPrometheusQueryTotalTimeSumFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeSumLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeSumLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeSumLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        NdcPrometheusQueryTotalTimeSumLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: NdcPrometheusQueryTotalTimeSumLabel
+        NdcPrometheusQueryTotalTimeSumLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: NdcPrometheusQueryTotalTimeSumLabel
         NetConntrackDialerConnAttemptedTotal:
           fields:
             instance:
@@ -2985,6 +5580,651 @@ definition:
               type:
                 type: named
                 name: NetConntrackDialerConnFailedTotalLabel
+        OtelScopeInfo:
+          fields:
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            otel_scope_name:
+              type:
+                type: named
+                name: String
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        OtelScopeInfoFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: OtelScopeInfoLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: OtelScopeInfoLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: OtelScopeInfoLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        OtelScopeInfoLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: OtelScopeInfoLabel
+        OtelScopeInfoLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: OtelScopeInfoLabel
         PredictLinearInput:
           description: Input arguments for the predict_linear function
           fields:
@@ -11525,6 +14765,150 @@ definition:
                 type: named
                 name: Float64
       collections:
+        - name: ndc_prometheus_query_total
+          description: Total number of query requests
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for ndc_prometheus_query_total
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: NdcPrometheusQueryTotal
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: ndc_prometheus_query_total_time_bucket
+          description: Total time taken to plan and execute a query, in seconds
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for ndc_prometheus_query_total_time_bucket
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeBucketFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: NdcPrometheusQueryTotalTimeBucket
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: ndc_prometheus_query_total_time_count
+          description: Total time taken to plan and execute a query, in seconds
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for ndc_prometheus_query_total_time_count
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeCountFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: NdcPrometheusQueryTotalTimeCount
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: ndc_prometheus_query_total_time_sum
+          description: Total time taken to plan and execute a query, in seconds
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for ndc_prometheus_query_total_time_sum
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: NdcPrometheusQueryTotalTimeSumFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: NdcPrometheusQueryTotalTimeSum
+          uniqueness_constraints: {}
+          foreign_keys: {}
         - name: net_conntrack_dialer_conn_attempted_total
           description: Total number of connections attempted by the given dialer a given name.
           arguments:
@@ -11667,6 +15051,42 @@ definition:
                   type: named
                   name: Duration
           type: NetConntrackDialerConnFailedTotal
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: otel_scope_info
+          description: Instrumentation Scope metadata
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for otel_scope_info
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: OtelScopeInfoFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: OtelScopeInfo
           uniqueness_constraints: {}
           foreign_keys: {}
         - name: process_cpu_seconds_total

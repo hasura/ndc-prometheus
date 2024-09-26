@@ -15,6 +15,7 @@ import (
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-prometheus/connector/types"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel"
 	"gopkg.in/yaml.v3"
@@ -121,7 +122,7 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 			continue
 		}
 		slog.Info(key, slog.String("type", string(info[0].Type)))
-		labels, err := uc.getAllLabelsOfMetric(ctx, key)
+		labels, err := uc.getAllLabelsOfMetric(ctx, key, info[0])
 		if err != nil {
 			return fmt.Errorf("error when fetching labels for metric `%s`: %s", key, err)
 		}
@@ -135,8 +136,12 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 	return nil
 }
 
-func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string) (map[string]metadata.LabelInfo, error) {
-	labels, warnings, err := uc.Client.Series(ctx, []string{name}, uc.Config.Generator.Metrics.StartAt, time.Now(), 1)
+func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string, metric v1.Metadata) (map[string]metadata.LabelInfo, error) {
+	metricName := name
+	if metric.Type == v1.MetricTypeHistogram || metric.Type == v1.MetricTypeGaugeHistogram {
+		metricName = fmt.Sprintf("%s_count", metricName)
+	}
+	labels, warnings, err := uc.Client.Series(ctx, []string{metricName}, uc.Config.Generator.Metrics.StartAt, time.Now(), 10)
 	if err != nil {
 		return nil, err
 	}
@@ -154,12 +159,14 @@ func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string) 
 			excludedLabels = append(excludedLabels, el.Labels...)
 		}
 	}
-	for key := range labels[0] {
-		if !key.IsValid() || slices.Contains(excludedLabels, string(key)) {
-			continue
-		}
+	for _, ls := range labels {
+		for key := range ls {
+			if !key.IsValid() || slices.Contains(excludedLabels, string(key)) {
+				continue
+			}
 
-		results[string(key)] = metadata.LabelInfo{}
+			results[string(key)] = metadata.LabelInfo{}
+		}
 	}
 	return results, nil
 }

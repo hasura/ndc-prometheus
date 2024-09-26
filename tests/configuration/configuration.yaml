@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../jsonschema/configuration.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-prometheus/main/jsonschema/configuration.json
 connection_settings:
   url:
     env: CONNECTION_URL
@@ -37,7 +37,11 @@ metadata:
     ndc_prometheus_query_total_time:
       type: histogram
       description: Total time taken to plan and execute a query, in seconds
-      labels: {}
+      labels:
+        collection: {}
+        instance: {}
+        job: {}
+        otel_scope_name: {}
     net_conntrack_dialer_conn_attempted_total:
       type: counter
       description: Total number of connections attempted by the given dialer a given name.
@@ -70,6 +74,7 @@ metadata:
         instance: {}
         job: {}
         otel_scope_name: {}
+        otel_scope_version: {}
     process_cpu_seconds_total:
       type: counter
       description: Total user and system CPU time spent in seconds.

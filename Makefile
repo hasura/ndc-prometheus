@@ -22,7 +22,7 @@ clean:
 
 .PHONY: build-configuration
 build-configuration:
-	go build -o _output/ndc-prometheus-configuration .
+	go build -o _output/ndc-prometheus ./configuration
 	
 .PHONY: build-jsonschema
 build-jsonschema:

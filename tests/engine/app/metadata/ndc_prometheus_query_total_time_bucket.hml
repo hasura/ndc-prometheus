@@ -2,7 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnAcceptedTotalLabelJoinInput
+  name: NdcPrometheusQueryTotalTimeBucketLabelJoinInput
   description: Input arguments for the label_join function
   fields:
     - name: dest_label
@@ -12,20 +12,20 @@ definition:
       type: String!
       description: The separator between source labels
     - name: source_labels
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]!"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]!"
       description: Source labels
   graphql:
-    typeName: NetConntrackListenerConnAcceptedTotalLabelJoinInput
-    inputTypeName: NetConntrackListenerConnAcceptedTotalLabelJoinInput_input
+    typeName: NdcPrometheusQueryTotalTimeBucketLabelJoinInput
+    inputTypeName: NdcPrometheusQueryTotalTimeBucketLabelJoinInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnAcceptedTotalLabelJoinInput
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeBucketLabelJoinInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnAcceptedTotalLabelJoinInput
+  typeName: NdcPrometheusQueryTotalTimeBucketLabelJoinInput
   permissions:
     - role: admin
       output:
@@ -38,7 +38,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnAcceptedTotalLabelReplaceInput
+  name: NdcPrometheusQueryTotalTimeBucketLabelReplaceInput
   description: Input arguments for the label_replace function
   fields:
     - name: dest_label
@@ -51,20 +51,20 @@ definition:
       type: String!
       description: The replacement value
     - name: source_label
-      type: NetConntrackListenerConnAcceptedTotalLabel!
+      type: NdcPrometheusQueryTotalTimeBucketLabel!
       description: Source label
   graphql:
-    typeName: NetConntrackListenerConnAcceptedTotalLabelReplaceInput
-    inputTypeName: NetConntrackListenerConnAcceptedTotalLabelReplaceInput_input
+    typeName: NdcPrometheusQueryTotalTimeBucketLabelReplaceInput
+    inputTypeName: NdcPrometheusQueryTotalTimeBucketLabelReplaceInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnAcceptedTotalLabelReplaceInput
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeBucketLabelReplaceInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnAcceptedTotalLabelReplaceInput
+  typeName: NdcPrometheusQueryTotalTimeBucketLabelReplaceInput
   permissions:
     - role: admin
       output:
@@ -78,7 +78,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnAcceptedTotalFunctions
+  name: NdcPrometheusQueryTotalTimeBucketFunctions
   fields:
     - name: abs
       type: Boolean
@@ -113,7 +113,7 @@ definition:
       type: Boolean
       description: Calculates the inverse hyperbolic tangent of all elements in v
     - name: avg
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: avg_over_time
       type: RangeResolution
       description: The average value of all points in the specified interval
@@ -147,12 +147,12 @@ definition:
       type: Boolean
       description: Calculates the hyperbolic cosine of all elements in v
     - name: count
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: count_over_time
       type: RangeResolution
       description: The count of all values in the specified interval
     - name: count_values
-      type: NetConntrackListenerConnAcceptedTotalLabel
+      type: NdcPrometheusQueryTotalTimeBucketLabel
     - name: deg
       type: Boolean
       description: Converts radians to degrees for all elements in v
@@ -173,7 +173,7 @@ definition:
       description: Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: histogram_avg
       type: Boolean
       description: Returns the arithmetic average of observed values stored in a
@@ -224,12 +224,12 @@ definition:
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
-      type: NetConntrackListenerConnAcceptedTotalLabelJoinInput
+      type: NdcPrometheusQueryTotalTimeBucketLabelJoinInput
       description: Joins all the values of all the src_labels using separator and
         returns the timeseries with the label dst_label containing the joined
         value
     - name: label_replace
-      type: NetConntrackListenerConnAcceptedTotalLabelReplaceInput
+      type: NdcPrometheusQueryTotalTimeBucketLabelReplaceInput
       description: Matches the regular expression regex against the value of the label
         src_label. If it matches, the value of the label dst_label in the
         returned timeseries will be the expansion of replacement, together with
@@ -257,12 +257,12 @@ definition:
       type: RangeResolution
       description: The median absolute deviation of all points in the specified interval
     - name: max
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: max_over_time
       type: RangeResolution
       description: The maximum value of all points in the specified interval
     - name: min
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: min_over_time
       type: RangeResolution
       description: The minimum value of all points in the specified interval
@@ -312,11 +312,11 @@ definition:
       description: Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
       description: Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
       description: Same as sort_by_label, but sorts in descending order
     - name: sort_desc
       type: Boolean
@@ -325,17 +325,17 @@ definition:
       type: Boolean
       description: Calculates the square root of all elements in v
     - name: stddev
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: stddev_over_time
       type: RangeResolution
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: stdvar_over_time
       type: RangeResolution
       description: The population standard variance of the values in the specified interval
     - name: sum
-      type: "[NetConntrackListenerConnAcceptedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketLabel!]"
     - name: sum_over_time
       type: RangeResolution
       description: The sum of all values in the specified interval
@@ -354,17 +354,17 @@ definition:
       type: Int64
       description: Largest k elements by sample value
   graphql:
-    typeName: NetConntrackListenerConnAcceptedTotalFunctions
-    inputTypeName: NetConntrackListenerConnAcceptedTotalFunctions_input
+    typeName: NdcPrometheusQueryTotalTimeBucketFunctions
+    inputTypeName: NdcPrometheusQueryTotalTimeBucketFunctions_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnAcceptedTotalFunctions
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeBucketFunctions
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnAcceptedTotalFunctions
+  typeName: NdcPrometheusQueryTotalTimeBucketFunctions
   permissions:
     - role: admin
       output:
@@ -453,17 +453,11 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnAcceptedTotal
+  name: NdcPrometheusQueryTotalTimeBucket
   fields:
-    - name: instance
-      type: String!
-    - name: job
-      type: String!
     - name: labels
       type: LabelSet!
       description: Labels of the metric
-    - name: listener_name
-      type: String!
     - name: timestamp
       type: Timestamp!
       description: An instant timestamp or the last timestamp of a range query result
@@ -474,73 +468,60 @@ definition:
       type: "[QueryResultValue!]!"
       description: An array of query result values
   graphql:
-    typeName: NetConntrackListenerConnAcceptedTotal
-    inputTypeName: NetConntrackListenerConnAcceptedTotal_input
+    typeName: NdcPrometheusQueryTotalTimeBucket
+    inputTypeName: NdcPrometheusQueryTotalTimeBucket_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnAcceptedTotal
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeBucket
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnAcceptedTotal
+  typeName: NdcPrometheusQueryTotalTimeBucket
   permissions:
     - role: admin
       output:
         allowedFields:
-          - instance
-          - job
           - labels
-          - listener_name
           - timestamp
           - value
           - values
 
 ---
-kind: ObjectBooleanExpressionType
+kind: BooleanExpressionType
 version: v1
 definition:
-  name: NetConntrackListenerConnAcceptedTotal_bool_exp
-  objectType: NetConntrackListenerConnAcceptedTotal
-  dataConnectorName: prometheus
-  dataConnectorObjectType: NetConntrackListenerConnAcceptedTotal
-  comparableFields:
-    - fieldName: instance
-      operators:
-        enableAll: true
-    - fieldName: job
-      operators:
-        enableAll: true
-    - fieldName: labels
-      operators:
-        enableAll: true
-    - fieldName: listener_name
-      operators:
-        enableAll: true
-    - fieldName: timestamp
-      operators:
-        enableAll: true
-    - fieldName: value
-      operators:
-        enableAll: true
-    - fieldName: values
-      operators:
-        enableAll: true
+  name: NdcPrometheusQueryTotalTimeBucket_bool_exp
+  operand:
+    object:
+      type: NdcPrometheusQueryTotalTimeBucket
+      comparableFields:
+        - fieldName: labels
+          booleanExpressionType: LabelSet_bool_exp
+        - fieldName: timestamp
+          booleanExpressionType: Timestamp_bool_exp
+        - fieldName: value
+          booleanExpressionType: Decimal_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
   graphql:
-    typeName: NetConntrackListenerConnAcceptedTotal_bool_exp
+    typeName: NdcPrometheusQueryTotalTimeBucket_bool_exp
 
 ---
 kind: Model
 version: v1
 definition:
-  name: net_conntrack_listener_conn_accepted_total
-  objectType: NetConntrackListenerConnAcceptedTotal
+  name: ndc_prometheus_query_total_time_bucket
+  objectType: NdcPrometheusQueryTotalTimeBucket
   arguments:
     - name: fn
-      type: "[NetConntrackListenerConnAcceptedTotalFunctions!]"
+      type: "[NdcPrometheusQueryTotalTimeBucketFunctions!]"
       description: PromQL aggregation operators and functions for
-        net_conntrack_listener_conn_accepted_total
+        ndc_prometheus_query_total_time_bucket
     - name: offset
       type: Duration
       description: The offset modifier allows changing the time offset for individual
@@ -554,19 +535,10 @@ definition:
       description: Evaluation timeout
   source:
     dataConnectorName: prometheus
-    collection: net_conntrack_listener_conn_accepted_total
-  filterExpressionType: NetConntrackListenerConnAcceptedTotal_bool_exp
+    collection: ndc_prometheus_query_total_time_bucket
+  filterExpressionType: NdcPrometheusQueryTotalTimeBucket_bool_exp
   orderableFields:
-    - fieldName: instance
-      orderByDirections:
-        enableAll: true
-    - fieldName: job
-      orderByDirections:
-        enableAll: true
     - fieldName: labels
-      orderByDirections:
-        enableAll: true
-    - fieldName: listener_name
       orderByDirections:
         enableAll: true
     - fieldName: timestamp
@@ -575,22 +547,19 @@ definition:
     - fieldName: value
       orderByDirections:
         enableAll: true
-    - fieldName: values
-      orderByDirections:
-        enableAll: true
   graphql:
     selectMany:
-      queryRootField: net_conntrack_listener_conn_accepted_total
+      queryRootField: ndc_prometheus_query_total_time_bucket
     selectUniques: []
-    argumentsInputType: net_conntrack_listener_conn_accepted_total_arguments
-    orderByExpressionType: net_conntrack_listener_conn_accepted_total_order_by
-  description: Total number of connections opened to the listener of a given name.
+    argumentsInputType: ndc_prometheus_query_total_time_bucket_arguments
+    orderByExpressionType: ndc_prometheus_query_total_time_bucket_order_by
+  description: Total time taken to plan and execute a query, in seconds
 
 ---
 kind: ModelPermissions
 version: v1
 definition:
-  modelName: net_conntrack_listener_conn_accepted_total
+  modelName: ndc_prometheus_query_total_time_bucket
   permissions:
     - role: admin
       select:

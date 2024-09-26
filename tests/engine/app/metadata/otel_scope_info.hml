@@ -2,7 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytesLabelJoinInput
+  name: OtelScopeInfoLabelJoinInput
   description: Input arguments for the label_join function
   fields:
     - name: dest_label
@@ -12,20 +12,20 @@ definition:
       type: String!
       description: The separator between source labels
     - name: source_labels
-      type: "[ProcessResidentMemoryBytesLabel!]!"
+      type: "[OtelScopeInfoLabel!]!"
       description: Source labels
   graphql:
-    typeName: ProcessResidentMemoryBytesLabelJoinInput
-    inputTypeName: ProcessResidentMemoryBytesLabelJoinInput_input
+    typeName: OtelScopeInfoLabelJoinInput
+    inputTypeName: OtelScopeInfoLabelJoinInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytesLabelJoinInput
+      dataConnectorObjectType: OtelScopeInfoLabelJoinInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytesLabelJoinInput
+  typeName: OtelScopeInfoLabelJoinInput
   permissions:
     - role: admin
       output:
@@ -38,7 +38,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytesLabelReplaceInput
+  name: OtelScopeInfoLabelReplaceInput
   description: Input arguments for the label_replace function
   fields:
     - name: dest_label
@@ -51,20 +51,20 @@ definition:
       type: String!
       description: The replacement value
     - name: source_label
-      type: ProcessResidentMemoryBytesLabel!
+      type: OtelScopeInfoLabel!
       description: Source label
   graphql:
-    typeName: ProcessResidentMemoryBytesLabelReplaceInput
-    inputTypeName: ProcessResidentMemoryBytesLabelReplaceInput_input
+    typeName: OtelScopeInfoLabelReplaceInput
+    inputTypeName: OtelScopeInfoLabelReplaceInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytesLabelReplaceInput
+      dataConnectorObjectType: OtelScopeInfoLabelReplaceInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytesLabelReplaceInput
+  typeName: OtelScopeInfoLabelReplaceInput
   permissions:
     - role: admin
       output:
@@ -78,7 +78,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytesFunctions
+  name: OtelScopeInfoFunctions
   fields:
     - name: abs
       type: Boolean
@@ -113,7 +113,7 @@ definition:
       type: Boolean
       description: Calculates the inverse hyperbolic tangent of all elements in v
     - name: avg
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: avg_over_time
       type: RangeResolution
       description: The average value of all points in the specified interval
@@ -147,12 +147,12 @@ definition:
       type: Boolean
       description: Calculates the hyperbolic cosine of all elements in v
     - name: count
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: count_over_time
       type: RangeResolution
       description: The count of all values in the specified interval
     - name: count_values
-      type: ProcessResidentMemoryBytesLabel
+      type: OtelScopeInfoLabel
     - name: deg
       type: Boolean
       description: Converts radians to degrees for all elements in v
@@ -173,7 +173,7 @@ definition:
       description: Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: histogram_avg
       type: Boolean
       description: Returns the arithmetic average of observed values stored in a
@@ -224,12 +224,12 @@ definition:
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
-      type: ProcessResidentMemoryBytesLabelJoinInput
+      type: OtelScopeInfoLabelJoinInput
       description: Joins all the values of all the src_labels using separator and
         returns the timeseries with the label dst_label containing the joined
         value
     - name: label_replace
-      type: ProcessResidentMemoryBytesLabelReplaceInput
+      type: OtelScopeInfoLabelReplaceInput
       description: Matches the regular expression regex against the value of the label
         src_label. If it matches, the value of the label dst_label in the
         returned timeseries will be the expansion of replacement, together with
@@ -257,12 +257,12 @@ definition:
       type: RangeResolution
       description: The median absolute deviation of all points in the specified interval
     - name: max
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: max_over_time
       type: RangeResolution
       description: The maximum value of all points in the specified interval
     - name: min
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: min_over_time
       type: RangeResolution
       description: The minimum value of all points in the specified interval
@@ -312,11 +312,11 @@ definition:
       description: Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
       description: Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
       description: Same as sort_by_label, but sorts in descending order
     - name: sort_desc
       type: Boolean
@@ -325,17 +325,17 @@ definition:
       type: Boolean
       description: Calculates the square root of all elements in v
     - name: stddev
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: stddev_over_time
       type: RangeResolution
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: stdvar_over_time
       type: RangeResolution
       description: The population standard variance of the values in the specified interval
     - name: sum
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[OtelScopeInfoLabel!]"
     - name: sum_over_time
       type: RangeResolution
       description: The sum of all values in the specified interval
@@ -354,17 +354,17 @@ definition:
       type: Int64
       description: Largest k elements by sample value
   graphql:
-    typeName: ProcessResidentMemoryBytesFunctions
-    inputTypeName: ProcessResidentMemoryBytesFunctions_input
+    typeName: OtelScopeInfoFunctions
+    inputTypeName: OtelScopeInfoFunctions_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytesFunctions
+      dataConnectorObjectType: OtelScopeInfoFunctions
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytesFunctions
+  typeName: OtelScopeInfoFunctions
   permissions:
     - role: admin
       output:
@@ -453,7 +453,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytes
+  name: OtelScopeInfo
   fields:
     - name: instance
       type: String!
@@ -462,6 +462,8 @@ definition:
     - name: labels
       type: LabelSet!
       description: Labels of the metric
+    - name: otel_scope_name
+      type: String!
     - name: timestamp
       type: Timestamp!
       description: An instant timestamp or the last timestamp of a range query result
@@ -472,17 +474,17 @@ definition:
       type: "[QueryResultValue!]!"
       description: An array of query result values
   graphql:
-    typeName: ProcessResidentMemoryBytes
-    inputTypeName: ProcessResidentMemoryBytes_input
+    typeName: OtelScopeInfo
+    inputTypeName: OtelScopeInfo_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytes
+      dataConnectorObjectType: OtelScopeInfo
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytes
+  typeName: OtelScopeInfo
   permissions:
     - role: admin
       output:
@@ -490,6 +492,7 @@ definition:
           - instance
           - job
           - labels
+          - otel_scope_name
           - timestamp
           - value
           - values
@@ -498,10 +501,10 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytes_bool_exp
+  name: OtelScopeInfo_bool_exp
   operand:
     object:
-      type: ProcessResidentMemoryBytes
+      type: OtelScopeInfo
       comparableFields:
         - fieldName: instance
           booleanExpressionType: String_bool_exp
@@ -509,6 +512,8 @@ definition:
           booleanExpressionType: String_bool_exp
         - fieldName: labels
           booleanExpressionType: LabelSet_bool_exp
+        - fieldName: otel_scope_name
+          booleanExpressionType: String_bool_exp
         - fieldName: timestamp
           booleanExpressionType: Timestamp_bool_exp
         - fieldName: value
@@ -519,19 +524,18 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: ProcessResidentMemoryBytes_bool_exp
+    typeName: OtelScopeInfo_bool_exp
 
 ---
 kind: Model
 version: v1
 definition:
-  name: process_resident_memory_bytes
-  objectType: ProcessResidentMemoryBytes
+  name: otel_scope_info
+  objectType: OtelScopeInfo
   arguments:
     - name: fn
-      type: "[ProcessResidentMemoryBytesFunctions!]"
-      description: PromQL aggregation operators and functions for
-        process_resident_memory_bytes
+      type: "[OtelScopeInfoFunctions!]"
+      description: PromQL aggregation operators and functions for otel_scope_info
     - name: offset
       type: Duration
       description: The offset modifier allows changing the time offset for individual
@@ -545,8 +549,8 @@ definition:
       description: Evaluation timeout
   source:
     dataConnectorName: prometheus
-    collection: process_resident_memory_bytes
-  filterExpressionType: ProcessResidentMemoryBytes_bool_exp
+    collection: otel_scope_info
+  filterExpressionType: OtelScopeInfo_bool_exp
   orderableFields:
     - fieldName: instance
       orderByDirections:
@@ -557,6 +561,9 @@ definition:
     - fieldName: labels
       orderByDirections:
         enableAll: true
+    - fieldName: otel_scope_name
+      orderByDirections:
+        enableAll: true
     - fieldName: timestamp
       orderByDirections:
         enableAll: true
@@ -565,17 +572,17 @@ definition:
         enableAll: true
   graphql:
     selectMany:
-      queryRootField: process_resident_memory_bytes
+      queryRootField: otel_scope_info
     selectUniques: []
-    argumentsInputType: process_resident_memory_bytes_arguments
-    orderByExpressionType: process_resident_memory_bytes_order_by
-  description: Resident memory size in bytes.
+    argumentsInputType: otel_scope_info_arguments
+    orderByExpressionType: otel_scope_info_order_by
+  description: Instrumentation Scope metadata
 
 ---
 kind: ModelPermissions
 version: v1
 definition:
-  modelName: process_resident_memory_bytes
+  modelName: otel_scope_info
   permissions:
     - role: admin
       select:

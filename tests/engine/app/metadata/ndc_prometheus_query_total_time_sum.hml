@@ -2,7 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytesLabelJoinInput
+  name: NdcPrometheusQueryTotalTimeSumLabelJoinInput
   description: Input arguments for the label_join function
   fields:
     - name: dest_label
@@ -12,20 +12,20 @@ definition:
       type: String!
       description: The separator between source labels
     - name: source_labels
-      type: "[ProcessResidentMemoryBytesLabel!]!"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]!"
       description: Source labels
   graphql:
-    typeName: ProcessResidentMemoryBytesLabelJoinInput
-    inputTypeName: ProcessResidentMemoryBytesLabelJoinInput_input
+    typeName: NdcPrometheusQueryTotalTimeSumLabelJoinInput
+    inputTypeName: NdcPrometheusQueryTotalTimeSumLabelJoinInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytesLabelJoinInput
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeSumLabelJoinInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytesLabelJoinInput
+  typeName: NdcPrometheusQueryTotalTimeSumLabelJoinInput
   permissions:
     - role: admin
       output:
@@ -38,7 +38,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytesLabelReplaceInput
+  name: NdcPrometheusQueryTotalTimeSumLabelReplaceInput
   description: Input arguments for the label_replace function
   fields:
     - name: dest_label
@@ -51,20 +51,20 @@ definition:
       type: String!
       description: The replacement value
     - name: source_label
-      type: ProcessResidentMemoryBytesLabel!
+      type: NdcPrometheusQueryTotalTimeSumLabel!
       description: Source label
   graphql:
-    typeName: ProcessResidentMemoryBytesLabelReplaceInput
-    inputTypeName: ProcessResidentMemoryBytesLabelReplaceInput_input
+    typeName: NdcPrometheusQueryTotalTimeSumLabelReplaceInput
+    inputTypeName: NdcPrometheusQueryTotalTimeSumLabelReplaceInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytesLabelReplaceInput
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeSumLabelReplaceInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytesLabelReplaceInput
+  typeName: NdcPrometheusQueryTotalTimeSumLabelReplaceInput
   permissions:
     - role: admin
       output:
@@ -78,7 +78,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytesFunctions
+  name: NdcPrometheusQueryTotalTimeSumFunctions
   fields:
     - name: abs
       type: Boolean
@@ -113,7 +113,7 @@ definition:
       type: Boolean
       description: Calculates the inverse hyperbolic tangent of all elements in v
     - name: avg
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: avg_over_time
       type: RangeResolution
       description: The average value of all points in the specified interval
@@ -147,12 +147,12 @@ definition:
       type: Boolean
       description: Calculates the hyperbolic cosine of all elements in v
     - name: count
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: count_over_time
       type: RangeResolution
       description: The count of all values in the specified interval
     - name: count_values
-      type: ProcessResidentMemoryBytesLabel
+      type: NdcPrometheusQueryTotalTimeSumLabel
     - name: deg
       type: Boolean
       description: Converts radians to degrees for all elements in v
@@ -173,7 +173,7 @@ definition:
       description: Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: histogram_avg
       type: Boolean
       description: Returns the arithmetic average of observed values stored in a
@@ -224,12 +224,12 @@ definition:
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
-      type: ProcessResidentMemoryBytesLabelJoinInput
+      type: NdcPrometheusQueryTotalTimeSumLabelJoinInput
       description: Joins all the values of all the src_labels using separator and
         returns the timeseries with the label dst_label containing the joined
         value
     - name: label_replace
-      type: ProcessResidentMemoryBytesLabelReplaceInput
+      type: NdcPrometheusQueryTotalTimeSumLabelReplaceInput
       description: Matches the regular expression regex against the value of the label
         src_label. If it matches, the value of the label dst_label in the
         returned timeseries will be the expansion of replacement, together with
@@ -257,12 +257,12 @@ definition:
       type: RangeResolution
       description: The median absolute deviation of all points in the specified interval
     - name: max
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: max_over_time
       type: RangeResolution
       description: The maximum value of all points in the specified interval
     - name: min
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: min_over_time
       type: RangeResolution
       description: The minimum value of all points in the specified interval
@@ -312,11 +312,11 @@ definition:
       description: Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
       description: Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
       description: Same as sort_by_label, but sorts in descending order
     - name: sort_desc
       type: Boolean
@@ -325,17 +325,17 @@ definition:
       type: Boolean
       description: Calculates the square root of all elements in v
     - name: stddev
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: stddev_over_time
       type: RangeResolution
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: stdvar_over_time
       type: RangeResolution
       description: The population standard variance of the values in the specified interval
     - name: sum
-      type: "[ProcessResidentMemoryBytesLabel!]"
+      type: "[NdcPrometheusQueryTotalTimeSumLabel!]"
     - name: sum_over_time
       type: RangeResolution
       description: The sum of all values in the specified interval
@@ -354,17 +354,17 @@ definition:
       type: Int64
       description: Largest k elements by sample value
   graphql:
-    typeName: ProcessResidentMemoryBytesFunctions
-    inputTypeName: ProcessResidentMemoryBytesFunctions_input
+    typeName: NdcPrometheusQueryTotalTimeSumFunctions
+    inputTypeName: NdcPrometheusQueryTotalTimeSumFunctions_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytesFunctions
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeSumFunctions
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytesFunctions
+  typeName: NdcPrometheusQueryTotalTimeSumFunctions
   permissions:
     - role: admin
       output:
@@ -453,12 +453,8 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytes
+  name: NdcPrometheusQueryTotalTimeSum
   fields:
-    - name: instance
-      type: String!
-    - name: job
-      type: String!
     - name: labels
       type: LabelSet!
       description: Labels of the metric
@@ -472,23 +468,21 @@ definition:
       type: "[QueryResultValue!]!"
       description: An array of query result values
   graphql:
-    typeName: ProcessResidentMemoryBytes
-    inputTypeName: ProcessResidentMemoryBytes_input
+    typeName: NdcPrometheusQueryTotalTimeSum
+    inputTypeName: NdcPrometheusQueryTotalTimeSum_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ProcessResidentMemoryBytes
+      dataConnectorObjectType: NdcPrometheusQueryTotalTimeSum
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ProcessResidentMemoryBytes
+  typeName: NdcPrometheusQueryTotalTimeSum
   permissions:
     - role: admin
       output:
         allowedFields:
-          - instance
-          - job
           - labels
           - timestamp
           - value
@@ -498,15 +492,11 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: ProcessResidentMemoryBytes_bool_exp
+  name: NdcPrometheusQueryTotalTimeSum_bool_exp
   operand:
     object:
-      type: ProcessResidentMemoryBytes
+      type: NdcPrometheusQueryTotalTimeSum
       comparableFields:
-        - fieldName: instance
-          booleanExpressionType: String_bool_exp
-        - fieldName: job
-          booleanExpressionType: String_bool_exp
         - fieldName: labels
           booleanExpressionType: LabelSet_bool_exp
         - fieldName: timestamp
@@ -519,19 +509,19 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: ProcessResidentMemoryBytes_bool_exp
+    typeName: NdcPrometheusQueryTotalTimeSum_bool_exp
 
 ---
 kind: Model
 version: v1
 definition:
-  name: process_resident_memory_bytes
-  objectType: ProcessResidentMemoryBytes
+  name: ndc_prometheus_query_total_time_sum
+  objectType: NdcPrometheusQueryTotalTimeSum
   arguments:
     - name: fn
-      type: "[ProcessResidentMemoryBytesFunctions!]"
+      type: "[NdcPrometheusQueryTotalTimeSumFunctions!]"
       description: PromQL aggregation operators and functions for
-        process_resident_memory_bytes
+        ndc_prometheus_query_total_time_sum
     - name: offset
       type: Duration
       description: The offset modifier allows changing the time offset for individual
@@ -545,15 +535,9 @@ definition:
       description: Evaluation timeout
   source:
     dataConnectorName: prometheus
-    collection: process_resident_memory_bytes
-  filterExpressionType: ProcessResidentMemoryBytes_bool_exp
+    collection: ndc_prometheus_query_total_time_sum
+  filterExpressionType: NdcPrometheusQueryTotalTimeSum_bool_exp
   orderableFields:
-    - fieldName: instance
-      orderByDirections:
-        enableAll: true
-    - fieldName: job
-      orderByDirections:
-        enableAll: true
     - fieldName: labels
       orderByDirections:
         enableAll: true
@@ -565,17 +549,17 @@ definition:
         enableAll: true
   graphql:
     selectMany:
-      queryRootField: process_resident_memory_bytes
+      queryRootField: ndc_prometheus_query_total_time_sum
     selectUniques: []
-    argumentsInputType: process_resident_memory_bytes_arguments
-    orderByExpressionType: process_resident_memory_bytes_order_by
-  description: Resident memory size in bytes.
+    argumentsInputType: ndc_prometheus_query_total_time_sum_arguments
+    orderByExpressionType: ndc_prometheus_query_total_time_sum_order_by
+  description: Total time taken to plan and execute a query, in seconds
 
 ---
 kind: ModelPermissions
 version: v1
 definition:
-  modelName: process_resident_memory_bytes
+  modelName: ndc_prometheus_query_total_time_sum
   permissions:
     - role: admin
       select:

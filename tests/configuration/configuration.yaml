@@ -11,11 +11,17 @@ connection_settings:
 generator:
   metrics:
     enabled: true
+    behavior: merge
     include: []
     exclude:
       - ^prometheus_+
       - ^go_+
       - ^node_+
+    exclude_labels:
+      - pattern: ^net_.+
+        labels:
+          - dialer_name
+    start_at: 2024-09-01T00:00:00Z
 metadata:
   metrics:
     ndc_prometheus_query_total:
@@ -36,28 +42,24 @@ metadata:
       type: counter
       description: Total number of connections attempted by the given dialer a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
     net_conntrack_dialer_conn_closed_total:
       type: counter
       description: Total number of connections closed which originated from the dialer of a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
     net_conntrack_dialer_conn_established_total:
       type: counter
       description: Total number of connections successfully established by the given dialer a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
     net_conntrack_dialer_conn_failed_total:
       type: counter
       description: Total number of connections failed to dial by the dialer a given name.
       labels:
-        dialer_name: {}
         instance: {}
         job: {}
         reason: {}

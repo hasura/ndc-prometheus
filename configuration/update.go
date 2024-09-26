@@ -23,17 +23,23 @@ import (
 var clientTracer = otel.Tracer("PrometheusClient")
 var bannedLabels = []string{"__name__"}
 
+type ExcludeLabels struct {
+	Regex  *regexp.Regexp
+	Labels []string
+}
+
 type updateCommand struct {
-	Client    *client.Client
-	OutputDir string
-	Config    *metadata.Configuration
-	Include   []*regexp.Regexp
-	Exclude   []*regexp.Regexp
+	Client        *client.Client
+	OutputDir     string
+	Config        *metadata.Configuration
+	Include       []*regexp.Regexp
+	Exclude       []*regexp.Regexp
+	ExcludeLabels []ExcludeLabels
 }
 
 func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	start := time.Now()
-	slog.Info("introspect metrics metadata...", slog.String("dir", args.Dir))
+	slog.Info("introspecting metadata", slog.String("dir", args.Dir))
 	originalConfig, err := metadata.ReadConfiguration(args.Dir)
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -56,6 +62,24 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	}
 
 	if originalConfig.Generator.Metrics.Enabled {
+		slog.Info("introspecting metrics",
+			slog.String("behavior", string(originalConfig.Generator.Metrics.Behavior)),
+			slog.Any("include", originalConfig.Generator.Metrics.Include),
+			slog.Any("exclude", originalConfig.Generator.Metrics.Exclude),
+		)
+		for _, el := range originalConfig.Generator.Metrics.ExcludeLabels {
+			if len(el.Labels) == 0 {
+				continue
+			}
+			rg, err := regexp.Compile(el.Pattern)
+			if err != nil {
+				return fmt.Errorf("invalid exclude_labels pattern `%s`: %s", el.Pattern, err)
+			}
+			cmd.ExcludeLabels = append(cmd.ExcludeLabels, ExcludeLabels{
+				Regex:  rg,
+				Labels: el.Labels,
+			})
+		}
 		if err := cmd.updateMetricsMetadata(ctx); err != nil {
 			return err
 		}
@@ -78,6 +102,15 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 	}
 
 	newMetrics := map[string]metadata.MetricInfo{}
+	if uc.Config.Generator.Metrics.Behavior == metadata.MetricsGenerationMerge {
+		for key, metric := range uc.Config.Metadata.Metrics {
+			if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) || validateRegularExpressions(uc.Exclude, key) {
+				continue
+			}
+			newMetrics[key] = metric
+		}
+	}
+
 	for key, info := range metricsInfo {
 		if len(info) == 0 {
 			continue
@@ -98,27 +131,35 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 			Labels:      labels,
 		}
 	}
-
 	uc.Config.Metadata.Metrics = newMetrics
 	return nil
 }
 
 func (uc *updateCommand) getAllLabelsOfMetric(ctx context.Context, name string) (map[string]metadata.LabelInfo, error) {
-	labels, warnings, err := uc.Client.LabelNames(ctx, []string{name}, time.Time{}, time.Now())
+	labels, warnings, err := uc.Client.Series(ctx, []string{name}, uc.Config.Generator.Metrics.StartAt, time.Now(), 1)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(warnings) > 0 {
-		slog.Warn(fmt.Sprintf("warning when fetching labels for metric `%s`", name), slog.Any("warnings", warnings))
+		slog.Debug(fmt.Sprintf("warning when fetching labels for metric `%s`", name), slog.Any("warnings", warnings))
 	}
-
 	results := make(map[string]metadata.LabelInfo)
-	for _, label := range labels {
-		if slices.Contains(bannedLabels, label) {
+	if len(labels) == 0 {
+		return results, nil
+	}
+	excludedLabels := bannedLabels
+	for _, el := range uc.ExcludeLabels {
+		if el.Regex.MatchString(name) {
+			excludedLabels = append(excludedLabels, el.Labels...)
+		}
+	}
+	for key := range labels[0] {
+		if !key.IsValid() || slices.Contains(excludedLabels, string(key)) {
 			continue
 		}
-		results[label] = metadata.LabelInfo{}
+
+		results[string(key)] = metadata.LabelInfo{}
 	}
 	return results, nil
 }
@@ -157,7 +198,7 @@ func (uc *updateCommand) writeConfigFile() error {
 	var buf bytes.Buffer
 	writer := bufio.NewWriter(&buf)
 
-	_, _ = writer.WriteString("# yaml-language-server: $schema=../../jsonschema/configuration.json\n")
+	_, _ = writer.WriteString("# yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-prometheus/main/jsonschema/configuration.json\n")
 	encoder := yaml.NewEncoder(writer)
 	encoder.SetIndent(2)
 	if err := encoder.Encode(uc.Config); err != nil {
@@ -174,9 +215,12 @@ var defaultConfiguration = metadata.Configuration{
 	},
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{
-			Enabled: true,
-			Include: []string{},
-			Exclude: []string{},
+			Enabled:       true,
+			Behavior:      metadata.MetricsGenerationMerge,
+			Include:       []string{},
+			Exclude:       []string{},
+			ExcludeLabels: []metadata.ExcludeLabelsSetting{},
+			StartAt:       time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
 		},
 	},
 	Metadata: metadata.Metadata{

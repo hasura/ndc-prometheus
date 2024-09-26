@@ -3,6 +3,7 @@ package metadata
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"gopkg.in/yaml.v3"
@@ -15,14 +16,36 @@ type Configuration struct {
 	Metadata           Metadata              `json:"metadata" yaml:"metadata"`
 }
 
+// MetricsGenerationBehavior the behavior of metrics generation
+type MetricsGenerationBehavior string
+
+const (
+	MetricsGenerationMerge   = "merge"
+	MetricsGenerationReplace = "replace"
+)
+
 // MetricsGeneratorSettings contain settings for the metrics generation
 type MetricsGeneratorSettings struct {
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	// Enable the metrics generation
+	Enabled  bool                      `json:"enabled" yaml:"enabled"`
+	Behavior MetricsGenerationBehavior `json:"behavior" yaml:"behavior" jsonschema:"enum=merge,enum=replace"`
 	// Include metrics with regular expression matching. Include all metrics by default
 	Include []string `json:"include" yaml:"include"`
 	// Exclude metrics with regular expression matching.
 	// Note: exclude is higher priority than include
 	Exclude []string `json:"exclude" yaml:"exclude"`
+	// Exclude unnecessary labels
+	ExcludeLabels []ExcludeLabelsSetting `json:"exclude_labels" yaml:"exclude_labels"`
+	// The minimum timestamp that the plugin uses to query metadata
+	StartAt time.Time `json:"start_at" yaml:"start_at"`
+}
+
+// ExcludeLabelsSetting the setting to exclude labels
+type ExcludeLabelsSetting struct {
+	// The regular expression pattern of metric names
+	Pattern string `json:"pattern" yaml:"pattern"`
+	// List of labels to be excluded
+	Labels []string `json:"labels" yaml:"labels"`
 }
 
 // GeneratorSettings contain settings for the configuration generator

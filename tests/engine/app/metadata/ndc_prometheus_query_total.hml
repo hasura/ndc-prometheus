@@ -2,7 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnClosedTotalLabelJoinInput
+  name: NdcPrometheusQueryTotalLabelJoinInput
   description: Input arguments for the label_join function
   fields:
     - name: dest_label
@@ -12,20 +12,20 @@ definition:
       type: String!
       description: The separator between source labels
     - name: source_labels
-      type: "[NetConntrackListenerConnClosedTotalLabel!]!"
+      type: "[NdcPrometheusQueryTotalLabel!]!"
       description: Source labels
   graphql:
-    typeName: NetConntrackListenerConnClosedTotalLabelJoinInput
-    inputTypeName: NetConntrackListenerConnClosedTotalLabelJoinInput_input
+    typeName: NdcPrometheusQueryTotalLabelJoinInput
+    inputTypeName: NdcPrometheusQueryTotalLabelJoinInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnClosedTotalLabelJoinInput
+      dataConnectorObjectType: NdcPrometheusQueryTotalLabelJoinInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnClosedTotalLabelJoinInput
+  typeName: NdcPrometheusQueryTotalLabelJoinInput
   permissions:
     - role: admin
       output:
@@ -38,7 +38,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnClosedTotalLabelReplaceInput
+  name: NdcPrometheusQueryTotalLabelReplaceInput
   description: Input arguments for the label_replace function
   fields:
     - name: dest_label
@@ -51,20 +51,20 @@ definition:
       type: String!
       description: The replacement value
     - name: source_label
-      type: NetConntrackListenerConnClosedTotalLabel!
+      type: NdcPrometheusQueryTotalLabel!
       description: Source label
   graphql:
-    typeName: NetConntrackListenerConnClosedTotalLabelReplaceInput
-    inputTypeName: NetConntrackListenerConnClosedTotalLabelReplaceInput_input
+    typeName: NdcPrometheusQueryTotalLabelReplaceInput
+    inputTypeName: NdcPrometheusQueryTotalLabelReplaceInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnClosedTotalLabelReplaceInput
+      dataConnectorObjectType: NdcPrometheusQueryTotalLabelReplaceInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnClosedTotalLabelReplaceInput
+  typeName: NdcPrometheusQueryTotalLabelReplaceInput
   permissions:
     - role: admin
       output:
@@ -78,7 +78,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnClosedTotalFunctions
+  name: NdcPrometheusQueryTotalFunctions
   fields:
     - name: abs
       type: Boolean
@@ -113,7 +113,7 @@ definition:
       type: Boolean
       description: Calculates the inverse hyperbolic tangent of all elements in v
     - name: avg
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: avg_over_time
       type: RangeResolution
       description: The average value of all points in the specified interval
@@ -147,12 +147,12 @@ definition:
       type: Boolean
       description: Calculates the hyperbolic cosine of all elements in v
     - name: count
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: count_over_time
       type: RangeResolution
       description: The count of all values in the specified interval
     - name: count_values
-      type: NetConntrackListenerConnClosedTotalLabel
+      type: NdcPrometheusQueryTotalLabel
     - name: deg
       type: Boolean
       description: Converts radians to degrees for all elements in v
@@ -173,7 +173,7 @@ definition:
       description: Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: histogram_avg
       type: Boolean
       description: Returns the arithmetic average of observed values stored in a
@@ -224,12 +224,12 @@ definition:
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
-      type: NetConntrackListenerConnClosedTotalLabelJoinInput
+      type: NdcPrometheusQueryTotalLabelJoinInput
       description: Joins all the values of all the src_labels using separator and
         returns the timeseries with the label dst_label containing the joined
         value
     - name: label_replace
-      type: NetConntrackListenerConnClosedTotalLabelReplaceInput
+      type: NdcPrometheusQueryTotalLabelReplaceInput
       description: Matches the regular expression regex against the value of the label
         src_label. If it matches, the value of the label dst_label in the
         returned timeseries will be the expansion of replacement, together with
@@ -257,12 +257,12 @@ definition:
       type: RangeResolution
       description: The median absolute deviation of all points in the specified interval
     - name: max
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: max_over_time
       type: RangeResolution
       description: The maximum value of all points in the specified interval
     - name: min
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: min_over_time
       type: RangeResolution
       description: The minimum value of all points in the specified interval
@@ -312,11 +312,11 @@ definition:
       description: Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
       description: Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
       description: Same as sort_by_label, but sorts in descending order
     - name: sort_desc
       type: Boolean
@@ -325,17 +325,17 @@ definition:
       type: Boolean
       description: Calculates the square root of all elements in v
     - name: stddev
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: stddev_over_time
       type: RangeResolution
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: stdvar_over_time
       type: RangeResolution
       description: The population standard variance of the values in the specified interval
     - name: sum
-      type: "[NetConntrackListenerConnClosedTotalLabel!]"
+      type: "[NdcPrometheusQueryTotalLabel!]"
     - name: sum_over_time
       type: RangeResolution
       description: The sum of all values in the specified interval
@@ -354,17 +354,17 @@ definition:
       type: Int64
       description: Largest k elements by sample value
   graphql:
-    typeName: NetConntrackListenerConnClosedTotalFunctions
-    inputTypeName: NetConntrackListenerConnClosedTotalFunctions_input
+    typeName: NdcPrometheusQueryTotalFunctions
+    inputTypeName: NdcPrometheusQueryTotalFunctions_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnClosedTotalFunctions
+      dataConnectorObjectType: NdcPrometheusQueryTotalFunctions
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnClosedTotalFunctions
+  typeName: NdcPrometheusQueryTotalFunctions
   permissions:
     - role: admin
       output:
@@ -453,8 +453,12 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: NetConntrackListenerConnClosedTotal
+  name: NdcPrometheusQueryTotal
   fields:
+    - name: collection
+      type: String!
+    - name: http_status
+      type: String!
     - name: instance
       type: String!
     - name: job
@@ -462,7 +466,9 @@ definition:
     - name: labels
       type: LabelSet!
       description: Labels of the metric
-    - name: listener_name
+    - name: otel_scope_name
+      type: String!
+    - name: status
       type: String!
     - name: timestamp
       type: Timestamp!
@@ -474,73 +480,77 @@ definition:
       type: "[QueryResultValue!]!"
       description: An array of query result values
   graphql:
-    typeName: NetConntrackListenerConnClosedTotal
-    inputTypeName: NetConntrackListenerConnClosedTotal_input
+    typeName: NdcPrometheusQueryTotal
+    inputTypeName: NdcPrometheusQueryTotal_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: NetConntrackListenerConnClosedTotal
+      dataConnectorObjectType: NdcPrometheusQueryTotal
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: NetConntrackListenerConnClosedTotal
+  typeName: NdcPrometheusQueryTotal
   permissions:
     - role: admin
       output:
         allowedFields:
+          - collection
+          - http_status
           - instance
           - job
           - labels
-          - listener_name
+          - otel_scope_name
+          - status
           - timestamp
           - value
           - values
 
 ---
-kind: ObjectBooleanExpressionType
+kind: BooleanExpressionType
 version: v1
 definition:
-  name: NetConntrackListenerConnClosedTotal_bool_exp
-  objectType: NetConntrackListenerConnClosedTotal
-  dataConnectorName: prometheus
-  dataConnectorObjectType: NetConntrackListenerConnClosedTotal
-  comparableFields:
-    - fieldName: instance
-      operators:
-        enableAll: true
-    - fieldName: job
-      operators:
-        enableAll: true
-    - fieldName: labels
-      operators:
-        enableAll: true
-    - fieldName: listener_name
-      operators:
-        enableAll: true
-    - fieldName: timestamp
-      operators:
-        enableAll: true
-    - fieldName: value
-      operators:
-        enableAll: true
-    - fieldName: values
-      operators:
-        enableAll: true
+  name: NdcPrometheusQueryTotal_bool_exp
+  operand:
+    object:
+      type: NdcPrometheusQueryTotal
+      comparableFields:
+        - fieldName: collection
+          booleanExpressionType: String_bool_exp
+        - fieldName: http_status
+          booleanExpressionType: String_bool_exp
+        - fieldName: instance
+          booleanExpressionType: String_bool_exp
+        - fieldName: job
+          booleanExpressionType: String_bool_exp
+        - fieldName: labels
+          booleanExpressionType: LabelSet_bool_exp
+        - fieldName: otel_scope_name
+          booleanExpressionType: String_bool_exp
+        - fieldName: status
+          booleanExpressionType: String_bool_exp
+        - fieldName: timestamp
+          booleanExpressionType: Timestamp_bool_exp
+        - fieldName: value
+          booleanExpressionType: Decimal_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
   graphql:
-    typeName: NetConntrackListenerConnClosedTotal_bool_exp
+    typeName: NdcPrometheusQueryTotal_bool_exp
 
 ---
 kind: Model
 version: v1
 definition:
-  name: net_conntrack_listener_conn_closed_total
-  objectType: NetConntrackListenerConnClosedTotal
+  name: ndc_prometheus_query_total
+  objectType: NdcPrometheusQueryTotal
   arguments:
     - name: fn
-      type: "[NetConntrackListenerConnClosedTotalFunctions!]"
-      description: PromQL aggregation operators and functions for
-        net_conntrack_listener_conn_closed_total
+      type: "[NdcPrometheusQueryTotalFunctions!]"
+      description: PromQL aggregation operators and functions for ndc_prometheus_query_total
     - name: offset
       type: Duration
       description: The offset modifier allows changing the time offset for individual
@@ -554,9 +564,15 @@ definition:
       description: Evaluation timeout
   source:
     dataConnectorName: prometheus
-    collection: net_conntrack_listener_conn_closed_total
-  filterExpressionType: NetConntrackListenerConnClosedTotal_bool_exp
+    collection: ndc_prometheus_query_total
+  filterExpressionType: NdcPrometheusQueryTotal_bool_exp
   orderableFields:
+    - fieldName: collection
+      orderByDirections:
+        enableAll: true
+    - fieldName: http_status
+      orderByDirections:
+        enableAll: true
     - fieldName: instance
       orderByDirections:
         enableAll: true
@@ -566,7 +582,10 @@ definition:
     - fieldName: labels
       orderByDirections:
         enableAll: true
-    - fieldName: listener_name
+    - fieldName: otel_scope_name
+      orderByDirections:
+        enableAll: true
+    - fieldName: status
       orderByDirections:
         enableAll: true
     - fieldName: timestamp
@@ -575,23 +594,19 @@ definition:
     - fieldName: value
       orderByDirections:
         enableAll: true
-    - fieldName: values
-      orderByDirections:
-        enableAll: true
   graphql:
     selectMany:
-      queryRootField: net_conntrack_listener_conn_closed_total
+      queryRootField: ndc_prometheus_query_total
     selectUniques: []
-    argumentsInputType: net_conntrack_listener_conn_closed_total_arguments
-    orderByExpressionType: net_conntrack_listener_conn_closed_total_order_by
-  description: Total number of connections closed that were made to the listener
-    of a given name.
+    argumentsInputType: ndc_prometheus_query_total_arguments
+    orderByExpressionType: ndc_prometheus_query_total_order_by
+  description: Total number of query requests
 
 ---
 kind: ModelPermissions
 version: v1
 definition:
-  modelName: net_conntrack_listener_conn_closed_total
+  modelName: ndc_prometheus_query_total
   permissions:
     - role: admin
       select:

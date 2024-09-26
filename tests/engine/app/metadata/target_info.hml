@@ -510,47 +510,39 @@ definition:
           - values
 
 ---
-kind: ObjectBooleanExpressionType
+kind: BooleanExpressionType
 version: v1
 definition:
   name: TargetInfo_bool_exp
-  objectType: TargetInfo
-  dataConnectorName: prometheus
-  dataConnectorObjectType: TargetInfo
-  comparableFields:
-    - fieldName: instance
-      operators:
-        enableAll: true
-    - fieldName: job
-      operators:
-        enableAll: true
-    - fieldName: labels
-      operators:
-        enableAll: true
-    - fieldName: service_name
-      operators:
-        enableAll: true
-    - fieldName: service_version
-      operators:
-        enableAll: true
-    - fieldName: telemetry_sdk_language
-      operators:
-        enableAll: true
-    - fieldName: telemetry_sdk_name
-      operators:
-        enableAll: true
-    - fieldName: telemetry_sdk_version
-      operators:
-        enableAll: true
-    - fieldName: timestamp
-      operators:
-        enableAll: true
-    - fieldName: value
-      operators:
-        enableAll: true
-    - fieldName: values
-      operators:
-        enableAll: true
+  operand:
+    object:
+      type: TargetInfo
+      comparableFields:
+        - fieldName: instance
+          booleanExpressionType: String_bool_exp
+        - fieldName: job
+          booleanExpressionType: String_bool_exp
+        - fieldName: labels
+          booleanExpressionType: LabelSet_bool_exp
+        - fieldName: service_name
+          booleanExpressionType: String_bool_exp
+        - fieldName: service_version
+          booleanExpressionType: String_bool_exp
+        - fieldName: telemetry_sdk_language
+          booleanExpressionType: String_bool_exp
+        - fieldName: telemetry_sdk_name
+          booleanExpressionType: String_bool_exp
+        - fieldName: telemetry_sdk_version
+          booleanExpressionType: String_bool_exp
+        - fieldName: timestamp
+          booleanExpressionType: Timestamp_bool_exp
+        - fieldName: value
+          booleanExpressionType: Decimal_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
   graphql:
     typeName: TargetInfo_bool_exp
 
@@ -608,9 +600,6 @@ definition:
       orderByDirections:
         enableAll: true
     - fieldName: value
-      orderByDirections:
-        enableAll: true
-    - fieldName: values
       orderByDirections:
         enableAll: true
   graphql:

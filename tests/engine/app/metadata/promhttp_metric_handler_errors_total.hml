@@ -498,35 +498,31 @@ definition:
           - values
 
 ---
-kind: ObjectBooleanExpressionType
+kind: BooleanExpressionType
 version: v1
 definition:
   name: PromhttpMetricHandlerErrorsTotal_bool_exp
-  objectType: PromhttpMetricHandlerErrorsTotal
-  dataConnectorName: prometheus
-  dataConnectorObjectType: PromhttpMetricHandlerErrorsTotal
-  comparableFields:
-    - fieldName: cause
-      operators:
-        enableAll: true
-    - fieldName: instance
-      operators:
-        enableAll: true
-    - fieldName: job
-      operators:
-        enableAll: true
-    - fieldName: labels
-      operators:
-        enableAll: true
-    - fieldName: timestamp
-      operators:
-        enableAll: true
-    - fieldName: value
-      operators:
-        enableAll: true
-    - fieldName: values
-      operators:
-        enableAll: true
+  operand:
+    object:
+      type: PromhttpMetricHandlerErrorsTotal
+      comparableFields:
+        - fieldName: cause
+          booleanExpressionType: String_bool_exp
+        - fieldName: instance
+          booleanExpressionType: String_bool_exp
+        - fieldName: job
+          booleanExpressionType: String_bool_exp
+        - fieldName: labels
+          booleanExpressionType: LabelSet_bool_exp
+        - fieldName: timestamp
+          booleanExpressionType: Timestamp_bool_exp
+        - fieldName: value
+          booleanExpressionType: Decimal_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
   graphql:
     typeName: PromhttpMetricHandlerErrorsTotal_bool_exp
 
@@ -573,9 +569,6 @@ definition:
       orderByDirections:
         enableAll: true
     - fieldName: value
-      orderByDirections:
-        enableAll: true
-    - fieldName: values
       orderByDirections:
         enableAll: true
   graphql:

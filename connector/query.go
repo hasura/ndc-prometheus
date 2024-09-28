@@ -53,6 +53,7 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 		executor := &internal.NativeQueryExecutor{
 			Tracer:      state.Tracer,
 			Client:      state.Client,
+			Runtime:     c.runtime,
 			Request:     request,
 			NativeQuery: &metadata.NativeQuery{},
 			Arguments:   arguments,
@@ -82,6 +83,7 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 		executor := &internal.NativeQueryExecutor{
 			Tracer:      state.Tracer,
 			Client:      state.Client,
+			Runtime:     c.runtime,
 			Request:     request,
 			NativeQuery: &nativeQuery,
 			Arguments:   arguments,
@@ -115,6 +117,7 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 			executor := &internal.QueryCollectionExecutor{
 				Tracer:    state.Tracer,
 				Client:    state.Client,
+				Runtime:   c.runtime,
 				Request:   request,
 				Metric:    collection,
 				Arguments: arguments,

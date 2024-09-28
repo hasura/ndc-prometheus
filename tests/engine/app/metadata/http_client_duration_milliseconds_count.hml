@@ -2,7 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: OtelScopeInfoLabelJoinInput
+  name: HttpClientDurationMillisecondsCountLabelJoinInput
   description: Input arguments for the label_join function
   fields:
     - name: dest_label
@@ -12,20 +12,20 @@ definition:
       type: String!
       description: The separator between source labels
     - name: source_labels
-      type: "[OtelScopeInfoLabel!]!"
+      type: "[HttpClientDurationMillisecondsCountLabel!]!"
       description: Source labels
   graphql:
-    typeName: OtelScopeInfoLabelJoinInput
-    inputTypeName: OtelScopeInfoLabelJoinInput_input
+    typeName: HttpClientDurationMillisecondsCountLabelJoinInput
+    inputTypeName: HttpClientDurationMillisecondsCountLabelJoinInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: OtelScopeInfoLabelJoinInput
+      dataConnectorObjectType: HttpClientDurationMillisecondsCountLabelJoinInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: OtelScopeInfoLabelJoinInput
+  typeName: HttpClientDurationMillisecondsCountLabelJoinInput
   permissions:
     - role: admin
       output:
@@ -38,7 +38,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: OtelScopeInfoLabelReplaceInput
+  name: HttpClientDurationMillisecondsCountLabelReplaceInput
   description: Input arguments for the label_replace function
   fields:
     - name: dest_label
@@ -51,20 +51,20 @@ definition:
       type: String!
       description: The replacement value
     - name: source_label
-      type: OtelScopeInfoLabel!
+      type: HttpClientDurationMillisecondsCountLabel!
       description: Source label
   graphql:
-    typeName: OtelScopeInfoLabelReplaceInput
-    inputTypeName: OtelScopeInfoLabelReplaceInput_input
+    typeName: HttpClientDurationMillisecondsCountLabelReplaceInput
+    inputTypeName: HttpClientDurationMillisecondsCountLabelReplaceInput_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: OtelScopeInfoLabelReplaceInput
+      dataConnectorObjectType: HttpClientDurationMillisecondsCountLabelReplaceInput
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: OtelScopeInfoLabelReplaceInput
+  typeName: HttpClientDurationMillisecondsCountLabelReplaceInput
   permissions:
     - role: admin
       output:
@@ -78,7 +78,7 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: OtelScopeInfoFunctions
+  name: HttpClientDurationMillisecondsCountFunctions
   fields:
     - name: abs
       type: Boolean
@@ -113,7 +113,7 @@ definition:
       type: Boolean
       description: Calculates the inverse hyperbolic tangent of all elements in v
     - name: avg
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: avg_over_time
       type: RangeResolution
       description: The average value of all points in the specified interval
@@ -147,12 +147,12 @@ definition:
       type: Boolean
       description: Calculates the hyperbolic cosine of all elements in v
     - name: count
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: count_over_time
       type: RangeResolution
       description: The count of all values in the specified interval
     - name: count_values
-      type: OtelScopeInfoLabel
+      type: HttpClientDurationMillisecondsCountLabel
     - name: deg
       type: Boolean
       description: Converts radians to degrees for all elements in v
@@ -173,7 +173,7 @@ definition:
       description: Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: histogram_avg
       type: Boolean
       description: Returns the arithmetic average of observed values stored in a
@@ -224,12 +224,12 @@ definition:
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
-      type: OtelScopeInfoLabelJoinInput
+      type: HttpClientDurationMillisecondsCountLabelJoinInput
       description: Joins all the values of all the src_labels using separator and
         returns the timeseries with the label dst_label containing the joined
         value
     - name: label_replace
-      type: OtelScopeInfoLabelReplaceInput
+      type: HttpClientDurationMillisecondsCountLabelReplaceInput
       description: Matches the regular expression regex against the value of the label
         src_label. If it matches, the value of the label dst_label in the
         returned timeseries will be the expansion of replacement, together with
@@ -257,12 +257,12 @@ definition:
       type: RangeResolution
       description: The median absolute deviation of all points in the specified interval
     - name: max
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: max_over_time
       type: RangeResolution
       description: The maximum value of all points in the specified interval
     - name: min
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: min_over_time
       type: RangeResolution
       description: The minimum value of all points in the specified interval
@@ -312,11 +312,11 @@ definition:
       description: Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
       description: Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
       description: Same as sort_by_label, but sorts in descending order
     - name: sort_desc
       type: Boolean
@@ -325,17 +325,17 @@ definition:
       type: Boolean
       description: Calculates the square root of all elements in v
     - name: stddev
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: stddev_over_time
       type: RangeResolution
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: stdvar_over_time
       type: RangeResolution
       description: The population standard variance of the values in the specified interval
     - name: sum
-      type: "[OtelScopeInfoLabel!]"
+      type: "[HttpClientDurationMillisecondsCountLabel!]"
     - name: sum_over_time
       type: RangeResolution
       description: The sum of all values in the specified interval
@@ -354,17 +354,17 @@ definition:
       type: Int64
       description: Largest k elements by sample value
   graphql:
-    typeName: OtelScopeInfoFunctions
-    inputTypeName: OtelScopeInfoFunctions_input
+    typeName: HttpClientDurationMillisecondsCountFunctions
+    inputTypeName: HttpClientDurationMillisecondsCountFunctions_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: OtelScopeInfoFunctions
+      dataConnectorObjectType: HttpClientDurationMillisecondsCountFunctions
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: OtelScopeInfoFunctions
+  typeName: HttpClientDurationMillisecondsCountFunctions
   permissions:
     - role: admin
       output:
@@ -453,8 +453,12 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: OtelScopeInfo
+  name: HttpClientDurationMillisecondsCount
   fields:
+    - name: http_method
+      type: String!
+    - name: http_status_code
+      type: String!
     - name: instance
       type: String!
     - name: job
@@ -462,7 +466,13 @@ definition:
     - name: labels
       type: LabelSet!
       description: Labels of the metric
+    - name: net_peer_name
+      type: String!
+    - name: net_peer_port
+      type: String!
     - name: otel_scope_name
+      type: String!
+    - name: otel_scope_version
       type: String!
     - name: timestamp
       type: Timestamp!
@@ -473,74 +483,85 @@ definition:
     - name: values
       type: "[QueryResultValue!]!"
       description: An array of query result values
-    - name: otel_scope_version
-      type: String!
   graphql:
-    typeName: OtelScopeInfo
-    inputTypeName: OtelScopeInfo_input
+    typeName: HttpClientDurationMillisecondsCount
+    inputTypeName: HttpClientDurationMillisecondsCount_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: OtelScopeInfo
+      dataConnectorObjectType: HttpClientDurationMillisecondsCount
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: OtelScopeInfo
+  typeName: HttpClientDurationMillisecondsCount
   permissions:
     - role: admin
       output:
         allowedFields:
+          - http_method
+          - http_status_code
           - instance
           - job
           - labels
+          - net_peer_name
+          - net_peer_port
           - otel_scope_name
+          - otel_scope_version
           - timestamp
           - value
           - values
-          - otel_scope_version
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: OtelScopeInfo_bool_exp
+  name: HttpClientDurationMillisecondsCount_bool_exp
   operand:
     object:
-      type: OtelScopeInfo
+      type: HttpClientDurationMillisecondsCount
       comparableFields:
+        - fieldName: http_method
+          booleanExpressionType: String_bool_exp
+        - fieldName: http_status_code
+          booleanExpressionType: String_bool_exp
         - fieldName: instance
           booleanExpressionType: String_bool_exp
         - fieldName: job
           booleanExpressionType: String_bool_exp
         - fieldName: labels
           booleanExpressionType: LabelSet_bool_exp
+        - fieldName: net_peer_name
+          booleanExpressionType: String_bool_exp
+        - fieldName: net_peer_port
+          booleanExpressionType: String_bool_exp
         - fieldName: otel_scope_name
+          booleanExpressionType: String_bool_exp
+        - fieldName: otel_scope_version
           booleanExpressionType: String_bool_exp
         - fieldName: timestamp
           booleanExpressionType: Timestamp_bool_exp
         - fieldName: value
           booleanExpressionType: Decimal_bool_exp
-        - fieldName: otel_scope_version
-          booleanExpressionType: String_bool_exp
       comparableRelationships: []
   logicalOperators:
     enable: true
   isNull:
     enable: true
   graphql:
-    typeName: OtelScopeInfo_bool_exp
+    typeName: HttpClientDurationMillisecondsCount_bool_exp
 
 ---
 kind: Model
 version: v1
 definition:
-  name: otel_scope_info
-  objectType: OtelScopeInfo
+  name: http_client_duration_milliseconds_count
+  objectType: HttpClientDurationMillisecondsCount
   arguments:
     - name: fn
-      type: "[OtelScopeInfoFunctions!]"
-      description: PromQL aggregation operators and functions for otel_scope_info
+      type: "[HttpClientDurationMillisecondsCountFunctions!]"
+      description: PromQL aggregation operators and functions for
+        http_client_duration_milliseconds_count
     - name: offset
       type: Duration
       description: The offset modifier allows changing the time offset for individual
@@ -554,9 +575,15 @@ definition:
       description: Evaluation timeout
   source:
     dataConnectorName: prometheus
-    collection: otel_scope_info
-  filterExpressionType: OtelScopeInfo_bool_exp
+    collection: http_client_duration_milliseconds_count
+  filterExpressionType: HttpClientDurationMillisecondsCount_bool_exp
   orderableFields:
+    - fieldName: http_method
+      orderByDirections:
+        enableAll: true
+    - fieldName: http_status_code
+      orderByDirections:
+        enableAll: true
     - fieldName: instance
       orderByDirections:
         enableAll: true
@@ -566,7 +593,16 @@ definition:
     - fieldName: labels
       orderByDirections:
         enableAll: true
+    - fieldName: net_peer_name
+      orderByDirections:
+        enableAll: true
+    - fieldName: net_peer_port
+      orderByDirections:
+        enableAll: true
     - fieldName: otel_scope_name
+      orderByDirections:
+        enableAll: true
+    - fieldName: otel_scope_version
       orderByDirections:
         enableAll: true
     - fieldName: timestamp
@@ -575,22 +611,19 @@ definition:
     - fieldName: value
       orderByDirections:
         enableAll: true
-    - fieldName: otel_scope_version
-      orderByDirections:
-        enableAll: true
   graphql:
     selectMany:
-      queryRootField: otel_scope_info
+      queryRootField: http_client_duration_milliseconds_count
     selectUniques: []
-    argumentsInputType: otel_scope_info_arguments
-    orderByExpressionType: otel_scope_info_order_by
-  description: Instrumentation Scope metadata
+    argumentsInputType: http_client_duration_milliseconds_count_arguments
+    orderByExpressionType: http_client_duration_milliseconds_count_order_by
+  description: Measures the duration of outbound HTTP requests.
 
 ---
 kind: ModelPermissions
 version: v1
 definition:
-  modelName: otel_scope_info
+  modelName: http_client_duration_milliseconds_count
   permissions:
     - role: admin
       select:

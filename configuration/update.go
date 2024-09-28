@@ -232,6 +232,14 @@ var defaultConfiguration = metadata.Configuration{
 		Metrics:          map[string]metadata.MetricInfo{},
 		NativeOperations: metadata.NativeOperations{},
 	},
+	Runtime: metadata.RuntimeSettings{
+		Flat:         false,
+		UnixTimeUnit: client.UnixTimeSecond,
+		Format: metadata.RuntimeFormatSettings{
+			Timestamp: metadata.TimestampUnix,
+			Value:     metadata.ValueFloat64,
+		},
+	},
 }
 
 func compileRegularExpressions(inputs []string) []*regexp.Regexp {

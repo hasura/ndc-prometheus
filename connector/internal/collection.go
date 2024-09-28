@@ -25,6 +25,7 @@ var valueBinaryOperators = map[string]string{
 type QueryCollectionExecutor struct {
 	Client    *client.Client
 	Tracer    trace.Tracer
+	Runtime   *metadata.RuntimeSettings
 	Request   *schema.QueryRequest
 	Metric    metadata.MetricInfo
 	Variables map[string]any
@@ -118,7 +119,7 @@ func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryStrin
 		vector = vector[:*qce.Request.Query.Limit]
 	}
 
-	results := createQueryResultsFromVector(vector, qce.Metric.Labels)
+	results := createQueryResultsFromVector(vector, qce.Metric.Labels, qce.Runtime)
 	return results, nil
 }
 
@@ -156,7 +157,7 @@ func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString 
 	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(matrix) {
 		matrix = matrix[:*qce.Request.Query.Limit]
 	}
-	results := createQueryResultsFromMatrix(matrix, qce.Metric.Labels)
+	results := createQueryResultsFromMatrix(matrix, qce.Metric.Labels, qce.Runtime)
 
 	return results, nil
 }
@@ -192,7 +193,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 	}
 	rawOffset, ok := qce.Arguments[metadata.ArgumentKeyOffset]
 	if ok {
-		offset, err := client.ParseDuration(rawOffset)
+		offset, err := client.ParseDuration(rawOffset, qce.Runtime.UnixTimeUnit)
 		if err != nil {
 			return "", false, fmt.Errorf("invalid offset argument `%v`", rawOffset)
 		}

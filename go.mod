@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/alecthomas/kong v1.2.1
 	github.com/go-viper/mapstructure/v2 v2.2.1
-	github.com/hasura/ndc-sdk-go v1.3.1-0.20240924031613-bf965d014b44
+	github.com/hasura/ndc-sdk-go v1.4.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/invopop/jsonschema v0.12.0
 	github.com/lmittmann/tint v1.0.5
@@ -13,13 +13,13 @@ require (
 	github.com/prometheus/common v0.59.1
 	go.opentelemetry.io/otel v1.30.0
 	go.opentelemetry.io/otel/trace v1.30.0
-	google.golang.org/api v0.198.0
+	google.golang.org/api v0.199.0
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/v3 v3.5.1
 )
 
 require (
-	cloud.google.com/go/auth v0.9.4 // indirect
+	cloud.google.com/go/auth v0.9.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect

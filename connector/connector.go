@@ -19,6 +19,7 @@ type PrometheusConnector struct {
 	capabilities *schema.RawCapabilitiesResponse
 	rawSchema    *schema.RawSchemaResponse
 	metadata     *metadata.Metadata
+	runtime      *metadata.RuntimeSettings
 	apiHandler   api.DataConnectorHandler
 }
 
@@ -55,6 +56,7 @@ func (c *PrometheusConnector) ParseConfiguration(ctx context.Context, configurat
 	}
 
 	c.metadata = &config.Metadata
+	c.runtime = &config.Runtime
 
 	return config, nil
 }
@@ -85,7 +87,7 @@ func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.C
 	}
 	c.rawSchema = schema.NewRawSchemaResponseUnsafe(rawSchema)
 
-	client, err := client.NewClient(ctx, conf.ConnectionSettings, metrics.Tracer, conf.ConnectionSettings.Timeout)
+	client, err := client.NewClient(ctx, conf.ConnectionSettings, metrics.Tracer, client.WithTimeout(conf.ConnectionSettings.Timeout), client.WithUnixTimeUnit(conf.Runtime.UnixTimeUnit))
 	if err != nil {
 		return nil, err
 	}

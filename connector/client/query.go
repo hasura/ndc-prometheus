@@ -12,6 +12,7 @@ import (
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Query evaluates an [instant query] at a single point in time
@@ -22,16 +23,18 @@ func (c *Client) Query(ctx context.Context, queryString string, timestamp any, t
 	ctx, span := c.tracer.Start(ctx, "Query")
 	defer span.End()
 
-	span.SetAttributes(attribute.String("query", queryString))
-	span.SetAttributes(attribute.String("timestamp", fmt.Sprint(timestamp)))
-	span.SetAttributes(attribute.String("timeout", fmt.Sprint(timeout)))
+	c.setQuerySpanAttributes(span, queryString)
+	span.SetAttributes(
+		attribute.String("timestamp", fmt.Sprint(timestamp)),
+		attribute.String("timeout", fmt.Sprint(timeout)),
+	)
 
 	opts, err := c.ApplyOptions(span, timeout)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	ts, err := ParseTimestamp(timestamp)
+	ts, err := ParseTimestamp(timestamp, c.unixTimeUnit)
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to decode time")
 		span.RecordError(err)
@@ -71,7 +74,7 @@ func (c *Client) QueryRange(ctx context.Context, queryString string, start any, 
 	ctx, span := c.tracer.Start(ctx, "QueryRange")
 	defer span.End()
 
-	span.SetAttributes(attribute.String("query", queryString))
+	c.setQuerySpanAttributes(span, queryString)
 	span.SetAttributes(attribute.String("start", fmt.Sprint(start)))
 	span.SetAttributes(attribute.String("end", fmt.Sprint(end)))
 	span.SetAttributes(attribute.String("step", fmt.Sprint(step)))
@@ -118,7 +121,7 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	result := v1.Range{
 		End: time.Now(),
 	}
-	startTime, err := ParseTimestamp(start)
+	startTime, err := ParseTimestamp(start, c.unixTimeUnit)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +130,7 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	}
 
 	// If the user provided an end value, parse it to a time struct and override the default
-	endTime, err := ParseTimestamp(end)
+	endTime, err := ParseTimestamp(end, c.unixTimeUnit)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +140,7 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	}
 
 	// Set up defaults for the step value
-	result.Step, err = ParseDuration(step)
+	result.Step, err = ParseDuration(step, c.unixTimeUnit)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse step: %s", err)
 	}
@@ -188,4 +191,15 @@ func (c *Client) FormatQuery(ctx context.Context, queryString string) (string, e
 		return "", fmt.Errorf("received failed response: %s", string(bodyResp))
 	}
 	return result.Data, nil
+}
+
+func (c *Client) setQuerySpanAttributes(span trace.Span, queryString string) {
+	span.SetAttributes(
+		attribute.String("db.system", "prometheus"),
+		attribute.String("db.query.text", queryString),
+		attribute.String("server.address", c.serverAddress),
+	)
+	if c.serverPort > 0 {
+		span.SetAttributes(attribute.Int("server.port", c.serverPort))
+	}
 }

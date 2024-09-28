@@ -38,7 +38,7 @@ ci-build-configuration: clean
 		-output="$(OUTPUT_DIR)/ndc-prometheus-{{.OS}}-{{.Arch}}" \
 		./configuration
 
-.PHONY: ci-build
+.PHONY: build-supergraph-test
 build-supergraph-test:
 	cd tests/engine && \
 		ddn connector-link update prometheus --add-all-resources --subgraph ./app/subgraph.yaml && \

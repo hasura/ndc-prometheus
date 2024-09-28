@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,15 +24,19 @@ import (
 
 // Client extends the Prometheus API client with advanced methods for the Prometheus connector
 type Client struct {
-	client  api.Client
-	tracer  trace.Tracer
-	timeout *model.Duration
+	client api.Client
+	tracer trace.Tracer
 
 	v1.API
+	clientOptions
+
+	// common OpenTelemetry attributes
+	serverAddress string
+	serverPort    int
 }
 
 // NewClient creates a new Prometheus client instance
-func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, timeout *model.Duration) (*Client, error) {
+func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, options ...Option) (*Client, error) {
 
 	endpoint, err := cfg.URL.Get()
 	if err != nil {
@@ -38,6 +44,11 @@ func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, tim
 	}
 	if endpoint == "" {
 		return nil, errors.New("the endpoint setting is empty")
+	}
+
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("invalid Prometheus URL: %s", err)
 	}
 
 	httpClient, err := cfg.createHttpClient(ctx)
@@ -53,18 +64,35 @@ func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, tim
 		return nil, err
 	}
 
+	opts := defaultClientOptions
+	for _, opt := range options {
+		opt(&opts)
+	}
 	clientWrapper := createHTTPClient(apiClient)
-	return &Client{
-		client:  clientWrapper,
-		tracer:  tracer,
-		timeout: timeout,
-		API:     v1.NewAPI(clientWrapper),
-	}, nil
+
+	c := &Client{
+		client:        clientWrapper,
+		tracer:        tracer,
+		API:           v1.NewAPI(clientWrapper),
+		clientOptions: opts,
+
+		serverAddress: u.Host,
+	}
+
+	port := u.Port()
+	if port != "" {
+		p, err := strconv.ParseInt(port, 10, 32)
+		if err != nil {
+			return nil, fmt.Errorf("invalid port of Prometheus URL: %s", err)
+		}
+		c.serverPort = int(p)
+	}
+	return c, nil
 }
 
 // ApplyOptions apply options to the Prometheus request
 func (c *Client) ApplyOptions(span trace.Span, timeout any) ([]v1.Option, error) {
-	timeoutDuration, err := ParseDuration(timeout)
+	timeoutDuration, err := ParseDuration(timeout, c.unixTimeUnit)
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to parse timeout")
 		span.RecordError(err)
@@ -126,6 +154,32 @@ func (c *Client) do(ctx context.Context, req *http.Request) (*http.Response, []b
 	}
 
 	return resp, []byte(result.Data), result.Warnings, err
+}
+
+type clientOptions struct {
+	timeout      *model.Duration
+	unixTimeUnit UnixTimeUnit
+}
+
+var defaultClientOptions = clientOptions{
+	unixTimeUnit: UnixTimeSecond,
+}
+
+// Option the wrapper function to set optional client options
+type Option func(opts *clientOptions)
+
+// WithTimeout sets the default timeout option to the client
+func WithTimeout(t *model.Duration) Option {
+	return func(opts *clientOptions) {
+		opts.timeout = t
+	}
+}
+
+// WithTimeout sets the default timeout option to the client
+func WithUnixTimeUnit(u UnixTimeUnit) Option {
+	return func(opts *clientOptions) {
+		opts.unixTimeUnit = u
+	}
 }
 
 // wrap the prometheus client with trace context

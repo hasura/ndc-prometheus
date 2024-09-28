@@ -105,6 +105,9 @@
         },
         "metadata": {
           "$ref": "#/$defs/Metadata"
+        },
+        "runtime": {
+          "$ref": "#/$defs/RuntimeSettings"
         }
       },
       "additionalProperties": false,
@@ -112,7 +115,8 @@
       "required": [
         "connection_settings",
         "generator",
-        "metadata"
+        "metadata",
+        "runtime"
       ]
     },
     "EnvironmentValue": {
@@ -418,6 +422,57 @@
         "type": "array"
       },
       "type": "object"
+    },
+    "RuntimeFormatSettings": {
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "enum": [
+            "rfc3339",
+            "unix"
+          ],
+          "default": "unix"
+        },
+        "value": {
+          "type": "string",
+          "enum": [
+            "string",
+            "float64"
+          ],
+          "default": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "timestamp",
+        "value"
+      ]
+    },
+    "RuntimeSettings": {
+      "properties": {
+        "flat": {
+          "type": "boolean"
+        },
+        "unix_time_unit": {
+          "type": "string",
+          "enum": [
+            "s",
+            "ms"
+          ],
+          "default": "s"
+        },
+        "format": {
+          "$ref": "#/$defs/RuntimeFormatSettings"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "flat",
+        "unix_time_unit",
+        "format"
+      ]
     },
     "TLSConfig": {
       "properties": {

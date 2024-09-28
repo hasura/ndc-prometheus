@@ -466,6 +466,7 @@ func TestCollectionQueryExplain(t *testing.T) {
 				Request:   &tc.Request,
 				Variables: map[string]any{},
 				Arguments: arguments,
+				Runtime:   &metadata.RuntimeSettings{},
 			}
 
 			request, queryString, ok, err := executor.Explain(context.TODO())

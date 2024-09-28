@@ -246,6 +246,29 @@ connection_settings:
       #   env: GOOGLE_APPLICATION_CREDENTIALS
 ```
 
+### Runtime Settings
+
+```yaml
+runtime:
+  flat: false
+  unix_time_unit: s # enum: s, ms
+  format:
+    timestamp: rfc3339 # enum: rfc3339, unix
+    value: float64 # enum: string, float64
+```
+
+#### Flatten values
+
+By default, values are grouped by the label set. If you want to flatten the values array set `flat=true`.
+
+#### Unix timestamp's unit
+
+If you use integer values for duration and timestamp fields the connector will transform them with this unix timestamp unit. Accept second (`s`) and millisecond (`ms`). The default unit is second.
+
+#### Response Format
+
+These settings specify the format of response timestamp and value.
+
 ## Development
 
 ### Get started

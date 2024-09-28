@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -27,6 +29,10 @@ type Client struct {
 
 	v1.API
 	clientOptions
+
+	// common OpenTelemetry attributes
+	serverAddress string
+	serverPort    int
 }
 
 // NewClient creates a new Prometheus client instance
@@ -38,6 +44,11 @@ func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, opt
 	}
 	if endpoint == "" {
 		return nil, errors.New("the endpoint setting is empty")
+	}
+
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("invalid Prometheus URL: %s", err)
 	}
 
 	httpClient, err := cfg.createHttpClient(ctx)
@@ -58,12 +69,25 @@ func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, opt
 		opt(&opts)
 	}
 	clientWrapper := createHTTPClient(apiClient)
-	return &Client{
+
+	c := &Client{
 		client:        clientWrapper,
 		tracer:        tracer,
 		API:           v1.NewAPI(clientWrapper),
 		clientOptions: opts,
-	}, nil
+
+		serverAddress: u.Host,
+	}
+
+	port := u.Port()
+	if port != "" {
+		p, err := strconv.ParseInt(port, 10, 32)
+		if err != nil {
+			return nil, fmt.Errorf("invalid port of Prometheus URL: %s", err)
+		}
+		c.serverPort = int(p)
+	}
+	return c, nil
 }
 
 // ApplyOptions apply options to the Prometheus request

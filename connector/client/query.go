@@ -12,6 +12,7 @@ import (
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Query evaluates an [instant query] at a single point in time
@@ -22,9 +23,11 @@ func (c *Client) Query(ctx context.Context, queryString string, timestamp any, t
 	ctx, span := c.tracer.Start(ctx, "Query")
 	defer span.End()
 
-	span.SetAttributes(attribute.String("query", queryString))
-	span.SetAttributes(attribute.String("timestamp", fmt.Sprint(timestamp)))
-	span.SetAttributes(attribute.String("timeout", fmt.Sprint(timeout)))
+	c.setQuerySpanAttributes(span, queryString)
+	span.SetAttributes(
+		attribute.String("timestamp", fmt.Sprint(timestamp)),
+		attribute.String("timeout", fmt.Sprint(timeout)),
+	)
 
 	opts, err := c.ApplyOptions(span, timeout)
 	if err != nil {
@@ -71,7 +74,7 @@ func (c *Client) QueryRange(ctx context.Context, queryString string, start any, 
 	ctx, span := c.tracer.Start(ctx, "QueryRange")
 	defer span.End()
 
-	span.SetAttributes(attribute.String("query", queryString))
+	c.setQuerySpanAttributes(span, queryString)
 	span.SetAttributes(attribute.String("start", fmt.Sprint(start)))
 	span.SetAttributes(attribute.String("end", fmt.Sprint(end)))
 	span.SetAttributes(attribute.String("step", fmt.Sprint(step)))
@@ -188,4 +191,15 @@ func (c *Client) FormatQuery(ctx context.Context, queryString string) (string, e
 		return "", fmt.Errorf("received failed response: %s", string(bodyResp))
 	}
 	return result.Data, nil
+}
+
+func (c *Client) setQuerySpanAttributes(span trace.Span, queryString string) {
+	span.SetAttributes(
+		attribute.String("db.system", "prometheus"),
+		attribute.String("db.query.text", queryString),
+		attribute.String("server.address", c.serverAddress),
+	)
+	if c.serverPort > 0 {
+		span.SetAttributes(attribute.Int("server.port", c.serverPort))
+	}
 }

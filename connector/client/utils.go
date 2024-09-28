@@ -14,6 +14,24 @@ import (
 
 const maxSteps = 11000
 
+// UnixTimeUnit the unit for unix timestamp
+type UnixTimeUnit string
+
+const (
+	UnixTimeSecond      UnixTimeUnit = "s"
+	UnixTimeMillisecond UnixTimeUnit = "ms"
+)
+
+// Duration returns the duration of the unit
+func (ut UnixTimeUnit) Duration() time.Duration {
+	switch ut {
+	case UnixTimeMillisecond:
+		return time.Millisecond
+	default:
+		return time.Second
+	}
+}
+
 // calculate the step to avoid exceeding maximum resolution of 11,000 points per time-series
 func evalStepFromRange(start time.Time, end time.Time) time.Duration {
 	difference := end.Sub(start)
@@ -38,7 +56,7 @@ func evalStepFromRange(start time.Time, end time.Time) time.Duration {
 }
 
 // ParseDuration parses duration from an unknown value
-func ParseDuration(value any) (time.Duration, error) {
+func ParseDuration(value any, unixTimeUnit UnixTimeUnit) (time.Duration, error) {
 	reflectValue, ok := utils.UnwrapPointerFromReflectValue(reflect.ValueOf(value))
 	if !ok {
 		return 0, nil
@@ -57,25 +75,24 @@ func ParseDuration(value any) (time.Duration, error) {
 		}
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		// or as a number in seconds
-		return time.Duration(reflectValue.Int()) * time.Second, nil
+		return time.Duration(reflectValue.Int()) * unixTimeUnit.Duration(), nil
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return time.Duration(reflectValue.Uint()) * time.Second, nil
+		return time.Duration(reflectValue.Uint()) * unixTimeUnit.Duration(), nil
 	case reflect.Float32, reflect.Float64:
-		floatValue := reflectValue.Float() * 1000
-
-		return time.Duration(int64(floatValue)) * time.Millisecond, nil
+		return time.Duration(int64(reflectValue.Float() * float64(unixTimeUnit.Duration()))), nil
 	default:
 		return 0, fmt.Errorf("unable to parse duration from kind %v", kind)
 	}
 }
 
 // ParseTimestamp parses timestamp from an unknown value
-func ParseTimestamp(s any) (*time.Time, error) {
+func ParseTimestamp(s any, unixTimeUnit UnixTimeUnit) (*time.Time, error) {
 	reflectValue, ok := utils.UnwrapPointerFromReflectValue(reflect.ValueOf(s))
 	if !ok {
 		return nil, nil
 	}
 
+	baseMs := int64(unixTimeUnit.Duration() / time.Millisecond)
 	kind := reflectValue.Kind()
 	switch kind {
 	case reflect.Invalid:
@@ -97,16 +114,15 @@ func ParseTimestamp(s any) (*time.Time, error) {
 			return nil, fmt.Errorf("unable to parse timestamp from string %s: %s", strValue, err)
 		}
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		// or as a Unix timestamp in seconds,
+		// or as a Unix timestamp,
 		// with optional decimal places for sub-second precision
-		result := time.Unix(reflectValue.Int(), 0)
+		result := time.UnixMilli(reflectValue.Int() * baseMs)
 		return &result, nil
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		result := time.Unix(int64(reflectValue.Uint()), 0)
+		result := time.UnixMilli(int64(reflectValue.Uint()) * baseMs)
 		return &result, nil
 	case reflect.Float32, reflect.Float64:
-		v := int64(reflectValue.Float() * 1000)
-		result := time.UnixMilli(v)
+		result := time.UnixMilli(int64(reflectValue.Float() * float64(baseMs)))
 		return &result, nil
 	default:
 		return nil, fmt.Errorf("unable to parse timestamp from kind %v", kind)

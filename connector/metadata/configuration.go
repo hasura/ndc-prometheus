@@ -86,6 +86,8 @@ type RuntimeFormatSettings struct {
 type RuntimeSettings struct {
 	// Flatten value points to the root array
 	Flat bool `json:"flat" yaml:"flat"`
+	// The default unit for unix timestamp
+	UnixTimeUnit client.UnixTimeUnit `json:"unix_time_unit" yaml:"unix_time_unit" jsonschema:"enum=s,enum=ms,default=s"`
 	// The serialization format for response fields
 	Format RuntimeFormatSettings `json:"format" yaml:"format"`
 }

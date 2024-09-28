@@ -210,6 +210,7 @@ metadata:
             type: String
 runtime:
   flat: true
+  unix_time_unit: s
   format:
     timestamp: rfc3339
     value: float64

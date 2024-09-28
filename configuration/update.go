@@ -233,7 +233,8 @@ var defaultConfiguration = metadata.Configuration{
 		NativeOperations: metadata.NativeOperations{},
 	},
 	Runtime: metadata.RuntimeSettings{
-		Flat: false,
+		Flat:         false,
+		UnixTimeUnit: client.UnixTimeSecond,
 		Format: metadata.RuntimeFormatSettings{
 			Timestamp: metadata.TimestampUnix,
 			Value:     metadata.ValueFloat64,

@@ -208,7 +208,7 @@ func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString stri
 func createQueryResultsFromVector(vector model.Vector, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
 	results := make([]map[string]any, len(vector))
 	for i, item := range vector {
-		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp)
+		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
 		value := formatValue(item.Value, runtime.Format.Value)
 		r := map[string]any{
 			metadata.TimestampKey: ts,
@@ -256,7 +256,7 @@ func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]me
 		valuesLen := len(item.Values)
 		values := make([]map[string]any, valuesLen)
 		for i, value := range item.Values {
-			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp)
+			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
 			v := formatValue(value.Value, runtime.Format.Value)
 			values[i] = map[string]any{
 				metadata.TimestampKey: ts,
@@ -280,7 +280,7 @@ func createFlatQueryResultsFromMatrix(matrix model.Matrix, labels map[string]met
 
 	for _, item := range matrix {
 		for _, value := range item.Values {
-			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp)
+			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
 			v := formatValue(value.Value, runtime.Format.Value)
 			r := map[string]any{
 				metadata.LabelsKey:    item.Metric,
@@ -300,12 +300,12 @@ func createFlatQueryResultsFromMatrix(matrix model.Matrix, labels map[string]met
 	return results
 }
 
-func formatTimestamp(ts model.Time, format metadata.TimestampFormat) any {
+func formatTimestamp(ts model.Time, format metadata.TimestampFormat, unixTime client.UnixTimeUnit) any {
 	switch format {
 	case metadata.TimestampRFC3339:
 		return ts.Time().Format(time.RFC3339)
 	default:
-		return ts
+		return ts.Unix() * int64(time.Second/unixTime.Duration())
 	}
 }
 

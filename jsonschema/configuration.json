@@ -454,6 +454,14 @@
         "flat": {
           "type": "boolean"
         },
+        "unix_time_unit": {
+          "type": "string",
+          "enum": [
+            "s",
+            "ms"
+          ],
+          "default": "s"
+        },
         "format": {
           "$ref": "#/$defs/RuntimeFormatSettings"
         }
@@ -462,6 +470,7 @@
       "type": "object",
       "required": [
         "flat",
+        "unix_time_unit",
         "format"
       ]
     },

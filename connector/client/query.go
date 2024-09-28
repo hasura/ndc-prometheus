@@ -31,7 +31,7 @@ func (c *Client) Query(ctx context.Context, queryString string, timestamp any, t
 		return nil, nil, err
 	}
 
-	ts, err := ParseTimestamp(timestamp)
+	ts, err := ParseTimestamp(timestamp, c.unixTimeUnit)
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to decode time")
 		span.RecordError(err)
@@ -118,7 +118,7 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	result := v1.Range{
 		End: time.Now(),
 	}
-	startTime, err := ParseTimestamp(start)
+	startTime, err := ParseTimestamp(start, c.unixTimeUnit)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	}
 
 	// If the user provided an end value, parse it to a time struct and override the default
-	endTime, err := ParseTimestamp(end)
+	endTime, err := ParseTimestamp(end, c.unixTimeUnit)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	}
 
 	// Set up defaults for the step value
-	result.Step, err = ParseDuration(step)
+	result.Step, err = ParseDuration(step, c.unixTimeUnit)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse step: %s", err)
 	}

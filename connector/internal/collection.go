@@ -193,7 +193,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 	}
 	rawOffset, ok := qce.Arguments[metadata.ArgumentKeyOffset]
 	if ok {
-		offset, err := client.ParseDuration(rawOffset)
+		offset, err := client.ParseDuration(rawOffset, qce.Runtime.UnixTimeUnit)
 		if err != nil {
 			return "", false, fmt.Errorf("invalid offset argument `%v`", rawOffset)
 		}

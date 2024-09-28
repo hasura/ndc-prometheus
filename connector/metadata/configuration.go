@@ -11,9 +11,14 @@ import (
 
 // Configuration the configuration of Prometheus connector
 type Configuration struct {
+	// Connection settings to connect the Prometheus server
 	ConnectionSettings client.ClientSettings `json:"connection_settings" yaml:"connection_settings"`
-	Generator          GeneratorSettings     `json:"generator" yaml:"generator"`
-	Metadata           Metadata              `json:"metadata" yaml:"metadata"`
+	// Settings to generate metrics metadata
+	Generator GeneratorSettings `json:"generator" yaml:"generator"`
+	// The metadata of metrics and native queries
+	Metadata Metadata `json:"metadata" yaml:"metadata"`
+	// Runtime settings
+	Runtime RuntimeSettings `json:"runtime" yaml:"runtime"`
 }
 
 // MetricsGenerationBehavior the behavior of metrics generation
@@ -53,8 +58,36 @@ type GeneratorSettings struct {
 	Metrics MetricsGeneratorSettings `json:"metrics" yaml:"metrics"`
 }
 
+// TimestampFormat the format for timestamp serialization
+type TimestampFormat string
+
+const (
+	TimestampRFC3339 TimestampFormat = "rfc3339"
+	TimestampUnix    TimestampFormat = "unix"
+)
+
+// ValueFormat the format for value serialization
+type ValueFormat string
+
+const (
+	ValueString  ValueFormat = "string"
+	ValueFloat64 ValueFormat = "float64"
+)
+
+// RuntimeFormatSettings format settings for timestamps and values in runtime
+type RuntimeFormatSettings struct {
+	// The serialization format for timestamp
+	Timestamp TimestampFormat `json:"timestamp" yaml:"timestamp" jsonschema:"enum=rfc3339,enum=unix,default=unix"`
+	// The serialization format for value
+	Value ValueFormat `json:"value" yaml:"value" jsonschema:"enum=string,enum=float64,default=string"`
+}
+
 // RuntimeSettings contain settings for the runtime engine
 type RuntimeSettings struct {
+	// Flatten value points to the root array
+	Flat bool `json:"flat" yaml:"flat"`
+	// The serialization format for response fields
+	Format RuntimeFormatSettings `json:"format" yaml:"format"`
 }
 
 // ReadConfiguration reads the configuration from file

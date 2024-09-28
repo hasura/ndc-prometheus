@@ -19,6 +19,7 @@ type PrometheusConnector struct {
 	capabilities *schema.RawCapabilitiesResponse
 	rawSchema    *schema.RawSchemaResponse
 	metadata     *metadata.Metadata
+	runtime      *metadata.RuntimeSettings
 	apiHandler   api.DataConnectorHandler
 }
 
@@ -55,6 +56,7 @@ func (c *PrometheusConnector) ParseConfiguration(ctx context.Context, configurat
 	}
 
 	c.metadata = &config.Metadata
+	c.runtime = &config.Runtime
 
 	return config, nil
 }

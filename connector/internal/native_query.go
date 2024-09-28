@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
@@ -25,6 +26,7 @@ type nativeQueryParameters struct {
 type NativeQueryExecutor struct {
 	Client      *client.Client
 	Tracer      trace.Tracer
+	Runtime     *metadata.RuntimeSettings
 	Request     *schema.QueryRequest
 	NativeQuery *metadata.NativeQuery
 	Arguments   map[string]any
@@ -187,7 +189,7 @@ func (nqe *NativeQueryExecutor) queryInstant(ctx context.Context, queryString st
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
-	results := createQueryResultsFromVector(vector, nqe.NativeQuery.Labels)
+	results := createQueryResultsFromVector(vector, nqe.NativeQuery.Labels, nqe.Runtime)
 
 	return results, nil
 }
@@ -198,28 +200,32 @@ func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString stri
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	results := createQueryResultsFromMatrix(matrix, nqe.NativeQuery.Labels)
+	results := createQueryResultsFromMatrix(matrix, nqe.NativeQuery.Labels, nqe.Runtime)
 
 	return results, nil
 }
 
-func createQueryResultsFromVector(vector model.Vector, labels map[string]metadata.LabelInfo) []map[string]any {
+func createQueryResultsFromVector(vector model.Vector, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
 	results := make([]map[string]any, len(vector))
 	for i, item := range vector {
+		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp)
+		value := formatValue(item.Value, runtime.Format.Value)
 		r := map[string]any{
-			metadata.TimestampKey: item.Timestamp,
-			metadata.ValueKey:     item.Value.String(),
+			metadata.TimestampKey: ts,
+			metadata.ValueKey:     value,
 			metadata.LabelsKey:    item.Metric,
-			metadata.ValuesKey: []map[string]any{
-				{
-					metadata.TimestampKey: item.Timestamp,
-					metadata.ValueKey:     item.Value.String(),
-				},
-			},
 		}
 
 		for label := range labels {
 			r[label] = string(item.Metric[model.LabelName(label)])
+		}
+		if !runtime.Flat {
+			r[metadata.ValuesKey] = []map[string]any{
+				{
+					metadata.TimestampKey: ts,
+					metadata.ValueKey:     value,
+				},
+			}
 		}
 
 		results[i] = r
@@ -228,7 +234,15 @@ func createQueryResultsFromVector(vector model.Vector, labels map[string]metadat
 	return results
 }
 
-func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo) []map[string]any {
+func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
+	if runtime.Flat {
+		return createFlatQueryResultsFromMatrix(matrix, labels, runtime)
+	}
+
+	return createGroupQueryResultsFromMatrix(matrix, labels, runtime)
+}
+
+func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
 	results := make([]map[string]any, len(matrix))
 	for i, item := range matrix {
 		r := map[string]any{
@@ -242,13 +256,15 @@ func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadat
 		valuesLen := len(item.Values)
 		values := make([]map[string]any, valuesLen)
 		for i, value := range item.Values {
+			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp)
+			v := formatValue(value.Value, runtime.Format.Value)
 			values[i] = map[string]any{
-				metadata.TimestampKey: value.Timestamp,
-				metadata.ValueKey:     value.Value.String(),
+				metadata.TimestampKey: ts,
+				metadata.ValueKey:     v,
 			}
 			if i == valuesLen-1 {
-				r[metadata.TimestampKey] = value.Timestamp
-				r[metadata.ValueKey] = value.Value.String()
+				r[metadata.TimestampKey] = ts
+				r[metadata.ValueKey] = v
 			}
 		}
 
@@ -257,4 +273,47 @@ func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadat
 	}
 
 	return results
+}
+
+func createFlatQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
+	results := []map[string]any{}
+
+	for _, item := range matrix {
+		for _, value := range item.Values {
+			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp)
+			v := formatValue(value.Value, runtime.Format.Value)
+			r := map[string]any{
+				metadata.LabelsKey:    item.Metric,
+				metadata.TimestampKey: ts,
+				metadata.ValueKey:     v,
+				metadata.ValuesKey:    nil,
+			}
+
+			for label := range labels {
+				r[label] = string(item.Metric[model.LabelName(label)])
+			}
+
+			results = append(results, r)
+		}
+	}
+
+	return results
+}
+
+func formatTimestamp(ts model.Time, format metadata.TimestampFormat) any {
+	switch format {
+	case metadata.TimestampRFC3339:
+		return ts.Time().Format(time.RFC3339)
+	default:
+		return ts
+	}
+}
+
+func formatValue(value model.SampleValue, format metadata.ValueFormat) any {
+	switch format {
+	case metadata.ValueFloat64:
+		return float64(value)
+	default:
+		return value.String()
+	}
 }

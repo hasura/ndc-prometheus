@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-prometheus/main/jsonschema/configuration.json
+# yaml-language-server: $schema=../../jsonschema/configuration.json
 connection_settings:
   url:
     env: CONNECTION_URL
@@ -8,6 +8,11 @@ connection_settings:
         env: PROMETHEUS_USERNAME
       password:
         env: PROMETHEUS_PASSWORD
+runtime:
+  flat: true
+  format:
+    timestamp: rfc3339
+    value: float64
 generator:
   metrics:
     enabled: true

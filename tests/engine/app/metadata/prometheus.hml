@@ -69,6 +69,77 @@ definition:
             type: float64
           aggregate_functions: {}
           comparison_operators: {}
+        HttpClientDurationMillisecondsBucketLabel:
+          representation:
+            type: enum
+            one_of:
+              - http_method
+              - http_status_code
+              - net_peer_port
+              - otel_scope_name
+              - instance
+              - job
+              - net_peer_name
+              - otel_scope_version
+              - le
+          aggregate_functions: {}
+          comparison_operators: {}
+        HttpClientDurationMillisecondsCountLabel:
+          representation:
+            type: enum
+            one_of:
+              - otel_scope_name
+              - otel_scope_version
+              - http_method
+              - http_status_code
+              - instance
+              - job
+              - net_peer_name
+              - net_peer_port
+          aggregate_functions: {}
+          comparison_operators: {}
+        HttpClientDurationMillisecondsSumLabel:
+          representation:
+            type: enum
+            one_of:
+              - net_peer_port
+              - otel_scope_name
+              - otel_scope_version
+              - http_method
+              - http_status_code
+              - instance
+              - job
+              - net_peer_name
+          aggregate_functions: {}
+          comparison_operators: {}
+        HttpClientRequestSizeBytesTotalLabel:
+          representation:
+            type: enum
+            one_of:
+              - otel_scope_version
+              - http_method
+              - http_status_code
+              - instance
+              - job
+              - net_peer_name
+              - net_peer_port
+              - otel_scope_name
+          aggregate_functions: {}
+          comparison_operators: {}
+        HttpClientResponseSizeBytesTotalLabel:
+          representation:
+            type: enum
+            one_of:
+              - instance
+              - job
+              - net_peer_name
+              - net_peer_port
+              - otel_scope_name
+              - otel_scope_version
+              - http_method
+              - http_status_code
+          aggregate_functions: {}
+          comparison_operators: {}
         Int64:
           representation:
             type: int64
@@ -99,61 +170,75 @@ definition:
         NdcPrometheusQueryTotalTimeBucketLabel:
           representation:
             type: enum
-            one_of: []
+            one_of:
+              - collection
+              - instance
+              - job
+              - otel_scope_name
+              - le
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeCountLabel:
           representation:
             type: enum
-            one_of: []
+            one_of:
+              - collection
+              - instance
+              - job
+              - otel_scope_name
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeSumLabel:
           representation:
             type: enum
-            one_of: []
+            one_of:
+              - collection
+              - instance
+              - job
+              - otel_scope_name
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnAttemptedTotalLabel:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnClosedTotalLabel:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnEstablishedTotalLabel:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnFailedTotalLabel:
           representation:
             type: enum
             one_of:
-              - reason
               - instance
               - job
+              - reason
           aggregate_functions: {}
           comparison_operators: {}
         OtelScopeInfoLabel:
           representation:
             type: enum
             one_of:
+              - instance
               - job
               - otel_scope_name
-              - instance
+              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         ProcessCpuSecondsTotalLabel:
@@ -192,8 +277,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         ProcessResidentMemoryBytesLabel:
@@ -208,8 +293,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         ProcessVirtualMemoryBytesLabel:
@@ -241,8 +326,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         PromhttpMetricHandlerRequestsTotalLabel:
@@ -297,13 +382,13 @@ definition:
           representation:
             type: enum
             one_of:
+              - telemetry_sdk_version
               - instance
               - job
               - service_name
               - service_version
               - telemetry_sdk_language
               - telemetry_sdk_name
-              - telemetry_sdk_version
           aggregate_functions: {}
           comparison_operators: {}
         Timestamp:
@@ -434,6 +519,3335 @@ definition:
               type:
                 type: named
                 name: Float64
+        HttpClientDurationMillisecondsBucket:
+          fields:
+            http_method:
+              type:
+                type: named
+                name: String
+            http_status_code:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            le:
+              type:
+                type: named
+                name: String
+            net_peer_name:
+              type:
+                type: named
+                name: String
+            net_peer_port:
+              type:
+                type: named
+                name: String
+            otel_scope_name:
+              type:
+                type: named
+                name: String
+            otel_scope_version:
+              type:
+                type: named
+                name: String
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        HttpClientDurationMillisecondsBucketFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsBucketLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsBucketLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsBucketLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        HttpClientDurationMillisecondsBucketLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsBucketLabel
+        HttpClientDurationMillisecondsBucketLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: HttpClientDurationMillisecondsBucketLabel
+        HttpClientDurationMillisecondsCount:
+          fields:
+            http_method:
+              type:
+                type: named
+                name: String
+            http_status_code:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            net_peer_name:
+              type:
+                type: named
+                name: String
+            net_peer_port:
+              type:
+                type: named
+                name: String
+            otel_scope_name:
+              type:
+                type: named
+                name: String
+            otel_scope_version:
+              type:
+                type: named
+                name: String
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        HttpClientDurationMillisecondsCountFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsCountLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsCountLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsCountLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        HttpClientDurationMillisecondsCountLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsCountLabel
+        HttpClientDurationMillisecondsCountLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: HttpClientDurationMillisecondsCountLabel
+        HttpClientDurationMillisecondsSum:
+          fields:
+            http_method:
+              type:
+                type: named
+                name: String
+            http_status_code:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            net_peer_name:
+              type:
+                type: named
+                name: String
+            net_peer_port:
+              type:
+                type: named
+                name: String
+            otel_scope_name:
+              type:
+                type: named
+                name: String
+            otel_scope_version:
+              type:
+                type: named
+                name: String
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        HttpClientDurationMillisecondsSumFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsSumLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsSumLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsSumLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        HttpClientDurationMillisecondsSumLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: HttpClientDurationMillisecondsSumLabel
+        HttpClientDurationMillisecondsSumLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: HttpClientDurationMillisecondsSumLabel
+        HttpClientRequestSizeBytesTotal:
+          fields:
+            http_method:
+              type:
+                type: named
+                name: String
+            http_status_code:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            net_peer_name:
+              type:
+                type: named
+                name: String
+            net_peer_port:
+              type:
+                type: named
+                name: String
+            otel_scope_name:
+              type:
+                type: named
+                name: String
+            otel_scope_version:
+              type:
+                type: named
+                name: String
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        HttpClientRequestSizeBytesTotalFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientRequestSizeBytesTotalLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientRequestSizeBytesTotalLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientRequestSizeBytesTotalLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        HttpClientRequestSizeBytesTotalLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: HttpClientRequestSizeBytesTotalLabel
+        HttpClientRequestSizeBytesTotalLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: HttpClientRequestSizeBytesTotalLabel
+        HttpClientResponseSizeBytesTotal:
+          fields:
+            http_method:
+              type:
+                type: named
+                name: String
+            http_status_code:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            net_peer_name:
+              type:
+                type: named
+                name: String
+            net_peer_port:
+              type:
+                type: named
+                name: String
+            otel_scope_name:
+              type:
+                type: named
+                name: String
+            otel_scope_version:
+              type:
+                type: named
+                name: String
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
+        HttpClientResponseSizeBytesTotalFunctions:
+          fields:
+            abs:
+              description: Returns the input vector with all sample values converted to their absolute value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent:
+              description: Returns an empty vector if the vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            absent_over_time:
+              description: Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            acos:
+              description: Calculates the arccosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acosh:
+              description: Calculates the inverse hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asin:
+              description: Calculates the arcsine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            asinh:
+              description: Calculates the inverse hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atan:
+              description: Calculates the arctangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            atanh:
+              description: Calculates the inverse hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            avg:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            avg_over_time:
+              description: The average value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            bottomk:
+              description: Smallest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ceil:
+              description: Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            changes:
+              description: Returns the number of times its value has changed within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            clamp:
+              description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            clamp_max:
+              description: Clamps the sample values of all elements in v to have an upper limit of max
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            clamp_min:
+              description: Clamps the sample values of all elements in v to have a lower limit of min
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            cos:
+              description: Calculates the cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            cosh:
+              description: Calculates the hyperbolic cosine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            count:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            count_over_time:
+              description: The count of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            count_values:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientResponseSizeBytesTotalLabel
+            deg:
+              description: Converts radians to degrees for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            delta:
+              description: Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            deriv:
+              description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            exp:
+              description: Calculates the exponential function for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            floor:
+              description: Rounds the sample values of all elements in v down to the nearest integer value smaller than or equal to v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            histogram_avg:
+              description: Returns the arithmetic average of observed values stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_count:
+              description: Returns the count of observations stored in a native histogram. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_fraction:
+              description: Returns the estimated fraction of observations between the provided lower and upper values. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ValueBoundaryInput
+            histogram_quantile:
+              description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or from a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            histogram_stddev:
+              description: Returns the estimated standard deviation of observations in a native histogram, based on the geometric mean of the buckets where the observations lie. Samples that are not native histograms are ignored and do not show up in the returned vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_stdvar:
+              description: Returns the estimated standard variance of observations in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            histogram_sum:
+              description: Returns the sum of observations stored in a native histogram
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            holt_winters:
+              description: Produces a smoothed value for time series based on the range in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HoltWintersInput
+            idelta:
+              description: Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            increase:
+              description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            irate:
+              description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            label_join:
+              description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientResponseSizeBytesTotalLabelJoinInput
+            label_replace:
+              description: Matches the regular expression regex against the value of the label src_label. If it matches, the value of the label dst_label in the returned timeseries will be the expansion of replacement, together with the original labels in the input
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: HttpClientResponseSizeBytesTotalLabelReplaceInput
+            last_over_time:
+              description: The most recent point value in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            limit_ratio:
+              description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            limitk:
+              description: Limit sample n elements
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            ln:
+              description: Calculates the natural logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log2:
+              description: Calculates the binary logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            log10:
+              description: Calculates the decimal logarithm for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mad_over_time:
+              description: The median absolute deviation of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            max:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            max_over_time:
+              description: The maximum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            min:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            min_over_time:
+              description: The minimum value of all points in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            predict_linear:
+              description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: PredictLinearInput
+            present_over_time:
+              description: The value 1 for any series in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            quantile:
+              description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            quantile_over_time:
+              description: The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: QuantileOverTimeInput
+            rad:
+              description: Converts degrees to radians for all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rate:
+              description: Calculates the per-second average rate of increase of the time series in the range vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            resets:
+              description: Returns the number of counter resets within the provided time range as an instant vector
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            round:
+              description: Rounds the sample values of all elements in v to the nearest integer
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Float64
+            scalar:
+              description: Returns the sample value of that single element as a scalar
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sgn:
+              description: 'Returns a vector with all sample values converted to their sign, defined as this: 1 if v is positive, -1 if v is negative and 0 if v is equal to zero'
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sin:
+              description: Calculates the sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sinh:
+              description: Calculates the hyperbolic sine of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort:
+              description: Returns vector elements sorted by their sample values, in ascending order. Native histograms are sorted by their sum of observations
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sort_by_label:
+              description: Returns vector elements sorted by their label values and sample value in case of label values being equal, in ascending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            sort_by_label_desc:
+              description: Same as sort_by_label, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            sort_desc:
+              description: Same as sort, but sorts in descending order
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            sqrt:
+              description: Calculates the square root of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            stddev:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            stddev_over_time:
+              description: The population standard deviation of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            stdvar:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            stdvar_over_time:
+              description: The population standard variance of the values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            sum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalLabel
+            sum_over_time:
+              description: The sum of all values in the specified interval
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: RangeResolution
+            tan:
+              description: Calculates the tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            tanh:
+              description: Calculates the hyperbolic tangent of all elements in v
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            timestamp:
+              description: Returns the timestamp of each of the samples of the given vector as the number of seconds since January 1, 1970 UTC. It also works with histogram samples
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            topk:
+              description: Largest k elements by sample value
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+        HttpClientResponseSizeBytesTotalLabelJoinInput:
+          description: Input arguments for the label_join function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            separator:
+              description: The separator between source labels
+              type:
+                type: named
+                name: String
+            source_labels:
+              description: Source labels
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: HttpClientResponseSizeBytesTotalLabel
+        HttpClientResponseSizeBytesTotalLabelReplaceInput:
+          description: Input arguments for the label_replace function
+          fields:
+            dest_label:
+              description: The destination label name
+              type:
+                type: named
+                name: String
+            regex:
+              description: The regular expression against the value of the source label
+              type:
+                type: named
+                name: String
+            replacement:
+              description: The replacement value
+              type:
+                type: named
+                name: String
+            source_label:
+              description: Source label
+              type:
+                type: named
+                name: HttpClientResponseSizeBytesTotalLabel
         MetricMetadata:
           fields:
             help:
@@ -1115,11 +4529,31 @@ definition:
                 name: NdcPrometheusQueryTotalLabel
         NdcPrometheusQueryTotalTimeBucket:
           fields:
+            collection:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
             labels:
               description: Labels of the metric
               type:
                 type: named
                 name: LabelSet
+            le:
+              type:
+                type: named
+                name: String
+            otel_scope_name:
+              type:
+                type: named
+                name: String
             timestamp:
               description: An instant timestamp or the last timestamp of a range query result
               type:
@@ -1748,11 +5182,27 @@ definition:
                 name: NdcPrometheusQueryTotalTimeBucketLabel
         NdcPrometheusQueryTotalTimeCount:
           fields:
+            collection:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
             labels:
               description: Labels of the metric
               type:
                 type: named
                 name: LabelSet
+            otel_scope_name:
+              type:
+                type: named
+                name: String
             timestamp:
               description: An instant timestamp or the last timestamp of a range query result
               type:
@@ -2381,11 +5831,27 @@ definition:
                 name: NdcPrometheusQueryTotalTimeCountLabel
         NdcPrometheusQueryTotalTimeSum:
           fields:
+            collection:
+              type:
+                type: named
+                name: String
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
             labels:
               description: Labels of the metric
               type:
                 type: named
                 name: LabelSet
+            otel_scope_name:
+              type:
+                type: named
+                name: String
             timestamp:
               description: An instant timestamp or the last timestamp of a range query result
               type:
@@ -5596,6 +9062,10 @@ definition:
                 type: named
                 name: LabelSet
             otel_scope_name:
+              type:
+                type: named
+                name: String
+            otel_scope_version:
               type:
                 type: named
                 name: String
@@ -14765,6 +18235,186 @@ definition:
                 type: named
                 name: Float64
       collections:
+        - name: http_client_duration_milliseconds_bucket
+          description: Measures the duration of outbound HTTP requests.
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for http_client_duration_milliseconds_bucket
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsBucketFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: HttpClientDurationMillisecondsBucket
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: http_client_duration_milliseconds_count
+          description: Measures the duration of outbound HTTP requests.
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for http_client_duration_milliseconds_count
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsCountFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: HttpClientDurationMillisecondsCount
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: http_client_duration_milliseconds_sum
+          description: Measures the duration of outbound HTTP requests.
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for http_client_duration_milliseconds_sum
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientDurationMillisecondsSumFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: HttpClientDurationMillisecondsSum
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: http_client_request_size_bytes_total
+          description: Measures the size of HTTP request messages.
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for http_client_request_size_bytes_total
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientRequestSizeBytesTotalFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: HttpClientRequestSizeBytesTotal
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: http_client_response_size_bytes_total
+          description: Measures the size of HTTP response messages.
+          arguments:
+            fn:
+              description: PromQL aggregation operators and functions for http_client_response_size_bytes_total
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: HttpClientResponseSizeBytesTotalFunctions
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds.
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: HttpClientResponseSizeBytesTotal
+          uniqueness_constraints: {}
+          foreign_keys: {}
         - name: ndc_prometheus_query_total
           description: Total number of query requests
           arguments:

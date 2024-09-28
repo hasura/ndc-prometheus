@@ -944,3 +944,143 @@ definition:
   graphql:
     typeName: OtelScopeInfoLabel_bool_exp
 
+---
+kind: ScalarType
+version: v1
+definition:
+  name: HttpClientDurationMillisecondsBucketLabel
+  graphql:
+    typeName: HttpClientDurationMillisecondsBucketLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HttpClientDurationMillisecondsBucketLabel_bool_exp
+  operand:
+    scalar:
+      type: HttpClientDurationMillisecondsBucketLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: HttpClientDurationMillisecondsBucketLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HttpClientDurationMillisecondsBucketLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: HttpClientDurationMillisecondsCountLabel
+  graphql:
+    typeName: HttpClientDurationMillisecondsCountLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HttpClientDurationMillisecondsCountLabel_bool_exp
+  operand:
+    scalar:
+      type: HttpClientDurationMillisecondsCountLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: HttpClientDurationMillisecondsCountLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HttpClientDurationMillisecondsCountLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: HttpClientDurationMillisecondsSumLabel
+  graphql:
+    typeName: HttpClientDurationMillisecondsSumLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HttpClientDurationMillisecondsSumLabel_bool_exp
+  operand:
+    scalar:
+      type: HttpClientDurationMillisecondsSumLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: HttpClientDurationMillisecondsSumLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HttpClientDurationMillisecondsSumLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: HttpClientRequestSizeBytesTotalLabel
+  graphql:
+    typeName: HttpClientRequestSizeBytesTotalLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HttpClientRequestSizeBytesTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: HttpClientRequestSizeBytesTotalLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: HttpClientRequestSizeBytesTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HttpClientRequestSizeBytesTotalLabel_bool_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: HttpClientResponseSizeBytesTotalLabel
+  graphql:
+    typeName: HttpClientResponseSizeBytesTotalLabel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HttpClientResponseSizeBytesTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: HttpClientResponseSizeBytesTotalLabel
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: HttpClientResponseSizeBytesTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HttpClientResponseSizeBytesTotalLabel_bool_exp
+

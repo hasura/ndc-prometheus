@@ -71,12 +71,16 @@ func (scb *connectorSchemaBuilder) buildMetrics() error {
 		case model.MetricTypeHistogram, model.MetricTypeGaugeHistogram:
 			for _, suffix := range []string{"sum", "count", "bucket"} {
 				metricName := fmt.Sprintf("%s_%s", name, suffix)
-				if err := scb.buildMetricsItem(metricName, info); err != nil {
+				labels := info.Labels
+				if suffix == "bucket" {
+					labels["le"] = LabelInfo{}
+				}
+				if err := scb.buildMetricsItem(metricName, info, labels); err != nil {
 					return err
 				}
 			}
 		default:
-			if err := scb.buildMetricsItem(name, info); err != nil {
+			if err := scb.buildMetricsItem(name, info, info.Labels); err != nil {
 				return err
 			}
 		}
@@ -84,7 +88,7 @@ func (scb *connectorSchemaBuilder) buildMetrics() error {
 	return nil
 }
 
-func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo) error {
+func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo, labels map[string]LabelInfo) error {
 	if err := scb.checkDuplicatedOperation(name); err != nil {
 		return err
 	}
@@ -93,8 +97,8 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo
 		Fields: createQueryResultValuesObjectFields(),
 	}
 
-	labelEnums := make([]string, 0, len(info.Labels))
-	for key, label := range info.Labels {
+	labelEnums := make([]string, 0, len(labels))
+	for key, label := range labels {
 		labelEnums = append(labelEnums, key)
 		objectType.Fields[key] = schema.ObjectField{
 			Description: label.Description,

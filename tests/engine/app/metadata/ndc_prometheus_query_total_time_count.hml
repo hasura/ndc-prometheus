@@ -467,6 +467,14 @@ definition:
     - name: values
       type: "[QueryResultValue!]!"
       description: An array of query result values
+    - name: collection
+      type: String!
+    - name: instance
+      type: String!
+    - name: job
+      type: String!
+    - name: otel_scope_name
+      type: String!
   graphql:
     typeName: NdcPrometheusQueryTotalTimeCount
     inputTypeName: NdcPrometheusQueryTotalTimeCount_input
@@ -487,6 +495,10 @@ definition:
           - timestamp
           - value
           - values
+          - collection
+          - instance
+          - job
+          - otel_scope_name
 
 ---
 kind: BooleanExpressionType
@@ -503,6 +515,14 @@ definition:
           booleanExpressionType: Timestamp_bool_exp
         - fieldName: value
           booleanExpressionType: Decimal_bool_exp
+        - fieldName: collection
+          booleanExpressionType: String_bool_exp
+        - fieldName: instance
+          booleanExpressionType: String_bool_exp
+        - fieldName: job
+          booleanExpressionType: String_bool_exp
+        - fieldName: otel_scope_name
+          booleanExpressionType: String_bool_exp
       comparableRelationships: []
   logicalOperators:
     enable: true
@@ -545,6 +565,18 @@ definition:
       orderByDirections:
         enableAll: true
     - fieldName: value
+      orderByDirections:
+        enableAll: true
+    - fieldName: collection
+      orderByDirections:
+        enableAll: true
+    - fieldName: instance
+      orderByDirections:
+        enableAll: true
+    - fieldName: job
+      orderByDirections:
+        enableAll: true
+    - fieldName: otel_scope_name
       orderByDirections:
         enableAll: true
   graphql:

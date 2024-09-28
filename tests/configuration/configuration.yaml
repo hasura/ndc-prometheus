@@ -8,11 +8,6 @@ connection_settings:
         env: PROMETHEUS_USERNAME
       password:
         env: PROMETHEUS_PASSWORD
-runtime:
-  flat: true
-  format:
-    timestamp: rfc3339
-    value: float64
 generator:
   metrics:
     enabled: true
@@ -213,3 +208,8 @@ metadata:
             type: String
           job:
             type: String
+runtime:
+  flat: true
+  format:
+    timestamp: rfc3339
+    value: float64

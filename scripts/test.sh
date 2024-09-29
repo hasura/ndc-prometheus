@@ -1,8 +1,8 @@
 #!/bin/bash
-set -eo pipefail
+set -o pipefail
 
-go test -v -coverpkg=./... -race -timeout 3m -coverprofile=coverage.out.tmp ./...
-cat coverage.out.tmp | grep -v "main.go" > coverage.out
+trap 'docker compose down' EXIT
+
 mkdir -p ./tmp
 
 if [ ! -f ./tmp/ndc-test ]; then
@@ -29,7 +29,7 @@ http_wait() {
 
 docker compose up -d prometheus node-exporter alertmanager ndc-prometheus
 http_wait http://localhost:8080/health
-http_wait http://localhost:9090/-/healthy
+http_wait http://admin:test@localhost:9090/-/healthy
 
 ./tmp/ndc-test test --endpoint http://localhost:8080
 

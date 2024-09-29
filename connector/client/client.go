@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
@@ -22,10 +23,12 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+var clientTracer = connector.NewTracer("PrometheusClient")
+var errEndpointRequired = errors.New("the endpoint setting is empty")
+
 // Client extends the Prometheus API client with advanced methods for the Prometheus connector
 type Client struct {
 	client api.Client
-	tracer trace.Tracer
 
 	v1.API
 	clientOptions
@@ -36,14 +39,14 @@ type Client struct {
 }
 
 // NewClient creates a new Prometheus client instance
-func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, options ...Option) (*Client, error) {
+func NewClient(ctx context.Context, cfg ClientSettings, options ...Option) (*Client, error) {
 
 	endpoint, err := cfg.URL.Get()
 	if err != nil {
-		return nil, fmt.Errorf("url: %s", err)
+		return nil, fmt.Errorf("invalid Prometheus URL: %s", err)
 	}
 	if endpoint == "" {
-		return nil, errors.New("the endpoint setting is empty")
+		return nil, errEndpointRequired
 	}
 
 	u, err := url.Parse(endpoint)
@@ -72,7 +75,6 @@ func NewClient(ctx context.Context, cfg ClientSettings, tracer trace.Tracer, opt
 
 	c := &Client{
 		client:        clientWrapper,
-		tracer:        tracer,
 		API:           v1.NewAPI(clientWrapper),
 		clientOptions: opts,
 

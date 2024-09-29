@@ -5,6 +5,12 @@ import (
 	"os"
 )
 
+var (
+	errEnvironmentValueRequired    = errors.New("require either value or valueFromEnv")
+	errEnvironmentVariableRequired = errors.New("the variable name of valueFromEnv is empty")
+	errEnvironmentEitherValueOrEnv = errors.New("only one of value or valueFromEnv is allowed")
+)
+
 // EnvironmentValue represents either a literal string or an environment reference
 type EnvironmentValue struct {
 	Value    *string `json:"value,omitempty" yaml:"value,omitempty" jsonschema:"oneof_required=value"`
@@ -28,13 +34,13 @@ func NewEnvironmentVariable(name string) EnvironmentValue {
 // Validate checks if the current instance is valid
 func (ev EnvironmentValue) Validate() error {
 	if ev.Value == nil && ev.Variable == nil {
-		return errors.New("require either value or valueFromEnv")
+		return errEnvironmentValueRequired
 	}
 	if ev.Value != nil && ev.Variable != nil {
-		return errors.New("only one of value or valueFromEnv is allowed")
+		return errEnvironmentEitherValueOrEnv
 	}
 	if ev.Variable != nil && *ev.Variable == "" {
-		return errors.New("the variable name of valueFromEnv is empty")
+		return errEnvironmentVariableRequired
 	}
 
 	return nil

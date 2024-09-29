@@ -20,7 +20,7 @@ import (
 // [instant query]: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries
 func (c *Client) Query(ctx context.Context, queryString string, timestamp any, timeout any) (model.Vector, v1.Warnings, error) {
 
-	ctx, span := c.tracer.Start(ctx, "Query")
+	ctx, span := clientTracer.Start(ctx, "Query")
 	defer span.End()
 
 	c.setQuerySpanAttributes(span, queryString)
@@ -71,7 +71,7 @@ func (c *Client) Query(ctx context.Context, queryString string, timestamp any, t
 //
 // [range query](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries)
 func (c *Client) QueryRange(ctx context.Context, queryString string, start any, end any, step any, timeout any) (model.Matrix, v1.Warnings, error) {
-	ctx, span := c.tracer.Start(ctx, "QueryRange")
+	ctx, span := clientTracer.Start(ctx, "QueryRange")
 	defer span.End()
 
 	c.setQuerySpanAttributes(span, queryString)

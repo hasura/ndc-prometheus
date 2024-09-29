@@ -39,11 +39,10 @@ func EvalCollectionRequest(request *schema.QueryRequest, arguments map[string]an
 	result := &CollectionRequest{
 		LabelExpressions: make(map[string]*LabelExpression),
 	}
-	if len(request.Query.Predicate) == 0 {
-		return result, nil
-	}
-	if err := result.evalQueryPredicate(request.Query.Predicate); err != nil {
-		return nil, err
+	if len(request.Query.Predicate) > 0 {
+		if err := result.evalQueryPredicate(request.Query.Predicate); err != nil {
+			return nil, err
+		}
 	}
 
 	if len(arguments) > 0 {

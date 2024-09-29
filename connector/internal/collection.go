@@ -154,10 +154,11 @@ func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString 
 		}
 		matrix = matrix[*qce.Request.Query.Offset:]
 	}
-	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(matrix) {
-		matrix = matrix[:*qce.Request.Query.Limit]
-	}
 	results := createQueryResultsFromMatrix(matrix, qce.Metric.Labels, qce.Runtime)
+
+	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(results) {
+		results = results[:*qce.Request.Query.Limit]
+	}
 
 	return results, nil
 }
@@ -238,7 +239,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 				return "", false, fmt.Errorf("%s: invalid int64 value %v", fn.Key, fn.Value)
 			}
 			if k != nil {
-				query = fmt.Sprintf("%s(%d, %s)", fn.Key, k, query)
+				query = fmt.Sprintf("%s(%d, %s)", fn.Key, *k, query)
 			}
 		case metadata.Quantile, metadata.LimitRatio, metadata.HistogramQuantile:
 			n, err := utils.DecodeNullableFloat[float64](fn.Value)

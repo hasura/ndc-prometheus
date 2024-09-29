@@ -15,6 +15,7 @@ var testCases = []struct {
 	Request     schema.QueryRequest
 	Predicate   CollectionRequest
 	QueryString string
+	ErrorMsg    string
 	IsEmpty     bool
 }{
 	{
@@ -32,6 +33,12 @@ var testCases = []struct {
 					},
 					{
 						"abs": true,
+					},
+					{
+						"sort_by_label_desc": []string{"job"},
+					},
+					{
+						"limitk": 2,
 					},
 				}).Encode(),
 			},
@@ -69,9 +76,11 @@ var testCases = []struct {
 				{Key: "sum", Value: []string{"job"}},
 				{Key: "max", Value: []string{}},
 				{Key: "abs", Value: true},
+				{Key: "sort_by_label_desc", Value: []string{"job"}},
+				{Key: "limitk", Value: 2},
 			},
 		},
-		QueryString: `abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))) >= 0.000000`,
+		QueryString: `limitk(2, sort_by_label_desc(abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))), "job")) >= 0.000000`,
 	},
 	{
 		Name: "label_expressions_empty",
@@ -454,6 +463,263 @@ var testCases = []struct {
 		QueryString: ``,
 		IsEmpty:     true,
 	},
+	{
+		Name: "aggregation_histogram_fraction",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"offset": schema.NewArgumentLiteral("5m").Encode(),
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"quantile": 0.1,
+					},
+					{
+						"round": 0.2,
+					},
+					{
+						"clamp": map[string]any{
+							"min": 1,
+							"max": 2,
+						},
+					},
+					{
+						"histogram_fraction": map[string]any{
+							"min": 0.1,
+							"max": 0.2,
+						},
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "quantile", Value: 0.1},
+				{Key: "round", Value: 0.2},
+				{Key: "clamp", Value: map[string]any{
+					"min": 1,
+					"max": 2,
+				}},
+				{Key: "histogram_fraction", Value: map[string]any{
+					"min": 0.1,
+					"max": 0.2,
+				}},
+			},
+		},
+		QueryString: `histogram_fraction(0.100000, 0.200000, clamp(round(quantile(0.100000, go_gc_duration_seconds offset 5m0s), 0.200000), 1.000000, 2.000000))`,
+	},
+	{
+		Name: "aggregation_holt_winters",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"holt_winters": map[string]any{
+							"sf":    0.1,
+							"tf":    0.2,
+							"range": "1m",
+						},
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "holt_winters", Value: map[string]any{
+					"sf":    0.1,
+					"tf":    0.2,
+					"range": "1m",
+				}},
+			},
+		},
+		QueryString: `holt_winters(go_gc_duration_seconds[1m], 0.100000, 0.200000)`,
+	},
+	{
+		Name: "aggregation_predict_linear",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"predict_linear": map[string]any{
+							"t":     0.1,
+							"range": "1m",
+						},
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "predict_linear", Value: map[string]any{
+					"t":     0.1,
+					"range": "1m",
+				}},
+			},
+		},
+		QueryString: `predict_linear(go_gc_duration_seconds[1m], 0.100000)`,
+	},
+	{
+		Name: "aggregation_quantile_over_time",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"quantile_over_time": map[string]any{
+							"quantile": 0.1,
+							"range":    "1m",
+						},
+					},
+					{
+						"label_join": map[string]any{
+							"dest_label":    "dest",
+							"source_labels": []string{"job", "instance"},
+							"separator":     "-",
+						},
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "quantile_over_time", Value: map[string]any{
+					"quantile": 0.1,
+					"range":    "1m",
+				}},
+				{Key: "label_join", Value: map[string]any{
+					"dest_label":    "dest",
+					"source_labels": []string{"job", "instance"},
+					"separator":     "-",
+				}},
+			},
+		},
+		QueryString: `label_join(quantile_over_time(0.100000, go_gc_duration_seconds[1m]), "dest", "-", "job", "instance")`,
+	},
+	{
+		Name: "aggregation_label_replace",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"label_replace": map[string]any{
+							"dest_label":   "dest",
+							"source_label": "job",
+							"replacement":  "",
+							"regex":        ".+",
+						},
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "label_replace", Value: map[string]any{
+					"dest_label":   "dest",
+					"source_label": "job",
+					"replacement":  "",
+					"regex":        ".+",
+				}},
+			},
+		},
+		QueryString: `label_replace(go_gc_duration_seconds, "dest", "", "job", ".+")`,
+	},
+	{
+		Name: "aggregation_clamp_max",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"clamp_max": 1,
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "clamp_max", Value: 1},
+			},
+		},
+		QueryString: `clamp_max(go_gc_duration_seconds, 1.000000)`,
+	},
+	{
+		Name: "aggregation_count_values",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"count_values": "job",
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "count_values", Value: "job"},
+			},
+		},
+		QueryString: `count_values("job", go_gc_duration_seconds)`,
+	},
+	{
+		Name: "aggregation_irate",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"irate": "1m",
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "irate", Value: "1m"},
+			},
+		},
+		QueryString: `irate(go_gc_duration_seconds[1m])`,
+	},
+	{
+		Name: "invalid_function",
+		Request: schema.QueryRequest{
+			Collection: "go_gc_duration_seconds",
+			Arguments: schema.QueryRequestArguments{
+				"fn": schema.NewArgumentLiteral([]map[string]any{
+					{
+						"test": "1m",
+					},
+				}).Encode(),
+			},
+			Query: schema.Query{},
+		},
+		Predicate: CollectionRequest{
+			LabelExpressions: map[string]*LabelExpression{},
+			Functions: []KeyValue{
+				{Key: "test", Value: "1m"},
+			},
+		},
+		QueryString: ``,
+		ErrorMsg:    "failed to evaluate the query",
+	},
 }
 
 func TestCollectionQueryExplain(t *testing.T) {
@@ -470,10 +736,14 @@ func TestCollectionQueryExplain(t *testing.T) {
 			}
 
 			request, queryString, ok, err := executor.Explain(context.TODO())
-			assert.NilError(t, err)
-			assert.DeepEqual(t, tc.Predicate, *request)
-			assert.Equal(t, tc.QueryString, queryString)
-			assert.Equal(t, !tc.IsEmpty, ok)
+			if tc.ErrorMsg != "" {
+				assert.ErrorContains(t, err, tc.ErrorMsg)
+			} else {
+				assert.NilError(t, err)
+				assert.DeepEqual(t, tc.Predicate, *request)
+				assert.Equal(t, tc.QueryString, queryString)
+				assert.Equal(t, !tc.IsEmpty, ok)
+			}
 		})
 	}
 }

@@ -87,7 +87,7 @@ func (c *PrometheusConnector) TryInitState(ctx context.Context, conf *metadata.C
 	}
 	c.rawSchema = schema.NewRawSchemaResponseUnsafe(rawSchema)
 
-	client, err := client.NewClient(ctx, conf.ConnectionSettings, metrics.Tracer, client.WithTimeout(conf.ConnectionSettings.Timeout), client.WithUnixTimeUnit(conf.Runtime.UnixTimeUnit))
+	client, err := client.NewClient(ctx, conf.ConnectionSettings, client.WithTimeout(conf.ConnectionSettings.Timeout), client.WithUnixTimeUnit(conf.Runtime.UnixTimeUnit))
 	if err != nil {
 		return nil, err
 	}

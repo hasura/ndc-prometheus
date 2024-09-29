@@ -17,11 +17,9 @@ import (
 	"github.com/hasura/ndc-prometheus/connector/types"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
-	"go.opentelemetry.io/otel"
 	"gopkg.in/yaml.v3"
 )
 
-var clientTracer = otel.Tracer("PrometheusClient")
 var bannedLabels = []string{"__name__"}
 
 type ExcludeLabels struct {
@@ -49,7 +47,7 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 		originalConfig = &defaultConfiguration
 	}
 
-	apiClient, err := client.NewClient(ctx, originalConfig.ConnectionSettings, clientTracer, nil)
+	apiClient, err := client.NewClient(ctx, originalConfig.ConnectionSettings)
 	if err != nil {
 		return err
 	}

@@ -1,12 +1,7 @@
 #!/bin/bash
-set -eo pipefail
+set -o pipefail
 
-trap 'printf "\nkilling process..." && kill $serverPID' EXIT
-
-CONFIG_PATH="./tests/prometheus"
-if [ -n "$1" ]; then
-  CONFIG_PATH="$1"
-fi
+trap 'docker compose down' EXIT
 
 mkdir -p ./tmp
 
@@ -32,10 +27,11 @@ http_wait() {
   exit 1
 }
 
-go build -o ./tmp/ndc-prometheus ./server
-./tmp/ndc-prometheus serve --configuration $CONFIG_PATH > /dev/null 2>&1 &
-serverPID=$!
-
+docker compose -f ./compose.base.yaml up -d prometheus node-exporter alertmanager ndc-prometheus
 http_wait http://localhost:8080/health
+http_wait http://admin:test@localhost:9090/-/healthy
 
 ./tmp/ndc-test test --endpoint http://localhost:8080
+
+# go tests
+go test -v -coverpkg=./connector/... -race -timeout 3m -coverprofile=coverage.out ./...

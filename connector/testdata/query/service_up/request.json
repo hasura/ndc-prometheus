@@ -1,0 +1,82 @@
+{
+  "arguments": {
+    "instance": {
+      "type": "literal",
+      "value": "localhost:9090"
+    },
+    "job": {
+      "type": "literal",
+      "value": "node"
+    },
+    "start": {
+      "type": "literal",
+      "value": "2024-09-20T00:00:00Z"
+    },
+    "step": {
+      "type": "literal",
+      "value": "1h"
+    },
+    "timeout": {
+      "type": "literal",
+      "value": "1m"
+    }
+  },
+  "collection": "service_up",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "fields": {
+              "instance": {
+                "column": "instance",
+                "type": "column"
+              },
+              "job": {
+                "column": "job",
+                "type": "column"
+              },
+              "labels": {
+                "column": "labels",
+                "type": "column"
+              },
+              "timestamp": {
+                "column": "timestamp",
+                "type": "column"
+              },
+              "value": {
+                "column": "value",
+                "type": "column"
+              },
+              "values": {
+                "column": "values",
+                "fields": {
+                  "fields": {
+                    "fields": {
+                      "timestamp": {
+                        "column": "timestamp",
+                        "type": "column"
+                      },
+                      "value": {
+                        "column": "value",
+                        "type": "column"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "type": "column"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

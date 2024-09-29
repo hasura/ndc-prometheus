@@ -1,0 +1,18 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "groups": [
+            {
+              "file": "/etc/prometheus/alert.rules",
+              "interval": 15,
+              "name": "services",
+              "rules": null
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

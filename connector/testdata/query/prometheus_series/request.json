@@ -1,0 +1,26 @@
+{
+  "arguments": {
+    "limit": {
+      "type": "literal",
+      "value": "1"
+    },
+    "match": {
+      "type": "literal",
+      "value": ["up"]
+    },
+    "start": {
+      "type": "literal",
+      "value": "1970-01-01T00:00:00Z"
+    }
+  },
+  "collection": "prometheus_series",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "type": "column"
+      }
+    }
+  }
+}

@@ -1,65 +1,7 @@
 include:
+  - path: ./compose.base.yaml
   - path: ./tests/engine/compose.yaml
 services:
-  ndc-prometheus:
-    build:
-      context: .
-    ports:
-      - 8080:8080
-    volumes:
-      - ./tests/configuration:/etc/connector:ro
-    extra_hosts:
-      - local.hasura.dev=host-gateway
-    environment:
-      CONNECTION_URL: http://prometheus:9090
-      PROMETHEUS_USERNAME: admin
-      PROMETHEUS_PASSWORD: test
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4317
-      OTEL_METRICS_EXPORTER: prometheus
-      HASURA_LOG_LEVEL: debug
-
-  prometheus:
-    image: prom/prometheus:v2.54.1
-    volumes:
-      - ./tests/prometheus/:/etc/prometheus/
-      - prometheus_data:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
-      - "--web.enable-lifecycle"
-      - "--web.config.file=/etc/prometheus/web.yml"
-      - "--enable-feature=promql-experimental-functions"
-    ports:
-      - 9090:9090
-    links:
-      - alertmanager:alertmanager
-    restart: always
-
-  node-exporter:
-    image: prom/node-exporter:v1.8.1
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - "--path.procfs=/host/proc"
-      - "--path.sysfs=/host/sys"
-      - --collector.filesystem.ignored-mount-points
-      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
-    ports:
-      - 9100:9100
-    restart: always
-
-  alertmanager:
-    image: prom/alertmanager:v0.27.0
-    ports:
-      - 9093:9093
-    volumes:
-      - ./tests/alertmanager/config.yml/:/etc/alertmanager/alertmanager.yml
-    restart: always
-
   jaeger:
     image: jaegertracing/all-in-one:1.60
     restart: always
@@ -67,6 +9,3 @@ services:
       - 16686:16686
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
-
-volumes:
-  prometheus_data: {}

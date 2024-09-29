@@ -1,0 +1,41 @@
+{
+  "arguments": {},
+  "collection": "prometheus_alerts",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "fields": {
+              "activeAt": {
+                "column": "activeAt",
+                "type": "column"
+              },
+              "annotations": {
+                "column": "annotations",
+                "type": "column"
+              },
+              "labels": {
+                "column": "labels",
+                "type": "column"
+              },
+              "state": {
+                "column": "state",
+                "type": "column"
+              },
+              "value": {
+                "column": "value",
+                "type": "column"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

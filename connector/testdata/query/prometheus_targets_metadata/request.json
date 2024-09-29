@@ -1,0 +1,54 @@
+{
+  "arguments": {
+    "limit": {
+      "type": "literal",
+      "value": "1"
+    },
+    "match_target": {
+      "type": "literal",
+      "value": "up"
+    },
+    "metric": {
+      "type": "literal",
+      "value": "up"
+    }
+  },
+  "collection": "prometheus_targets_metadata",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "fields": {
+              "help": {
+                "column": "help",
+                "type": "column"
+              },
+              "metric": {
+                "column": "metric",
+                "type": "column"
+              },
+              "target": {
+                "column": "target",
+                "type": "column"
+              },
+              "type": {
+                "column": "type",
+                "type": "column"
+              },
+              "unit": {
+                "column": "unit",
+                "type": "column"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

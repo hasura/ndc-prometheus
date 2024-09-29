@@ -203,11 +203,11 @@ type BasicAuthConfig struct {
 func (bac BasicAuthConfig) toClientConfig() (*config.BasicAuth, error) {
 	username, err := bac.Username.Get()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("basic auth username: %s", err)
 	}
 	password, err := bac.Password.Get()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("basic auth password: %s", err)
 	}
 	return &config.BasicAuth{
 		Username: username,
@@ -224,11 +224,11 @@ type AuthorizationConfig struct {
 func (hac AuthorizationConfig) toClientConfig() (*config.Authorization, error) {
 	authType, err := hac.Type.Get()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("authorization type: %s", err)
 	}
 	cred, err := hac.Credentials.Get()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("authorization credentials: %s", err)
 	}
 	return &config.Authorization{
 		Type:        authType,
@@ -251,15 +251,15 @@ type OAuth2Config struct {
 func (oc OAuth2Config) toClientConfig() (*config.OAuth2, error) {
 	clientId, err := oc.ClientID.Get()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("oauth2 client_id: %s", err)
 	}
 	clientSecret, err := oc.ClientSecret.Get()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("oauth2 client_secret: %s", err)
 	}
 	tokenURL, err := oc.TokenURL.Get()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("oauth2 token_url: %s", err)
 	}
 
 	result := &config.OAuth2{

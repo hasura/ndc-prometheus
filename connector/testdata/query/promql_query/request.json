@@ -1,0 +1,66 @@
+{
+  "arguments": {
+    "query": {
+      "type": "literal",
+      "value": "up"
+    },
+    "time": {
+      "type": "literal",
+      "value": "2024-09-28T00:00:02Z"
+    },
+    "timeout": {
+      "type": "literal",
+      "value": "1m"
+    }
+  },
+  "collection": "promql_query",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "fields": {
+              "labels": {
+                "column": "labels",
+                "type": "column"
+              },
+              "timestamp": {
+                "column": "timestamp",
+                "type": "column"
+              },
+              "value": {
+                "column": "value",
+                "type": "column"
+              },
+              "values": {
+                "column": "values",
+                "fields": {
+                  "fields": {
+                    "fields": {
+                      "timestamp": {
+                        "column": "timestamp",
+                        "type": "column"
+                      },
+                      "value": {
+                        "column": "value",
+                        "type": "column"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "type": "column"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

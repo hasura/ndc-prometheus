@@ -1,0 +1,26 @@
+{
+  "arguments": {
+    "label_name": {
+      "type": "literal",
+      "value": "job"
+    },
+    "match": {
+      "type": "literal",
+      "value": ["up"]
+    },
+    "start": {
+      "type": "literal",
+      "value": "1970-01-01T00:00:01Z"
+    }
+  },
+  "collection": "prometheus_label_values",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "type": "column"
+      }
+    }
+  }
+}

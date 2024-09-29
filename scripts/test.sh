@@ -1,13 +1,8 @@
 #!/bin/bash
 set -eo pipefail
 
-trap 'printf "\nkilling process..." && kill $serverPID' EXIT
-
-CONFIG_PATH="./tests/prometheus"
-if [ -n "$1" ]; then
-  CONFIG_PATH="$1"
-fi
-
+go test -v -coverpkg=./... -race -timeout 3m -coverprofile=coverage.out.tmp ./...
+cat coverage.out.tmp | grep -v "main.go" > coverage.out
 mkdir -p ./tmp
 
 if [ ! -f ./tmp/ndc-test ]; then
@@ -32,10 +27,12 @@ http_wait() {
   exit 1
 }
 
-go build -o ./tmp/ndc-prometheus ./server
-./tmp/ndc-prometheus serve --configuration $CONFIG_PATH > /dev/null 2>&1 &
-serverPID=$!
-
+docker compose up -d prometheus node-exporter alertmanager ndc-prometheus
 http_wait http://localhost:8080/health
+http_wait http://localhost:9090/-/healthy
 
 ./tmp/ndc-test test --endpoint http://localhost:8080
+
+# go tests
+go test -v -coverpkg=./... -race -timeout 3m -coverprofile=coverage.out.tmp ./...
+cat coverage.out.tmp | grep -v "main.go" > coverage.out

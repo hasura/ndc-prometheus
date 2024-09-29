@@ -22,7 +22,6 @@ services:
     image: prom/prometheus:v2.54.1
     volumes:
       - ./tests/prometheus/:/etc/prometheus/
-      - prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -67,6 +66,3 @@ services:
       - 16686:16686
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
-
-volumes:
-  prometheus_data: {}

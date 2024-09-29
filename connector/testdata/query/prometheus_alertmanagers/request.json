@@ -1,0 +1,50 @@
+{
+  "arguments": {},
+  "collection": "prometheus_alertmanagers",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "activeAlertManagers": {
+              "column": "activeAlertManagers",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "url": {
+                      "column": "url",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            },
+            "droppedAlertManagers": {
+              "column": "droppedAlertManagers",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "url": {
+                      "column": "url",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

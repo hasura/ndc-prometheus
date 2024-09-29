@@ -27,7 +27,7 @@ http_wait() {
   exit 1
 }
 
-docker compose up -d prometheus node-exporter alertmanager ndc-prometheus
+docker compose -f ./compose.base.yaml up -d prometheus node-exporter alertmanager ndc-prometheus
 http_wait http://localhost:8080/health
 http_wait http://admin:test@localhost:9090/-/healthy
 

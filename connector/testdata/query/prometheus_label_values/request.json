@@ -11,6 +11,10 @@
     "start": {
       "type": "literal",
       "value": "1970-01-01T00:00:01Z"
+    },
+    "end": {
+      "type": "literal",
+      "value": "1970-01-02T00:00:01Z"
     }
   },
   "collection": "prometheus_label_values",

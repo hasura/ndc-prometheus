@@ -35,4 +35,3 @@ http_wait http://admin:test@localhost:9090/-/healthy
 
 # go tests
 go test -v -coverpkg=./connector/... -race -timeout 3m -coverprofile=coverage.out ./...
-cat coverage.out.tmp | grep -v "main.go" > coverage.out

@@ -22,7 +22,7 @@ clean:
 
 .PHONY: build-configuration
 build-configuration:
-	go build -o _output/ndc-prometheus ./configuration
+	CGO_ENABLED=0 go build -o _output/ndc-prometheus ./configuration
 	
 .PHONY: build-jsonschema
 build-jsonschema:

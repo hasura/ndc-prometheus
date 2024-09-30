@@ -7,10 +7,13 @@ supportedEnvironmentVariables:
     description: The connection URL to the Prometheus server
     required: true
 commands:
-  update: ndc-prometheus update
+  update:
+    type: Dockerized
+    dockerImage: ghcr.io/hasura/ndc-prometheus-cli:{{VERSION}}
+    commandArgs: ["update"]
 cliPlugin:
-  name: ndc-prometheus
-  version: {{VERSION}} 
+  type: Docker
+  dockerImage: ghcr.io/hasura/ndc-prometheus-cli:{{VERSION}}
 dockerComposeWatch:
   # copy config files into the existing container and restart it
   - path: ./configuration.yaml

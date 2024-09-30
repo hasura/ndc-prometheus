@@ -22,8 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with:
-          go-version: "1.22"
       - name: Format
         run: diff -u <(echo -n) <(gofmt -d -s .)
       - name: Vet

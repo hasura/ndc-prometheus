@@ -1,0 +1,18 @@
+# build context at repo root: docker build -f Dockerfile .
+FROM golang:1.23 AS builder
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN make build-configuration
+
+# stage 2: production image
+FROM alpine:3.20
+
+# Copy the binary to the production image from the builder stage.
+COPY --from=builder /app/_output/ndc-prometheus /bin/ndc-prometheus-cli
+
+WORKDIR /app
+
+ENTRYPOINT ["/bin/ndc-prometheus-cli"]

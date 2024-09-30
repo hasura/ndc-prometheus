@@ -14,7 +14,6 @@ FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=builder /app/ndc-prometheus /ndc-prometheus
 
 ENV HASURA_CONFIGURATION_DIRECTORY=/etc/connector
-ENV OTEL_SERVICE_NAME=ndc_prometheus
 
 ENTRYPOINT ["/ndc-prometheus"]
 

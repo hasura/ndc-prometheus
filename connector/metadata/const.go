@@ -8,16 +8,15 @@ import (
 type ScalarName string
 
 const (
-	ScalarBoolean         ScalarName = "Boolean"
-	ScalarInt64           ScalarName = "Int64"
-	ScalarFloat64         ScalarName = "Float64"
-	ScalarString          ScalarName = "String"
-	ScalarDecimal         ScalarName = "Decimal"
-	ScalarTimestamp       ScalarName = "Timestamp"
-	ScalarLabelSet        ScalarName = "LabelSet"
-	ScalarDuration        ScalarName = "Duration"
-	ScalarRangeResolution ScalarName = "RangeResolution"
-	ScalarJSON            ScalarName = "JSON"
+	ScalarBoolean   ScalarName = "Boolean"
+	ScalarInt64     ScalarName = "Int64"
+	ScalarFloat64   ScalarName = "Float64"
+	ScalarString    ScalarName = "String"
+	ScalarDecimal   ScalarName = "Decimal"
+	ScalarTimestamp ScalarName = "Timestamp"
+	ScalarLabelSet  ScalarName = "LabelSet"
+	ScalarDuration  ScalarName = "Duration"
+	ScalarJSON      ScalarName = "JSON"
 )
 
 const (
@@ -70,12 +69,7 @@ var defaultScalars = map[string]schema.ScalarType{
 	string(ScalarDuration): {
 		AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-		Representation:      schema.NewTypeRepresentationString().Encode(),
-	},
-	string(ScalarRangeResolution): {
-		AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
-		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-		Representation:      schema.NewTypeRepresentationString().Encode(),
+		Representation:      schema.NewTypeRepresentationJSON().Encode(),
 	},
 	string(ScalarTimestamp): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
@@ -238,7 +232,7 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 			},
 			"range": schema.ObjectField{
 				Description: utils.ToPtr("The range value"),
-				Type:        schema.NewNamedType(string(ScalarRangeResolution)).Encode(),
+				Type:        schema.NewNamedType(string(ScalarDuration)).Encode(),
 			},
 		},
 	},
@@ -251,7 +245,7 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 			},
 			"range": schema.ObjectField{
 				Description: utils.ToPtr("The range value"),
-				Type:        schema.NewNamedType(string(ScalarRangeResolution)).Encode(),
+				Type:        schema.NewNamedType(string(ScalarDuration)).Encode(),
 			},
 		},
 	},
@@ -264,7 +258,7 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 			},
 			"range": schema.ObjectField{
 				Description: utils.ToPtr("The range value"),
-				Type:        schema.NewNamedType(string(ScalarRangeResolution)).Encode(),
+				Type:        schema.NewNamedType(string(ScalarDuration)).Encode(),
 			},
 		},
 	},

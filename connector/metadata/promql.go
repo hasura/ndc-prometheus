@@ -93,7 +93,7 @@ func createPromQLFunctionObjectFields(name string, labelEnumScalarName string) s
 		},
 		string(AbsentOverTime): schema.ObjectField{
 			Description: utils.ToPtr("Returns an empty vector if the range vector passed to it has any elements (floats or native histograms) and a 1-element vector with the value 1 if the range vector passed to it has no elements"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Ceil): schema.ObjectField{
 			Description: utils.ToPtr("Rounds the sample values of all elements in v up to the nearest integer value greater than or equal to v"),
@@ -101,7 +101,7 @@ func createPromQLFunctionObjectFields(name string, labelEnumScalarName string) s
 		},
 		string(Changes): schema.ObjectField{
 			Description: utils.ToPtr("Returns the number of times its value has changed within the provided time range as an instant vector"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Clamp): schema.ObjectField{
 			Description: utils.ToPtr("Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max"),
@@ -117,11 +117,11 @@ func createPromQLFunctionObjectFields(name string, labelEnumScalarName string) s
 		},
 		string(Delta): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the difference between the first and last value of each time series element in a range vector v, returning an instant vector with the given deltas and equivalent labels"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Derivative): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the per-second derivative of the time series in a range vector v, using simple linear regression"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Exponential): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the exponential function for all elements in v"),
@@ -165,15 +165,15 @@ func createPromQLFunctionObjectFields(name string, labelEnumScalarName string) s
 		},
 		string(IDelta): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the difference between the last two samples in the range vector v, returning an instant vector with the given deltas and equivalent labels"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Increase): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(IRate): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(LabelJoin): schema.ObjectField{
 			Description: utils.ToPtr("Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value"),
@@ -201,11 +201,11 @@ func createPromQLFunctionObjectFields(name string, labelEnumScalarName string) s
 		},
 		string(Rate): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the per-second average rate of increase of the time series in the range vector"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Resets): schema.ObjectField{
 			Description: utils.ToPtr("Returns the number of counter resets within the provided time range as an instant vector"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Round): schema.ObjectField{
 			Description: utils.ToPtr("Rounds the sample values of all elements in v to the nearest integer"),
@@ -245,23 +245,23 @@ func createPromQLFunctionObjectFields(name string, labelEnumScalarName string) s
 		},
 		string(AvgOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The average value of all points in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(MinOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The minimum value of all points in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(MaxOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The maximum value of all points in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(SumOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The sum of all values in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(CountOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The count of all values in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(QuantileOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The φ-quantile (0 ≤ φ ≤ 1) of the values in the specified interval"),
@@ -269,23 +269,23 @@ func createPromQLFunctionObjectFields(name string, labelEnumScalarName string) s
 		},
 		string(StddevOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The population standard deviation of the values in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(StdvarOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The population standard variance of the values in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(LastOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The most recent point value in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(PresentOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The value 1 for any series in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(MadOverTime): schema.ObjectField{
 			Description: utils.ToPtr("The median absolute deviation of all points in the specified interval"),
-			Type:        schema.NewNullableNamedType(string(ScalarRangeResolution)).Encode(),
+			Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 		},
 		string(Acos): schema.ObjectField{
 			Description: utils.ToPtr("Calculates the arccosine of all elements in v"),

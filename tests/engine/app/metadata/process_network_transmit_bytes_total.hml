@@ -90,7 +90,7 @@ definition:
         (floats or native histograms) and a 1-element vector with the value 1 if
         the vector passed to it has no elements
     - name: absent_over_time
-      type: RangeResolution
+      type: Duration
       description: Returns an empty vector if the range vector passed to it has any
         elements (floats or native histograms) and a 1-element vector with the
         value 1 if the range vector passed to it has no elements
@@ -115,7 +115,7 @@ definition:
     - name: avg
       type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: avg_over_time
-      type: RangeResolution
+      type: Duration
       description: The average value of all points in the specified interval
     - name: bottomk
       type: Int64
@@ -125,7 +125,7 @@ definition:
       description: Rounds the sample values of all elements in v up to the nearest
         integer value greater than or equal to v
     - name: changes
-      type: RangeResolution
+      type: Duration
       description: Returns the number of times its value has changed within the
         provided time range as an instant vector
     - name: clamp
@@ -149,7 +149,7 @@ definition:
     - name: count
       type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: count_over_time
-      type: RangeResolution
+      type: Duration
       description: The count of all values in the specified interval
     - name: count_values
       type: ProcessNetworkTransmitBytesTotalLabel
@@ -157,12 +157,12 @@ definition:
       type: Boolean
       description: Converts radians to degrees for all elements in v
     - name: delta
-      type: RangeResolution
+      type: Duration
       description: Calculates the difference between the first and last value of each
         time series element in a range vector v, returning an instant vector
         with the given deltas and equivalent labels
     - name: deriv
-      type: RangeResolution
+      type: Duration
       description: Calculates the per-second derivative of the time series in a range
         vector v, using simple linear regression
     - name: exp
@@ -210,17 +210,17 @@ definition:
       type: HoltWintersInput
       description: Produces a smoothed value for time series based on the range in v
     - name: idelta
-      type: RangeResolution
+      type: Duration
       description: Calculates the difference between the last two samples in the range
         vector v, returning an instant vector with the given deltas and
         equivalent labels
     - name: increase
-      type: RangeResolution
+      type: Duration
       description: Calculates the increase in the time series in the range vector.
         Breaks in monotonicity (such as counter resets due to target restarts)
         are automatically adjusted for
     - name: irate
-      type: RangeResolution
+      type: Duration
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
@@ -235,7 +235,7 @@ definition:
         returned timeseries will be the expansion of replacement, together with
         the original labels in the input
     - name: last_over_time
-      type: RangeResolution
+      type: Duration
       description: The most recent point value in the specified interval
     - name: limit_ratio
       type: Float64
@@ -254,24 +254,24 @@ definition:
       type: Boolean
       description: Calculates the decimal logarithm for all elements in v
     - name: mad_over_time
-      type: RangeResolution
+      type: Duration
       description: The median absolute deviation of all points in the specified interval
     - name: max
       type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: max_over_time
-      type: RangeResolution
+      type: Duration
       description: The maximum value of all points in the specified interval
     - name: min
       type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: min_over_time
-      type: RangeResolution
+      type: Duration
       description: The minimum value of all points in the specified interval
     - name: predict_linear
       type: PredictLinearInput
       description: Predicts the value of time series t seconds from now, based on the
         range vector v, using simple linear regression
     - name: present_over_time
-      type: RangeResolution
+      type: Duration
       description: The value 1 for any series in the specified interval
     - name: quantile
       type: Float64
@@ -283,11 +283,11 @@ definition:
       type: Boolean
       description: Converts degrees to radians for all elements in v
     - name: rate
-      type: RangeResolution
+      type: Duration
       description: Calculates the per-second average rate of increase of the time
         series in the range vector
     - name: resets
-      type: RangeResolution
+      type: Duration
       description: Returns the number of counter resets within the provided time range
         as an instant vector
     - name: round
@@ -327,17 +327,17 @@ definition:
     - name: stddev
       type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: stddev_over_time
-      type: RangeResolution
+      type: Duration
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
       type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: stdvar_over_time
-      type: RangeResolution
+      type: Duration
       description: The population standard variance of the values in the specified interval
     - name: sum
       type: "[ProcessNetworkTransmitBytesTotalLabel!]"
     - name: sum_over_time
-      type: RangeResolution
+      type: Duration
       description: The sum of all values in the specified interval
     - name: tan
       type: Boolean

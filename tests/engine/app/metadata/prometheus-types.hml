@@ -2,34 +2,6 @@
 kind: ScalarType
 version: v1
 definition:
-  name: RangeResolution
-  graphql:
-    typeName: RangeResolution
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: RangeResolution_bool_exp
-  operand:
-    scalar:
-      type: RangeResolution
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: RangeResolution
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: RangeResolution_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
   name: NetConntrackDialerConnAttemptedTotalLabel
   graphql:
     typeName: NetConntrackDialerConnAttemptedTotalLabel
@@ -186,9 +158,9 @@ definition:
         - name: _eq
           argumentType: Timestamp!
         - name: _gt
-          argumentType: String!
+          argumentType: Timestamp!
         - name: _lt
-          argumentType: String!
+          argumentType: Timestamp!
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
           dataConnectorScalarType: Timestamp
@@ -1083,4 +1055,3 @@ definition:
     enable: true
   graphql:
     typeName: HttpClientResponseSizeBytesTotalLabel_bool_exp
-

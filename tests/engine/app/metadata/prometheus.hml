@@ -61,7 +61,7 @@ definition:
                 name: Decimal
         Duration:
           representation:
-            type: string
+            type: json
           aggregate_functions: {}
           comparison_operators: {}
         Float64:
@@ -73,35 +73,36 @@ definition:
           representation:
             type: enum
             one_of:
-              - http_method
-              - http_status_code
               - net_peer_port
               - otel_scope_name
-              - instance
-              - job
-              - net_peer_name
-              - otel_scope_version
               - le
+              - http_method
+              - net_peer_name
+              - job
+              - otel_scope_version
+              - http_status_code
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientDurationMillisecondsCountLabel:
           representation:
             type: enum
             one_of:
-              - otel_scope_name
-              - otel_scope_version
               - http_method
               - http_status_code
               - instance
               - job
               - net_peer_name
               - net_peer_port
+              - otel_scope_name
+              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientDurationMillisecondsSumLabel:
           representation:
             type: enum
             one_of:
+              - net_peer_name
               - net_peer_port
               - otel_scope_name
               - otel_scope_version
@@ -109,21 +110,20 @@ definition:
               - http_status_code
               - instance
               - job
-              - net_peer_name
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientRequestSizeBytesTotalLabel:
           representation:
             type: enum
             one_of:
+              - net_peer_port
+              - otel_scope_name
               - otel_scope_version
               - http_method
               - http_status_code
               - instance
               - job
               - net_peer_name
-              - net_peer_port
-              - otel_scope_name
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientResponseSizeBytesTotalLabel:
@@ -159,12 +159,12 @@ definition:
           representation:
             type: enum
             one_of:
+              - status
               - collection
               - http_status
               - instance
               - job
               - otel_scope_name
-              - status
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeBucketLabel:
@@ -182,10 +182,10 @@ definition:
           representation:
             type: enum
             one_of:
-              - collection
               - instance
               - job
               - otel_scope_name
+              - collection
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeSumLabel:
@@ -202,24 +202,24 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnClosedTotalLabel:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnEstablishedTotalLabel:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnFailedTotalLabel:
@@ -277,24 +277,24 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         ProcessResidentMemoryBytesLabel:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         ProcessStartTimeSecondsLabel:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         ProcessVirtualMemoryBytesLabel:
@@ -339,11 +339,6 @@ definition:
               - job
           aggregate_functions: {}
           comparison_operators: {}
-        RangeResolution:
-          representation:
-            type: string
-          aggregate_functions: {}
-          comparison_operators: {}
         String:
           representation:
             type: string
@@ -382,13 +377,13 @@ definition:
           representation:
             type: enum
             one_of:
-              - telemetry_sdk_version
-              - instance
-              - job
               - service_name
               - service_version
               - telemetry_sdk_language
               - telemetry_sdk_name
+              - telemetry_sdk_version
+              - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         Timestamp:
@@ -402,12 +397,12 @@ definition:
               type: custom
               argument_type:
                 type: named
-                name: String
+                name: Timestamp
             _lt:
               type: custom
               argument_type:
                 type: named
-                name: String
+                name: Timestamp
         TimestampTZ:
           representation:
             type: timestamptz
@@ -508,7 +503,7 @@ definition:
               description: The range value
               type:
                 type: named
-                name: RangeResolution
+                name: Duration
             sf:
               description: The lower the smoothing factor sf, the more importance is given to old data. Must be between 0 and 1
               type:
@@ -601,7 +596,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -658,7 +653,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -679,7 +674,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -729,7 +724,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -749,14 +744,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -841,21 +836,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -876,7 +871,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -918,7 +913,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -933,7 +928,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -948,7 +943,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -962,7 +957,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -990,14 +985,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -1086,7 +1081,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -1101,7 +1096,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -1116,7 +1111,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -1266,7 +1261,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -1323,7 +1318,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -1344,7 +1339,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -1394,7 +1389,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -1414,14 +1409,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -1506,21 +1501,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -1541,7 +1536,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -1583,7 +1578,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -1598,7 +1593,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -1613,7 +1608,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -1627,7 +1622,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -1655,14 +1650,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -1751,7 +1746,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -1766,7 +1761,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -1781,7 +1776,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -1931,7 +1926,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -1988,7 +1983,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -2009,7 +2004,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -2059,7 +2054,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -2079,14 +2074,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -2171,21 +2166,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -2206,7 +2201,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -2248,7 +2243,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -2263,7 +2258,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -2278,7 +2273,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -2292,7 +2287,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -2320,14 +2315,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -2416,7 +2411,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -2431,7 +2426,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -2446,7 +2441,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -2596,7 +2591,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -2653,7 +2648,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -2674,7 +2669,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -2724,7 +2719,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -2744,14 +2739,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -2836,21 +2831,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -2871,7 +2866,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -2913,7 +2908,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -2928,7 +2923,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -2943,7 +2938,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -2957,7 +2952,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -2985,14 +2980,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -3081,7 +3076,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -3096,7 +3091,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -3111,7 +3106,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -3261,7 +3256,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -3318,7 +3313,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -3339,7 +3334,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -3389,7 +3384,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -3409,14 +3404,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -3501,21 +3496,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -3536,7 +3531,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -3578,7 +3573,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -3593,7 +3588,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -3608,7 +3603,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -3622,7 +3617,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -3650,14 +3645,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -3746,7 +3741,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -3761,7 +3756,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -3776,7 +3771,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -3940,7 +3935,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -3997,7 +3992,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -4018,7 +4013,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -4068,7 +4063,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -4088,14 +4083,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -4180,21 +4175,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -4215,7 +4210,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -4257,7 +4252,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -4272,7 +4267,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -4287,7 +4282,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -4301,7 +4296,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -4329,14 +4324,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -4425,7 +4420,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -4440,7 +4435,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -4455,7 +4450,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -4593,7 +4588,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -4650,7 +4645,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -4671,7 +4666,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -4721,7 +4716,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -4741,14 +4736,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -4833,21 +4828,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -4868,7 +4863,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -4910,7 +4905,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -4925,7 +4920,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -4940,7 +4935,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -4954,7 +4949,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -4982,14 +4977,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -5078,7 +5073,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -5093,7 +5088,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -5108,7 +5103,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -5242,7 +5237,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -5299,7 +5294,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -5320,7 +5315,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -5370,7 +5365,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -5390,14 +5385,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -5482,21 +5477,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -5517,7 +5512,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -5559,7 +5554,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -5574,7 +5569,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -5589,7 +5584,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -5603,7 +5598,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -5631,14 +5626,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -5727,7 +5722,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -5742,7 +5737,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -5757,7 +5752,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -5891,7 +5886,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -5948,7 +5943,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -5969,7 +5964,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -6019,7 +6014,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -6039,14 +6034,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -6131,21 +6126,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -6166,7 +6161,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -6208,7 +6203,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -6223,7 +6218,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -6238,7 +6233,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -6252,7 +6247,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -6280,14 +6275,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -6376,7 +6371,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -6391,7 +6386,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -6406,7 +6401,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -6532,7 +6527,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -6589,7 +6584,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -6610,7 +6605,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -6660,7 +6655,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -6680,14 +6675,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -6772,21 +6767,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -6807,7 +6802,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -6849,7 +6844,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -6864,7 +6859,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -6879,7 +6874,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -6893,7 +6888,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -6921,14 +6916,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -7017,7 +7012,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -7032,7 +7027,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -7047,7 +7042,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -7173,7 +7168,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -7230,7 +7225,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -7251,7 +7246,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -7301,7 +7296,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -7321,14 +7316,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -7413,21 +7408,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -7448,7 +7443,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -7490,7 +7485,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -7505,7 +7500,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -7520,7 +7515,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -7534,7 +7529,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -7562,14 +7557,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -7658,7 +7653,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -7673,7 +7668,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -7688,7 +7683,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -7814,7 +7809,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -7871,7 +7866,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -7892,7 +7887,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -7942,7 +7937,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -7962,14 +7957,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -8054,21 +8049,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -8089,7 +8084,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -8131,7 +8126,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -8146,7 +8141,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -8161,7 +8156,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -8175,7 +8170,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -8203,14 +8198,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -8299,7 +8294,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -8314,7 +8309,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -8329,7 +8324,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -8459,7 +8454,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -8516,7 +8511,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -8537,7 +8532,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -8587,7 +8582,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -8607,14 +8602,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -8699,21 +8694,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -8734,7 +8729,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -8776,7 +8771,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -8791,7 +8786,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -8806,7 +8801,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -8820,7 +8815,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -8848,14 +8843,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -8944,7 +8939,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -8959,7 +8954,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -8974,7 +8969,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -9108,7 +9103,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -9165,7 +9160,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -9186,7 +9181,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -9236,7 +9231,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -9256,14 +9251,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -9348,21 +9343,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -9383,7 +9378,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -9425,7 +9420,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -9440,7 +9435,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -9455,7 +9450,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -9469,7 +9464,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -9497,14 +9492,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -9593,7 +9588,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -9608,7 +9603,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -9623,7 +9618,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -9702,7 +9697,7 @@ definition:
               description: The range value
               type:
                 type: named
-                name: RangeResolution
+                name: Duration
             t:
               description: Number of seconds from now
               type:
@@ -9762,7 +9757,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -9819,7 +9814,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -9840,7 +9835,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -9890,7 +9885,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -9910,14 +9905,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -10002,21 +9997,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -10037,7 +10032,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -10079,7 +10074,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -10094,7 +10089,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -10109,7 +10104,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -10123,7 +10118,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -10151,14 +10146,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -10247,7 +10242,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -10262,7 +10257,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -10277,7 +10272,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -10403,7 +10398,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -10460,7 +10455,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -10481,7 +10476,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -10531,7 +10526,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -10551,14 +10546,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -10643,21 +10638,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -10678,7 +10673,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -10720,7 +10715,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -10735,7 +10730,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -10750,7 +10745,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -10764,7 +10759,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -10792,14 +10787,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -10888,7 +10883,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -10903,7 +10898,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -10918,7 +10913,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -11044,7 +11039,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -11101,7 +11096,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -11122,7 +11117,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -11172,7 +11167,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -11192,14 +11187,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -11284,21 +11279,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -11319,7 +11314,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -11361,7 +11356,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -11376,7 +11371,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -11391,7 +11386,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -11405,7 +11400,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -11433,14 +11428,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -11529,7 +11524,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -11544,7 +11539,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -11559,7 +11554,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -11685,7 +11680,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -11742,7 +11737,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -11763,7 +11758,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -11813,7 +11808,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -11833,14 +11828,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -11925,21 +11920,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -11960,7 +11955,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -12002,7 +11997,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -12017,7 +12012,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -12032,7 +12027,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -12046,7 +12041,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -12074,14 +12069,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -12170,7 +12165,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -12185,7 +12180,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -12200,7 +12195,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -12326,7 +12321,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -12383,7 +12378,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -12404,7 +12399,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -12454,7 +12449,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -12474,14 +12469,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -12566,21 +12561,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -12601,7 +12596,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -12643,7 +12638,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -12658,7 +12653,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -12673,7 +12668,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -12687,7 +12682,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -12715,14 +12710,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -12811,7 +12806,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -12826,7 +12821,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -12841,7 +12836,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -12967,7 +12962,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -13024,7 +13019,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -13045,7 +13040,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -13095,7 +13090,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -13115,14 +13110,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -13207,21 +13202,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -13242,7 +13237,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -13284,7 +13279,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -13299,7 +13294,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -13314,7 +13309,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -13328,7 +13323,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -13356,14 +13351,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -13452,7 +13447,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -13467,7 +13462,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -13482,7 +13477,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -13608,7 +13603,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -13665,7 +13660,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -13686,7 +13681,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -13736,7 +13731,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -13756,14 +13751,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -13848,21 +13843,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -13883,7 +13878,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -13925,7 +13920,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -13940,7 +13935,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -13955,7 +13950,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -13969,7 +13964,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -13997,14 +13992,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -14093,7 +14088,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -14108,7 +14103,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -14123,7 +14118,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -14249,7 +14244,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -14306,7 +14301,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -14327,7 +14322,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -14377,7 +14372,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -14397,14 +14392,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -14489,21 +14484,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -14524,7 +14519,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -14566,7 +14561,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -14581,7 +14576,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -14596,7 +14591,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -14610,7 +14605,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -14638,14 +14633,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -14734,7 +14729,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -14749,7 +14744,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -14764,7 +14759,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -14890,7 +14885,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -14947,7 +14942,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -14968,7 +14963,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -15018,7 +15013,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -15038,14 +15033,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -15130,21 +15125,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -15165,7 +15160,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -15207,7 +15202,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -15222,7 +15217,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -15237,7 +15232,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -15251,7 +15246,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -15279,14 +15274,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -15375,7 +15370,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -15390,7 +15385,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -15405,7 +15400,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -15562,7 +15557,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -15619,7 +15614,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -15640,7 +15635,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -15690,7 +15685,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -15710,14 +15705,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -15802,21 +15797,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -15837,7 +15832,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -15879,7 +15874,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -15894,7 +15889,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -15909,7 +15904,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -15923,7 +15918,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -15951,14 +15946,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -16047,7 +16042,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -16062,7 +16057,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -16077,7 +16072,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -16203,7 +16198,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -16260,7 +16255,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -16281,7 +16276,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -16331,7 +16326,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -16351,14 +16346,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -16443,21 +16438,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -16478,7 +16473,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -16520,7 +16515,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -16535,7 +16530,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -16550,7 +16545,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -16564,7 +16559,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -16592,14 +16587,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -16688,7 +16683,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -16703,7 +16698,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -16718,7 +16713,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -16848,7 +16843,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -16905,7 +16900,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -16926,7 +16921,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -16976,7 +16971,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -16996,14 +16991,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -17088,21 +17083,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -17123,7 +17118,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -17165,7 +17160,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -17180,7 +17175,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -17195,7 +17190,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -17209,7 +17204,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -17237,14 +17232,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -17333,7 +17328,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -17348,7 +17343,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -17363,7 +17358,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:
@@ -17447,7 +17442,7 @@ definition:
               description: The range value
               type:
                 type: named
-                name: RangeResolution
+                name: Duration
         QueryResultValue:
           description: A value of the query result
           fields:
@@ -17620,7 +17615,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             acos:
               description: Calculates the arccosine of all elements in v
               type:
@@ -17677,7 +17672,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             bottomk:
               description: Smallest k elements by sample value
               type:
@@ -17698,7 +17693,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             clamp:
               description: Clamps the sample values of all elements in v to have a lower limit of min and an upper limit of max
               type:
@@ -17748,7 +17743,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             count_values:
               type:
                 type: nullable
@@ -17768,14 +17763,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             deriv:
               description: Calculates the per-second derivative of the time series in a range vector v, using simple linear regression
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             exp:
               description: Calculates the exponential function for all elements in v
               type:
@@ -17860,21 +17855,21 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             increase:
               description: Calculates the increase in the time series in the range vector. Breaks in monotonicity (such as counter resets due to target restarts) are automatically adjusted for
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             irate:
               description: Calculates the per-second instant rate of increase of the time series in the range vector. This is based on the last two data points
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             label_join:
               description: Joins all the values of all the src_labels using separator and returns the timeseries with the label dst_label containing the joined value
               type:
@@ -17895,7 +17890,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             limit_ratio:
               description: "Sample elements with approximately \U0001D45F ratio if \U0001D45F > 0, and the complement of such samples if \U0001D45F = -(1.0 - \U0001D45F))"
               type:
@@ -17937,7 +17932,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             max:
               type:
                 type: nullable
@@ -17952,7 +17947,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             min:
               type:
                 type: nullable
@@ -17967,7 +17962,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             predict_linear:
               description: Predicts the value of time series t seconds from now, based on the range vector v, using simple linear regression
               type:
@@ -17981,7 +17976,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             quantile:
               description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
               type:
@@ -18009,14 +18004,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             resets:
               description: Returns the number of counter resets within the provided time range as an instant vector
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             round:
               description: Rounds the sample values of all elements in v to the nearest integer
               type:
@@ -18105,7 +18100,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             stdvar:
               type:
                 type: nullable
@@ -18120,7 +18115,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             sum:
               type:
                 type: nullable
@@ -18135,7 +18130,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: RangeResolution
+                  name: Duration
             tan:
               description: Calculates the tangent of all elements in v
               type:

@@ -7,7 +7,6 @@ on:
 env:
   DOCKER_REGISTRY: ghcr.io
   DOCKER_IMAGE_NAME: hasura/ndc-prometheus
-  DOCKER_CLI_IMAGE_NAME: hasura/ndc-prometheus-cli
 
 jobs:
   tests:
@@ -45,21 +44,6 @@ jobs:
           push: true
           tags: ${{ steps.docker-metadata.outputs.tags }}
           labels: ${{ steps.docker-metadata.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
-
-      - name: Extract metadata (tags, labels) for the CLI
-        id: docker-metadata-cli
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_CLI_IMAGE_NAME }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ${{ steps.docker-metadata-cli.outputs.tags }}
-          labels: ${{ steps.docker-metadata-cli.outputs.labels }}
-          file: Dockerfile.cli
           platforms: linux/amd64,linux/arm64
 
   build-cli-binaries:

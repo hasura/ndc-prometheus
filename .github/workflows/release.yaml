@@ -45,7 +45,7 @@ jobs:
           push: true
           tags: ${{ steps.docker-metadata.outputs.tags }}
           labels: ${{ steps.docker-metadata.outputs.labels }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,windows/amd64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
 
       - name: Extract metadata (tags, labels) for the CLI
         id: docker-metadata-cli
@@ -59,7 +59,7 @@ jobs:
           push: true
           tags: ${{ steps.docker-metadata-cli.outputs.tags }}
           labels: ${{ steps.docker-metadata-cli.outputs.labels }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,windows/amd64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
 
   build-cli-binaries:
     name: build the CLI binaries

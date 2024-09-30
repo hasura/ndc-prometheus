@@ -59,6 +59,7 @@ jobs:
           push: true
           tags: ${{ steps.docker-metadata-cli.outputs.tags }}
           labels: ${{ steps.docker-metadata-cli.outputs.labels }}
+          file: Dockerfile.cli
           platforms: linux/amd64,linux/arm64
 
   build-cli-binaries:

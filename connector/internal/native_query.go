@@ -69,7 +69,7 @@ func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*nativeQueryParame
 					}
 					argString = fmt.Sprint(argFloat)
 				case metadata.ScalarDuration:
-					duration, err := ParseRangeResolution(arg)
+					duration, err := client.ParseRangeResolution(arg, nqe.Runtime.UnixTimeUnit)
 					if err != nil {
 						return nil, "", schema.UnprocessableContentError(err.Error(), nil)
 					}

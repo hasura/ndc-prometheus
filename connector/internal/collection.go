@@ -279,7 +279,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 		case metadata.HoltWinters:
 			if !utils.IsNil(fn.Value) {
 				var hw HoltWintersInput
-				if err := hw.FromValue(fn.Value); err != nil {
+				if err := hw.FromValue(fn.Value, qce.Runtime.UnixTimeUnit); err != nil {
 					return "", false, fmt.Errorf("%s: %s", fn.Key, err)
 				}
 				query = fmt.Sprintf("%s(%s[%s], %f, %f)", fn.Key, query, hw.Range.String(), hw.Sf, hw.Tf)
@@ -287,7 +287,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 		case metadata.PredictLinear:
 			if !utils.IsNil(fn.Value) {
 				var pli PredictLinearInput
-				if err := pli.FromValue(fn.Value); err != nil {
+				if err := pli.FromValue(fn.Value, qce.Runtime.UnixTimeUnit); err != nil {
 					return "", false, fmt.Errorf("%s: %s", fn.Key, err)
 				}
 				query = fmt.Sprintf("%s(%s[%s], %f)", fn.Key, query, pli.Range.String(), pli.T)
@@ -295,7 +295,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 		case metadata.QuantileOverTime:
 			if !utils.IsNil(fn.Value) {
 				var q QuantileOverTimeInput
-				if err := q.FromValue(fn.Value); err != nil {
+				if err := q.FromValue(fn.Value, qce.Runtime.UnixTimeUnit); err != nil {
 					return "", false, fmt.Errorf("%s: %s", fn.Key, err)
 				}
 				query = fmt.Sprintf("%s(%f, %s[%s])", fn.Key, q.Quantile, query, q.Range.String())
@@ -343,7 +343,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionReques
 				query = fmt.Sprintf(`%s("%s", %s)`, fn.Key, *label, query)
 			}
 		case metadata.AbsentOverTime, metadata.Changes, metadata.Derivative, metadata.Delta, metadata.IDelta, metadata.Increase, metadata.IRate, metadata.Rate, metadata.Resets, metadata.AvgOverTime, metadata.MinOverTime, metadata.MaxOverTime, metadata.MadOverTime, metadata.SumOverTime, metadata.CountOverTime, metadata.StddevOverTime, metadata.StdvarOverTime, metadata.LastOverTime, metadata.PresentOverTime:
-			rng, err := ParseRangeResolution(fn.Value)
+			rng, err := client.ParseRangeResolution(fn.Value, qce.Runtime.UnixTimeUnit)
 			if err != nil {
 				return "", false, fmt.Errorf("%s: %s", fn.Key, err)
 			}

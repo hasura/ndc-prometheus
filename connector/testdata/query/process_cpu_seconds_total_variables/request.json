@@ -1,0 +1,45 @@
+{
+  "collection": "process_cpu_seconds_total",
+  "query": {
+    "fields": {
+      "job": { "type": "column", "column": "job", "fields": null },
+      "value": { "type": "column", "column": "value", "fields": null },
+      "timestamp": { "type": "column", "column": "timestamp", "fields": null }
+    },
+    "limit": 1,
+    "order_by": {
+      "elements": [
+        {
+          "order_direction": "desc",
+          "target": { "type": "column", "name": "job", "path": [] }
+        }
+      ]
+    },
+    "predicate": {
+      "type": "and",
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "timestamp", "path": [] },
+          "operator": "_gt",
+          "value": { "type": "scalar", "value": "2024-10-06T00:00:00Z" }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "job", "path": [] },
+          "operator": "_eq",
+          "value": { "type": "variable", "name": "$job" }
+        }
+      ]
+    }
+  },
+  "arguments": {
+    "fn": {
+      "type": "literal",
+      "value": [{ "increase": "1m" }, { "sum": ["job"] }, { "avg": ["job"] }]
+    },
+    "step": { "type": "literal", "value": "5m" }
+  },
+  "collection_relationships": {},
+  "variables": [{ "$job": "ndc-prometheus" }, { "$job": "node" }]
+}

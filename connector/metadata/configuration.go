@@ -90,6 +90,8 @@ type RuntimeSettings struct {
 	UnixTimeUnit client.UnixTimeUnit `json:"unix_time_unit" yaml:"unix_time_unit" jsonschema:"enum=s,enum=ms,default=s"`
 	// The serialization format for response fields
 	Format RuntimeFormatSettings `json:"format" yaml:"format"`
+	// The concurrency limit of queries if there are many variables in a single query
+	ConcurrencyLimit int `json:"concurrency_limit,omitempty" yaml:"concurrency_limit,omitempty"`
 }
 
 // ReadConfiguration reads the configuration from file

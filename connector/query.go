@@ -11,6 +11,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"go.opentelemetry.io/otel/codes"
+	"golang.org/x/sync/errgroup"
 )
 
 var histogramNameRegex = regexp.MustCompile(`^(\w+)_(sum|count|bucket)$`)
@@ -21,6 +22,14 @@ func (c *PrometheusConnector) Query(ctx context.Context, configuration *metadata
 	if len(requestVars) == 0 {
 		requestVars = []schema.QueryRequestVariablesElem{make(schema.QueryRequestVariablesElem)}
 	}
+
+	if len(requestVars) == 1 || c.runtime.ConcurrencyLimit <= 1 {
+		return c.execQuerySync(ctx, state, request, requestVars)
+	}
+	return c.execQueryAsync(ctx, state, request, requestVars)
+}
+
+func (c *PrometheusConnector) execQuerySync(ctx context.Context, state *metadata.State, request *schema.QueryRequest, requestVars []schema.QueryRequestVariablesElem) ([]schema.RowSet, error) {
 	rowSets := make([]schema.RowSet, len(requestVars))
 
 	for i, requestVar := range requestVars {
@@ -31,6 +40,31 @@ func (c *PrometheusConnector) Query(ctx context.Context, configuration *metadata
 		rowSets[i] = *result
 	}
 
+	return rowSets, nil
+}
+
+func (c *PrometheusConnector) execQueryAsync(ctx context.Context, state *metadata.State, request *schema.QueryRequest, requestVars []schema.QueryRequestVariablesElem) ([]schema.RowSet, error) {
+	rowSets := make([]schema.RowSet, len(requestVars))
+
+	eg, ctx := errgroup.WithContext(ctx)
+	eg.SetLimit(c.runtime.ConcurrencyLimit)
+
+	for i, requestVar := range requestVars {
+		func(index int, vars schema.QueryRequestVariablesElem) {
+			eg.Go(func() error {
+				result, err := c.execQuery(ctx, state, request, vars, index)
+				if err != nil {
+					return err
+				}
+				rowSets[index] = *result
+				return nil
+			})
+		}(i, requestVar)
+	}
+
+	if err := eg.Wait(); err != nil {
+		return nil, err
+	}
 	return rowSets, nil
 }
 

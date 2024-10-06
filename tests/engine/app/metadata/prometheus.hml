@@ -73,63 +73,64 @@ definition:
           representation:
             type: enum
             one_of:
-              - net_peer_port
-              - otel_scope_name
+              - job
+              - net_peer_name
               - le
               - http_method
-              - net_peer_name
-              - job
-              - otel_scope_version
               - http_status_code
               - instance
+              - net_peer_port
+              - otel_scope_name
+              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientDurationMillisecondsCountLabel:
           representation:
             type: enum
             one_of:
+              - otel_scope_name
+              - otel_scope_version
               - http_method
               - http_status_code
               - instance
               - job
               - net_peer_name
               - net_peer_port
-              - otel_scope_name
-              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientDurationMillisecondsSumLabel:
           representation:
             type: enum
             one_of:
-              - net_peer_name
-              - net_peer_port
-              - otel_scope_name
-              - otel_scope_version
               - http_method
               - http_status_code
               - instance
               - job
+              - net_peer_name
+              - net_peer_port
+              - otel_scope_name
+              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientRequestSizeBytesTotalLabel:
           representation:
             type: enum
             one_of:
-              - net_peer_port
-              - otel_scope_name
               - otel_scope_version
               - http_method
               - http_status_code
               - instance
               - job
               - net_peer_name
+              - net_peer_port
+              - otel_scope_name
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientResponseSizeBytesTotalLabel:
           representation:
             type: enum
             one_of:
+              - http_status_code
               - instance
               - job
               - net_peer_name
@@ -137,7 +138,6 @@ definition:
               - otel_scope_name
               - otel_scope_version
               - http_method
-              - http_status_code
           aggregate_functions: {}
           comparison_operators: {}
         Int64:
@@ -159,12 +159,12 @@ definition:
           representation:
             type: enum
             one_of:
-              - status
               - collection
               - http_status
               - instance
               - job
               - otel_scope_name
+              - status
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeBucketLabel:
@@ -182,20 +182,20 @@ definition:
           representation:
             type: enum
             one_of:
-              - instance
-              - job
               - otel_scope_name
               - collection
+              - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeSumLabel:
           representation:
             type: enum
             one_of:
-              - collection
-              - instance
               - job
               - otel_scope_name
+              - collection
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnAttemptedTotalLabel:
@@ -261,8 +261,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - instance
               - job
+              - instance
           aggregate_functions: {}
           comparison_operators: {}
         ProcessNetworkTransmitBytesTotalLabel:
@@ -285,16 +285,16 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         ProcessStartTimeSecondsLabel:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         ProcessVirtualMemoryBytesLabel:
@@ -317,9 +317,9 @@ definition:
           representation:
             type: enum
             one_of:
-              - cause
               - instance
               - job
+              - cause
           aggregate_functions: {}
           comparison_operators: {}
         PromhttpMetricHandlerRequestsInFlightLabel:
@@ -377,13 +377,13 @@ definition:
           representation:
             type: enum
             one_of:
+              - instance
+              - job
               - service_name
               - service_version
               - telemetry_sdk_language
               - telemetry_sdk_name
               - telemetry_sdk_version
-              - instance
-              - job
           aggregate_functions: {}
           comparison_operators: {}
         Timestamp:

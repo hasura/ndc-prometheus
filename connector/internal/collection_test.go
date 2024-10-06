@@ -547,7 +547,7 @@ var testCases = []struct {
 					{
 						"predict_linear": map[string]any{
 							"t":     0.1,
-							"range": "1m",
+							"range": 60,
 						},
 					},
 				}).Encode(),
@@ -559,7 +559,7 @@ var testCases = []struct {
 			Functions: []KeyValue{
 				{Key: "predict_linear", Value: map[string]any{
 					"t":     0.1,
-					"range": "1m",
+					"range": 60,
 				}},
 			},
 		},

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/utils"
@@ -40,18 +41,8 @@ func evalStepFromRange(start time.Time, end time.Time) time.Duration {
 		return time.Second
 	case difference <= time.Hour:
 		return time.Minute
-	case difference <= 3*time.Hour:
-		return 5 * time.Minute
-	case difference <= 6*time.Hour:
-		return 10 * time.Minute
-	case difference <= 12*time.Hour:
-		return 30 * time.Minute
-	case difference <= 24*time.Hour:
-		return time.Hour
-	case difference <= maxSteps*24*time.Hour:
-		return 24 * time.Hour
 	default:
-		return 30 * 24 * time.Hour
+		return difference / 60
 	}
 }
 
@@ -62,7 +53,11 @@ func ParseDuration(value any, unixTimeUnit UnixTimeUnit) (time.Duration, error) 
 		return 0, nil
 	}
 
-	kind := reflectValue.Kind()
+	return parseDurationReflection(reflectValue, reflectValue.Kind(), unixTimeUnit)
+}
+
+// parseDurationReflection parses duration from a reflection value
+func parseDurationReflection(reflectValue reflect.Value, kind reflect.Kind, unixTimeUnit UnixTimeUnit) (time.Duration, error) {
 	switch kind {
 	case reflect.Invalid:
 		return 0, nil
@@ -85,6 +80,59 @@ func ParseDuration(value any, unixTimeUnit UnixTimeUnit) (time.Duration, error) 
 	}
 }
 
+// RangeResolution represents the given range and resolution with format xx:xx
+type RangeResolution struct {
+	Range      model.Duration
+	Resolution model.Duration
+}
+
+// String implements the fmt.Stringer interface
+func (rr RangeResolution) String() string {
+	if rr.Resolution == 0 {
+		return rr.Range.String()
+	}
+	return fmt.Sprintf("%s:%s", rr.Range.String(), rr.Resolution.String())
+}
+
+// ParseRangeResolution parses the range resolution from a string
+func ParseRangeResolution(input any, unixTimeUnit UnixTimeUnit) (*RangeResolution, error) {
+	reflectValue, ok := utils.UnwrapPointerFromReflectValue(reflect.ValueOf(input))
+	if !ok {
+		return nil, nil
+	}
+
+	kind := reflectValue.Kind()
+	if kind != reflect.String {
+		rng, err := parseDurationReflection(reflectValue, kind, unixTimeUnit)
+		if err != nil {
+			return nil, fmt.Errorf("invalid range resolution %v: %s", input, err)
+		}
+		return &RangeResolution{Range: model.Duration(rng)}, nil
+	}
+
+	parts := strings.Split(reflectValue.String(), ":")
+	if parts[0] == "" {
+		return nil, fmt.Errorf("invalid range resolution %v", input)
+	}
+
+	rng, err := model.ParseDuration(parts[0])
+	if err != nil {
+		return nil, fmt.Errorf("invalid duration %s: %s", parts[0], err)
+	}
+
+	result := &RangeResolution{
+		Range: rng,
+	}
+	if len(parts) > 1 {
+		resolution, err := model.ParseDuration(parts[1])
+		if err != nil {
+			return nil, fmt.Errorf("invalid resolution %s: %s", parts[1], err)
+		}
+		result.Resolution = resolution
+	}
+	return result, nil
+}
+
 // ParseTimestamp parses timestamp from an unknown value
 func ParseTimestamp(s any, unixTimeUnit UnixTimeUnit) (*time.Time, error) {
 	reflectValue, ok := utils.UnwrapPointerFromReflectValue(reflect.ValueOf(s))
@@ -104,8 +152,10 @@ func ParseTimestamp(s any, unixTimeUnit UnixTimeUnit) (*time.Time, error) {
 			return &now, nil
 		}
 		// Input timestamps may be provided either in RFC3339 format
-		if t, err := time.Parse(time.RFC3339, strValue); err == nil {
-			return &t, nil
+		for _, format := range []string{time.RFC3339, "2006-01-02T15:04:05Z0700", "2006-01-02T15:04:05-0700", time.RFC3339Nano, time.DateOnly} {
+			if t, err := time.Parse(format, strValue); err == nil {
+				return &t, nil
+			}
 		}
 		if d, err := time.ParseDuration(strValue); err == nil {
 			result := time.Now().Add(-d)

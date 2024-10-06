@@ -464,6 +464,9 @@
         },
         "format": {
           "$ref": "#/$defs/RuntimeFormatSettings"
+        },
+        "concurrency_limit": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,

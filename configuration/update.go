@@ -21,6 +21,7 @@ import (
 )
 
 var bannedLabels = []string{"__name__"}
+var nativeQueryVariableRegex = regexp.MustCompile(`\$\{?([a-zA-Z_]\w+)\}?`)
 
 type ExcludeLabels struct {
 	Regex  *regexp.Regexp
@@ -172,12 +173,20 @@ func (uc *updateCommand) validateNativeQueries(ctx context.Context) error {
 		return nil
 	}
 
+	newNativeQueries := make(map[string]metadata.NativeQuery)
 	for key, nativeQuery := range uc.Config.Metadata.NativeOperations.Queries {
 		if _, ok := uc.Config.Metadata.Metrics[key]; ok {
 			return fmt.Errorf("duplicated native query name `%s`. That name may exist in the metrics collection", key)
 		}
 		slog.Debug(key, slog.String("type", "native_query"), slog.String("query", nativeQuery.Query))
+		args, err := findNativeQueryVariables(nativeQuery)
+		if err != nil {
+			return fmt.Errorf("%s; query: %s", err, nativeQuery.Query)
+		}
+		nativeQuery.Arguments = args
 		query := nativeQuery.Query
+
+		// validate arguments and promQL syntaxes
 		for k, v := range nativeQuery.Arguments {
 			switch v.Type {
 			case string(metadata.ScalarInt64), string(metadata.ScalarFloat64):
@@ -188,11 +197,22 @@ func (uc *updateCommand) validateNativeQueries(ctx context.Context) error {
 				return fmt.Errorf("invalid argument type `%s` in the native query `%s`", k, key)
 			}
 		}
-		_, err := uc.Client.FormatQuery(ctx, query)
+		_, err = uc.Client.FormatQuery(ctx, query)
 		if err != nil {
 			return fmt.Errorf("invalid native query %s: %s", key, err)
 		}
+
+		// format and replace $<name> to ${<name>}
+		query, err = formatNativeQueryVariables(nativeQuery.Query, nativeQuery.Arguments)
+		if err != nil {
+			return err
+		}
+
+		nativeQuery.Query = query
+		newNativeQueries[key] = nativeQuery
 	}
+
+	uc.Config.Metadata.NativeOperations.Queries = newNativeQueries
 
 	return nil
 }
@@ -256,4 +276,67 @@ func validateRegularExpressions(patterns []*regexp.Regexp, input string) bool {
 		}
 	}
 	return false
+}
+
+func findNativeQueryVariables(nq metadata.NativeQuery) (map[string]metadata.NativeQueryArgumentInfo, error) {
+	result := map[string]metadata.NativeQueryArgumentInfo{}
+	matches := nativeQueryVariableRegex.FindAllStringSubmatchIndex(nq.Query, -1)
+	if len(matches) == 0 {
+		return result, nil
+	}
+
+	queryLength := len(nq.Query)
+	for _, match := range matches {
+		if len(match) < 4 {
+			continue
+		}
+		name := nq.Query[match[2]:match[3]]
+		argumentInfo := metadata.NativeQueryArgumentInfo{}
+
+		if match[0] > 0 && nq.Query[match[0]-1] == '[' {
+			// duration variables should be bounded by square brackets
+			if match[1] >= queryLength-1 || nq.Query[match[1]] != ']' {
+				return nil, fmt.Errorf("invalid promQL range syntax")
+			}
+			argumentInfo.Type = string(metadata.ScalarDuration)
+		} else if match[0] > 0 && nq.Query[match[0]-1] == '"' {
+			// duration variables should be bounded by double quotes
+			if match[1] >= queryLength-1 || nq.Query[match[1]] != '"' {
+				return nil, fmt.Errorf("invalid promQL string syntax")
+			}
+			argumentInfo.Type = string(metadata.ScalarString)
+		}
+
+		if len(nq.Arguments) > 0 {
+			// merge the existing argument from the configuration file
+			arg, ok := nq.Arguments[name]
+			if ok {
+				argumentInfo.Description = arg.Description
+				if argumentInfo.Type == "" && arg.Type != "" {
+					argumentInfo.Type = arg.Type
+				}
+			}
+		}
+		if argumentInfo.Type == "" {
+			argumentInfo.Type = string(metadata.ScalarString)
+		}
+
+		result[name] = argumentInfo
+	}
+
+	return result, nil
+}
+
+func formatNativeQueryVariables(queryInput string, variables map[string]metadata.NativeQueryArgumentInfo) (string, error) {
+	query := queryInput
+	for key := range variables {
+		rawPattern := fmt.Sprintf(`\$\{?%s\}?`, key)
+		rg, err := regexp.Compile(rawPattern)
+		if err != nil {
+			return "", fmt.Errorf("failed to compile regular expression %s, query: %s, error: %s", rawPattern, queryInput, err)
+		}
+		query = rg.ReplaceAllLiteralString(query, fmt.Sprintf("${%s}", key))
+	}
+
+	return query, nil
 }

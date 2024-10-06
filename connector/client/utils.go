@@ -152,8 +152,10 @@ func ParseTimestamp(s any, unixTimeUnit UnixTimeUnit) (*time.Time, error) {
 			return &now, nil
 		}
 		// Input timestamps may be provided either in RFC3339 format
-		if t, err := time.Parse(time.RFC3339, strValue); err == nil {
-			return &t, nil
+		for _, format := range []string{time.RFC3339, "2006-01-02T15:04:05Z0700", "2006-01-02T15:04:05-0700", time.RFC3339Nano, time.DateOnly} {
+			if t, err := time.Parse(format, strValue); err == nil {
+				return &t, nil
+			}
 		}
 		if d, err := time.ParseDuration(strValue); err == nil {
 			result := time.Now().Add(-d)

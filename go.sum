@@ -73,8 +73,8 @@ github.com/googleapis/enterprise-certificate-proxy v0.3.4 h1:XYIDZApgAnrN1c855gT
 github.com/googleapis/enterprise-certificate-proxy v0.3.4/go.mod h1:YKe7cfqYXjKGpGvmSg28/fFvhNzinZQm8DGnaburhGA=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 h1:asbCHRVmodnJTuQ3qamDwqVOIjwqUPTYmYuemVOx+Ys=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0/go.mod h1:ggCgvZ2r7uOoQjOyu2Y1NhHmEPPzzuhWgcza5M1Ji1I=
-github.com/hasura/ndc-sdk-go v1.4.2-0.20241005173800-6d47f478310d h1:Naavbv0G5M0O00pn05y+9YnW7xqDygx/ltEGYe5I//Q=
-github.com/hasura/ndc-sdk-go v1.4.2-0.20241005173800-6d47f478310d/go.mod h1:oik0JrwuN5iZwZjZJzIRMw9uO2xDJbCXwhS1GgaRejk=
+github.com/hasura/ndc-sdk-go v1.5.0 h1:KvfzbrWBDrs21oz1xA0BvWNhKRqAX0NqLCfPyKz+l/M=
+github.com/hasura/ndc-sdk-go v1.5.0/go.mod h1:oik0JrwuN5iZwZjZJzIRMw9uO2xDJbCXwhS1GgaRejk=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
 github.com/iancoleman/strcase v0.3.0 h1:nTXanmYxhfFAMjZL34Ov6gkzEsSJZ5DbhxWjvSASxEI=

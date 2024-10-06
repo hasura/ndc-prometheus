@@ -13,8 +13,6 @@ import (
 	"github.com/prometheus/common/model"
 )
 
-const maxSteps = 11000
-
 // UnixTimeUnit the unit for unix timestamp
 type UnixTimeUnit string
 

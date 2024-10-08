@@ -22,6 +22,12 @@ import (
 
 var bannedLabels = []string{"__name__"}
 var nativeQueryVariableRegex = regexp.MustCompile(`\$\{?([a-zA-Z_]\w+)\}?`)
+var allowedMetricTypes = []model.MetricType{
+	model.MetricTypeCounter,
+	model.MetricTypeGauge,
+	model.MetricTypeHistogram,
+	model.MetricTypeGaugeHistogram,
+}
 
 type ExcludeLabels struct {
 	Regex  *regexp.Regexp
@@ -35,6 +41,8 @@ type updateCommand struct {
 	Include       []*regexp.Regexp
 	Exclude       []*regexp.Regexp
 	ExcludeLabels []ExcludeLabels
+
+	existedMetrics map[string]any
 }
 
 func introspectSchema(ctx context.Context, args *UpdateArguments) error {
@@ -54,11 +62,12 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	}
 
 	cmd := updateCommand{
-		Client:    apiClient,
-		Config:    originalConfig,
-		OutputDir: args.Dir,
-		Include:   compileRegularExpressions(originalConfig.Generator.Metrics.Include),
-		Exclude:   compileRegularExpressions(originalConfig.Generator.Metrics.Exclude),
+		Client:         apiClient,
+		Config:         originalConfig,
+		OutputDir:      args.Dir,
+		Include:        compileRegularExpressions(originalConfig.Generator.Metrics.Include),
+		Exclude:        compileRegularExpressions(originalConfig.Generator.Metrics.Exclude),
+		existedMetrics: make(map[string]any),
 	}
 
 	if originalConfig.Generator.Metrics.Enabled {
@@ -104,6 +113,9 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 	newMetrics := map[string]metadata.MetricInfo{}
 	if uc.Config.Generator.Metrics.Behavior == metadata.MetricsGenerationMerge {
 		for key, metric := range uc.Config.Metadata.Metrics {
+			if !slices.Contains(allowedMetricTypes, metric.Type) {
+				continue
+			}
 			if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) || validateRegularExpressions(uc.Exclude, key) {
 				continue
 			}
@@ -115,9 +127,25 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 		if len(info) == 0 {
 			continue
 		}
+
+		if _, ok := uc.existedMetrics[key]; ok {
+			slog.Warn(fmt.Sprintf("metric %s exists", key))
+		}
+		metricType := model.MetricType(info[0].Type)
+		if !slices.Contains(allowedMetricTypes, metricType) {
+			continue
+		}
+		switch metricType {
+		case model.MetricTypeGauge, model.MetricTypeGaugeHistogram:
+			for _, suffix := range []string{"sum", "bucket", "count"} {
+				uc.existedMetrics[fmt.Sprintf("%s_%s", key, suffix)] = true
+			}
+		default:
+			uc.existedMetrics[key] = true
+		}
+
 		if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) ||
-			validateRegularExpressions(uc.Exclude, key) ||
-			len(info) == 0 {
+			validateRegularExpressions(uc.Exclude, key) {
 			continue
 		}
 		slog.Info(key, slog.String("type", string(info[0].Type)))
@@ -239,7 +267,7 @@ var defaultConfiguration = metadata.Configuration{
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{
 			Enabled:       true,
-			Behavior:      metadata.MetricsGenerationMerge,
+			Behavior:      metadata.MetricsGenerationReplace,
 			Include:       []string{},
 			Exclude:       []string{},
 			ExcludeLabels: []metadata.ExcludeLabelsSetting{},

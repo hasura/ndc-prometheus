@@ -6,10 +6,12 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"math"
 	"os"
 	"regexp"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
@@ -17,15 +19,28 @@ import (
 	"github.com/hasura/ndc-prometheus/connector/types"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v3"
 )
 
 var bannedLabels = []string{"__name__"}
 var nativeQueryVariableRegex = regexp.MustCompile(`\$\{?([a-zA-Z_]\w+)\}?`)
+var allowedMetricTypes = []model.MetricType{
+	model.MetricTypeCounter,
+	model.MetricTypeGauge,
+	model.MetricTypeHistogram,
+	model.MetricTypeGaugeHistogram,
+}
 
 type ExcludeLabels struct {
 	Regex  *regexp.Regexp
 	Labels []string
+}
+
+// UpdateArguments represent input arguments of the `update` command
+type UpdateArguments struct {
+	Dir        string `help:"The directory where the configuration.yaml file is present" short:"d" env:"HASURA_PLUGIN_CONNECTOR_CONTEXT_PATH" default:"."`
+	Coroutines int    `help:"The maximum number of coroutines" short:"c" default:"5"`
 }
 
 type updateCommand struct {
@@ -35,6 +50,18 @@ type updateCommand struct {
 	Include       []*regexp.Regexp
 	Exclude       []*regexp.Regexp
 	ExcludeLabels []ExcludeLabels
+
+	coroutines     int
+	existedMetrics map[string]any
+	lock           sync.Mutex
+}
+
+// SetMetadataMetric sets the metadata metric item
+func (uc *updateCommand) SetMetadataMetric(key string, info metadata.MetricInfo) {
+	uc.lock.Lock()
+	defer uc.lock.Unlock()
+	uc.Config.Metadata.Metrics[key] = info
+	uc.existedMetrics[key] = true
 }
 
 func introspectSchema(ctx context.Context, args *UpdateArguments) error {
@@ -54,11 +81,13 @@ func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	}
 
 	cmd := updateCommand{
-		Client:    apiClient,
-		Config:    originalConfig,
-		OutputDir: args.Dir,
-		Include:   compileRegularExpressions(originalConfig.Generator.Metrics.Include),
-		Exclude:   compileRegularExpressions(originalConfig.Generator.Metrics.Exclude),
+		Client:         apiClient,
+		Config:         originalConfig,
+		OutputDir:      args.Dir,
+		Include:        compileRegularExpressions(originalConfig.Generator.Metrics.Include),
+		Exclude:        compileRegularExpressions(originalConfig.Generator.Metrics.Exclude),
+		coroutines:     int(math.Max(1, float64(args.Coroutines))),
+		existedMetrics: make(map[string]any),
 	}
 
 	if originalConfig.Generator.Metrics.Enabled {
@@ -101,37 +130,82 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 		return err
 	}
 
-	newMetrics := map[string]metadata.MetricInfo{}
+	existingMetrics := map[string]metadata.MetricInfo{}
 	if uc.Config.Generator.Metrics.Behavior == metadata.MetricsGenerationMerge {
 		for key, metric := range uc.Config.Metadata.Metrics {
+			if !slices.Contains(allowedMetricTypes, metric.Type) {
+				continue
+			}
 			if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) || validateRegularExpressions(uc.Exclude, key) {
 				continue
 			}
-			newMetrics[key] = metric
+			existingMetrics[key] = metric
 		}
 	}
+	uc.Config.Metadata.Metrics = make(map[string]metadata.MetricInfo)
 
-	for key, info := range metricsInfo {
-		if len(info) == 0 {
+	var eg errgroup.Group
+	eg.SetLimit(uc.coroutines)
+	for key, metricInfos := range metricsInfo {
+		if len(metricInfos) == 0 {
 			continue
 		}
-		if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) ||
-			validateRegularExpressions(uc.Exclude, key) ||
-			len(info) == 0 {
+
+		func(k string, infos []v1.Metadata) {
+			eg.Go(func() error {
+				return uc.introspectMetric(ctx, k, infos)
+			})
+		}(key, metricInfos)
+	}
+	if err := eg.Wait(); err != nil {
+		return err
+	}
+
+	// merge existing metrics
+	for key, metric := range existingMetrics {
+		if _, ok := uc.existedMetrics[key]; ok {
 			continue
 		}
-		slog.Info(key, slog.String("type", string(info[0].Type)))
-		labels, err := uc.getAllLabelsOfMetric(ctx, key, info[0])
+		uc.Config.Metadata.Metrics[key] = metric
+	}
+
+	return nil
+}
+
+func (uc *updateCommand) introspectMetric(ctx context.Context, key string, infos []v1.Metadata) error {
+	if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) || validateRegularExpressions(uc.Exclude, key) {
+		return nil
+	}
+
+	for _, info := range infos {
+		metricType := model.MetricType(info.Type)
+		if !slices.Contains(allowedMetricTypes, metricType) {
+			continue
+		}
+
+		if _, ok := uc.existedMetrics[key]; ok {
+			slog.Warn(fmt.Sprintf("metric %s exists", key))
+		}
+		switch metricType {
+		case model.MetricTypeGauge, model.MetricTypeGaugeHistogram:
+			for _, suffix := range []string{"sum", "bucket", "count"} {
+				uc.existedMetrics[fmt.Sprintf("%s_%s", key, suffix)] = true
+			}
+		}
+
+		slog.Info(key, slog.String("type", string(info.Type)))
+		labels, err := uc.getAllLabelsOfMetric(ctx, key, info)
 		if err != nil {
 			return fmt.Errorf("error when fetching labels for metric `%s`: %s", key, err)
 		}
-		newMetrics[key] = metadata.MetricInfo{
-			Type:        model.MetricType(info[0].Type),
-			Description: &info[0].Help,
+		uc.SetMetadataMetric(key, metadata.MetricInfo{
+			Type:        model.MetricType(info.Type),
+			Description: &info.Help,
 			Labels:      labels,
-		}
+		})
+		break
 	}
-	uc.Config.Metadata.Metrics = newMetrics
+
 	return nil
 }
 
@@ -239,7 +313,7 @@ var defaultConfiguration = metadata.Configuration{
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{
 			Enabled:       true,
-			Behavior:      metadata.MetricsGenerationMerge,
+			Behavior:      metadata.MetricsGenerationReplace,
 			Include:       []string{},
 			Exclude:       []string{},
 			ExcludeLabels: []metadata.ExcludeLabelsSetting{},

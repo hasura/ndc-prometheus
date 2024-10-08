@@ -13,11 +13,6 @@ import (
 	"github.com/lmittmann/tint"
 )
 
-// UpdateArguments represent input arguments of the `update` command
-type UpdateArguments struct {
-	Dir string `help:"The directory where the configuration.yaml file is present" short:"d" env:"HASURA_PLUGIN_CONNECTOR_CONTEXT_PATH" default:"."`
-}
-
 var cli struct {
 	LogLevel string          `help:"Log level." enum:"debug,info,warn,error,DEBUG,INFO,WARN,ERROR" env:"HASURA_PLUGIN_LOG_LEVEL" default:"info"`
 	Update   UpdateArguments `cmd:"" help:"Introspect metric metadata and update configuration."`

@@ -75,6 +75,7 @@ The `timestamp` and `value` fields are the result of the instant query. If the r
 - `offset`: the offset modifier allows changing the time offset for individual instant and range vectors in a query.
 - `timeout`: the evaluation timeout of the request.
 - `fn`: the array of composable PromQL functions.
+- `flat`: flatten grouped values out the root array. Use the runtime setting if the value is null.
 
 #### Aggregation
 
@@ -154,6 +155,7 @@ The native query is exposed as a read-only function with 2 required fields `job`
 - `time`: Evaluation timestamp. Use this argument if you want to run an instant query.
 - `step`: the query resolution step width in duration format or float number of seconds. The step should be explicitly set for range queries. Even though the connector can estimate the approximate step width the result may be empty due to too far interval.
 - `timeout`: the evaluation timeout of the request.
+- `flat`: flatten grouped values out the root array. Use the runtime setting if the value is null
 
 ### Prometheus APIs
 
@@ -259,7 +261,7 @@ runtime:
 
 #### Flatten values
 
-By default, values are grouped by the label set. If you want to flatten the values array set `flat=true`.
+By default, values are grouped by the label set. If you want to flatten out the values array, set `flat=true`.
 
 #### Unix timestamp's unit
 

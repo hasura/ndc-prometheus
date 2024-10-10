@@ -82,16 +82,19 @@ definition:
   fields:
     - name: abs
       type: Boolean
-      description: Returns the input vector with all sample values converted to their
+      description:
+        Returns the input vector with all sample values converted to their
         absolute value
     - name: absent
       type: Boolean
-      description: Returns an empty vector if the vector passed to it has any elements
+      description:
+        Returns an empty vector if the vector passed to it has any elements
         (floats or native histograms) and a 1-element vector with the value 1 if
         the vector passed to it has no elements
     - name: absent_over_time
       type: Duration
-      description: Returns an empty vector if the range vector passed to it has any
+      description:
+        Returns an empty vector if the range vector passed to it has any
         elements (floats or native histograms) and a 1-element vector with the
         value 1 if the range vector passed to it has no elements
     - name: acos
@@ -122,7 +125,8 @@ definition:
       description: Smallest k elements by sample value
     - name: ceil
       type: Boolean
-      description: Rounds the sample values of all elements in v up to the nearest
+      description:
+        Rounds the sample values of all elements in v up to the nearest
         integer value greater than or equal to v
     - name: changes
       type: Duration
@@ -130,15 +134,18 @@ definition:
         provided time range as an instant vector
     - name: clamp
       type: ValueBoundaryInput
-      description: Clamps the sample values of all elements in v to have a lower limit
+      description:
+        Clamps the sample values of all elements in v to have a lower limit
         of min and an upper limit of max
     - name: clamp_max
       type: Float64
-      description: Clamps the sample values of all elements in v to have an upper
+      description:
+        Clamps the sample values of all elements in v to have an upper
         limit of max
     - name: clamp_min
       type: Float64
-      description: Clamps the sample values of all elements in v to have a lower limit
+      description:
+        Clamps the sample values of all elements in v to have a lower limit
         of min
     - name: cos
       type: Boolean
@@ -158,19 +165,22 @@ definition:
       description: Converts radians to degrees for all elements in v
     - name: delta
       type: Duration
-      description: Calculates the difference between the first and last value of each
+      description:
+        Calculates the difference between the first and last value of each
         time series element in a range vector v, returning an instant vector
         with the given deltas and equivalent labels
     - name: deriv
       type: Duration
-      description: Calculates the per-second derivative of the time series in a range
+      description:
+        Calculates the per-second derivative of the time series in a range
         vector v, using simple linear regression
     - name: exp
       type: Boolean
       description: Calculates the exponential function for all elements in v
     - name: floor
       type: Boolean
-      description: Rounds the sample values of all elements in v down to the nearest
+      description:
+        Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
       type: "[OtelScopeInfoLabel!]"
@@ -181,17 +191,20 @@ definition:
         do not show up in the returned vector
     - name: histogram_count
       type: Boolean
-      description: Returns the count of observations stored in a native histogram.
+      description:
+        Returns the count of observations stored in a native histogram.
         Samples that are not native histograms are ignored and do not show up in
         the returned vector
     - name: histogram_fraction
       type: ValueBoundaryInput
-      description: Returns the estimated fraction of observations between the provided
+      description:
+        Returns the estimated fraction of observations between the provided
         lower and upper values. Samples that are not native histograms are
         ignored and do not show up in the returned vector
     - name: histogram_quantile
       type: Float64
-      description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or
+      description:
+        Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or
         from a native histogram
     - name: histogram_stddev
       type: Boolean
@@ -201,7 +214,8 @@ definition:
         do not show up in the returned vector
     - name: histogram_stdvar
       type: Boolean
-      description: Returns the estimated standard variance of observations in a native
+      description:
+        Returns the estimated standard variance of observations in a native
         histogram
     - name: histogram_sum
       type: Boolean
@@ -211,26 +225,31 @@ definition:
       description: Produces a smoothed value for time series based on the range in v
     - name: idelta
       type: Duration
-      description: Calculates the difference between the last two samples in the range
+      description:
+        Calculates the difference between the last two samples in the range
         vector v, returning an instant vector with the given deltas and
         equivalent labels
     - name: increase
       type: Duration
-      description: Calculates the increase in the time series in the range vector.
+      description:
+        Calculates the increase in the time series in the range vector.
         Breaks in monotonicity (such as counter resets due to target restarts)
         are automatically adjusted for
     - name: irate
       type: Duration
-      description: Calculates the per-second instant rate of increase of the time
+      description:
+        Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
       type: OtelScopeInfoLabelJoinInput
-      description: Joins all the values of all the src_labels using separator and
+      description:
+        Joins all the values of all the src_labels using separator and
         returns the timeseries with the label dst_label containing the joined
         value
     - name: label_replace
       type: OtelScopeInfoLabelReplaceInput
-      description: Matches the regular expression regex against the value of the label
+      description:
+        Matches the regular expression regex against the value of the label
         src_label. If it matches, the value of the label dst_label in the
         returned timeseries will be the expansion of replacement, together with
         the original labels in the input
@@ -268,7 +287,8 @@ definition:
       description: The minimum value of all points in the specified interval
     - name: predict_linear
       type: PredictLinearInput
-      description: Predicts the value of time series t seconds from now, based on the
+      description:
+        Predicts the value of time series t seconds from now, based on the
         range vector v, using simple linear regression
     - name: present_over_time
       type: Duration
@@ -284,11 +304,13 @@ definition:
       description: Converts degrees to radians for all elements in v
     - name: rate
       type: Duration
-      description: Calculates the per-second average rate of increase of the time
+      description:
+        Calculates the per-second average rate of increase of the time
         series in the range vector
     - name: resets
       type: Duration
-      description: Returns the number of counter resets within the provided time range
+      description:
+        Returns the number of counter resets within the provided time range
         as an instant vector
     - name: round
       type: Float64
@@ -298,7 +320,8 @@ definition:
       description: Returns the sample value of that single element as a scalar
     - name: sgn
       type: Boolean
-      description: "Returns a vector with all sample values converted to their sign,
+      description:
+        "Returns a vector with all sample values converted to their sign,
         defined as this: 1 if v is positive, -1 if v is negative and 0 if v is
         equal to zero"
     - name: sin
@@ -309,11 +332,13 @@ definition:
       description: Calculates the hyperbolic sine of all elements in v
     - name: sort
       type: Boolean
-      description: Returns vector elements sorted by their sample values, in ascending
+      description:
+        Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
       type: "[OtelScopeInfoLabel!]"
-      description: Returns vector elements sorted by their label values and sample
+      description:
+        Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
       type: "[OtelScopeInfoLabel!]"
@@ -347,7 +372,8 @@ definition:
       description: Calculates the hyperbolic tangent of all elements in v
     - name: timestamp
       type: Boolean
-      description: Returns the timestamp of each of the samples of the given vector as
+      description:
+        Returns the timestamp of each of the samples of the given vector as
         the number of seconds since January 1, 1970 UTC. It also works with
         histogram samples
     - name: topk
@@ -473,8 +499,6 @@ definition:
     - name: values
       type: "[QueryResultValue!]!"
       description: An array of query result values
-    - name: otel_scope_version
-      type: String!
   graphql:
     typeName: OtelScopeInfo
     inputTypeName: OtelScopeInfo_input
@@ -498,7 +522,6 @@ definition:
           - timestamp
           - value
           - values
-          - otel_scope_version
 
 ---
 kind: BooleanExpressionType
@@ -521,8 +544,6 @@ definition:
           booleanExpressionType: Timestamp_bool_exp
         - fieldName: value
           booleanExpressionType: Decimal_bool_exp
-        - fieldName: otel_scope_version
-          booleanExpressionType: String_bool_exp
       comparableRelationships: []
   logicalOperators:
     enable: true
@@ -543,11 +564,13 @@ definition:
       description: PromQL aggregation operators and functions for otel_scope_info
     - name: offset
       type: Duration
-      description: The offset modifier allows changing the time offset for individual
+      description:
+        The offset modifier allows changing the time offset for individual
         instant and range vectors in a query.
     - name: step
       type: Duration
-      description: Query resolution step width in duration format or float number of
+      description:
+        Query resolution step width in duration format or float number of
         seconds.
     - name: timeout
       type: Duration
@@ -578,9 +601,6 @@ definition:
     - fieldName: value
       orderByDirections:
         enableAll: true
-    - fieldName: otel_scope_version
-      orderByDirections:
-        enableAll: true
   graphql:
     selectMany:
       queryRootField: otel_scope_info
@@ -598,4 +618,3 @@ definition:
     - role: admin
       select:
         filter: null
-

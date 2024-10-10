@@ -42,7 +42,8 @@ ci-build-configuration: clean
 build-supergraph-test:
 	cd tests/engine && \
 		ddn connector-link update prometheus --add-all-resources --subgraph ./app/subgraph.yaml && \
-		ddn supergraph build local
+		ddn supergraph build local && \
+		docker compose up -d --build engine
 
 .PHONY: generate-api-types
 generate-api-types:

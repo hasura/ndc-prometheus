@@ -214,7 +214,7 @@ var testCases = []struct {
 		QueryString: `go_gc_duration_seconds{job!~"localhost:9090|node|prometheus"}`,
 	},
 	{
-		Name: "label_expressions_nin",
+		Name: "label_expressions_regex",
 		Request: schema.QueryRequest{
 			Collection: "go_gc_duration_seconds",
 			Arguments:  schema.QueryRequestArguments{},
@@ -243,7 +243,7 @@ var testCases = []struct {
 		QueryString: `go_gc_duration_seconds{job=~"node.*"}`,
 	},
 	{
-		Name: "label_expressions_nin",
+		Name: "label_expressions_nregex",
 		Request: schema.QueryRequest{
 			Collection: "go_gc_duration_seconds",
 			Arguments:  schema.QueryRequestArguments{},
@@ -290,31 +290,6 @@ var testCases = []struct {
 					Name: "job",
 					Expressions: []schema.ExpressionBinaryComparisonOperator{
 						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar(`["ndc-prometheus", "node", "prometheus"]`)),
-					},
-				},
-			},
-		},
-		QueryString: `go_gc_duration_seconds{job=~"ndc-prometheus|node|prometheus"}`,
-	},
-	{
-		Name: "label_expressions_in_string_pg",
-		Request: schema.QueryRequest{
-			Collection: "go_gc_duration_seconds",
-			Arguments: schema.QueryRequestArguments{
-				"timeout": schema.NewArgumentLiteral("5m").Encode(),
-			},
-			Query: schema.Query{
-				Predicate: schema.NewExpressionAnd(
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar(`{ndc-prometheus,node,prometheus}`)),
-				).Encode(),
-			},
-		},
-		Predicate: CollectionRequest{
-			LabelExpressions: map[string]*LabelExpression{
-				"job": {
-					Name: "job",
-					Expressions: []schema.ExpressionBinaryComparisonOperator{
-						*schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job", nil, nil), "_in", schema.NewComparisonValueScalar(`{ndc-prometheus,node,prometheus}`)),
 					},
 				},
 			},

@@ -12,8 +12,6 @@ import (
 	"github.com/hasura/ndc-sdk-go/utils"
 )
 
-var pgArrayStringRegex = regexp.MustCompile(`^{([\w-,]+)}$`)
-
 // LabelExpressionField the structured data of a label field expression
 type LabelExpressionField struct {
 	Value   string
@@ -222,13 +220,8 @@ func decodeStringSlice(value any) ([]string, error) {
 	var err error
 	sliceValue := []string{}
 	if str, ok := value.(string); ok {
-		matches := pgArrayStringRegex.FindStringSubmatch(str)
-		if len(matches) > 1 {
-			sliceValue = strings.Split(matches[1], ",")
-		} else {
-			// try to parse the slice from the json string
-			err = json.Unmarshal([]byte(str), &sliceValue)
-		}
+		// try to parse the slice from the json string
+		err = json.Unmarshal([]byte(str), &sliceValue)
 	} else {
 		sliceValue, err = utils.DecodeStringSlice(value)
 	}

@@ -73,12 +73,12 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
-              - net_peer_name
-              - le
               - http_method
               - http_status_code
               - instance
+              - job
+              - le
+              - net_peer_name
               - net_peer_port
               - otel_scope_name
               - otel_scope_version
@@ -88,14 +88,14 @@ definition:
           representation:
             type: enum
             one_of:
-              - otel_scope_name
-              - otel_scope_version
               - http_method
               - http_status_code
               - instance
               - job
               - net_peer_name
               - net_peer_port
+              - otel_scope_name
+              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientDurationMillisecondsSumLabel:
@@ -116,7 +116,6 @@ definition:
           representation:
             type: enum
             one_of:
-              - otel_scope_version
               - http_method
               - http_status_code
               - instance
@@ -124,12 +123,14 @@ definition:
               - net_peer_name
               - net_peer_port
               - otel_scope_name
+              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         HttpClientResponseSizeBytesTotalLabel:
           representation:
             type: enum
             one_of:
+              - http_method
               - http_status_code
               - instance
               - job
@@ -137,7 +138,6 @@ definition:
               - net_peer_port
               - otel_scope_name
               - otel_scope_version
-              - http_method
           aggregate_functions: {}
           comparison_operators: {}
         Int64:
@@ -174,28 +174,28 @@ definition:
               - collection
               - instance
               - job
-              - otel_scope_name
               - le
+              - otel_scope_name
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeCountLabel:
           representation:
             type: enum
             one_of:
-              - otel_scope_name
               - collection
               - instance
               - job
+              - otel_scope_name
           aggregate_functions: {}
           comparison_operators: {}
         NdcPrometheusQueryTotalTimeSumLabel:
           representation:
             type: enum
             one_of:
-              - job
-              - otel_scope_name
               - collection
               - instance
+              - job
+              - otel_scope_name
           aggregate_functions: {}
           comparison_operators: {}
         NetConntrackDialerConnAttemptedTotalLabel:
@@ -261,8 +261,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - job
               - instance
+              - job
           aggregate_functions: {}
           comparison_operators: {}
         ProcessNetworkTransmitBytesTotalLabel:
@@ -317,9 +317,9 @@ definition:
           representation:
             type: enum
             one_of:
+              - cause
               - instance
               - job
-              - cause
           aggregate_functions: {}
           comparison_operators: {}
         PromhttpMetricHandlerRequestsInFlightLabel:
@@ -18233,6 +18233,13 @@ definition:
         - name: http_client_duration_milliseconds_bucket
           description: Measures the duration of outbound HTTP requests.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for http_client_duration_milliseconds_bucket
               type:
@@ -18243,14 +18250,14 @@ definition:
                     type: named
                     name: HttpClientDurationMillisecondsBucketFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18269,6 +18276,13 @@ definition:
         - name: http_client_duration_milliseconds_count
           description: Measures the duration of outbound HTTP requests.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for http_client_duration_milliseconds_count
               type:
@@ -18279,14 +18293,14 @@ definition:
                     type: named
                     name: HttpClientDurationMillisecondsCountFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18305,6 +18319,13 @@ definition:
         - name: http_client_duration_milliseconds_sum
           description: Measures the duration of outbound HTTP requests.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for http_client_duration_milliseconds_sum
               type:
@@ -18315,14 +18336,14 @@ definition:
                     type: named
                     name: HttpClientDurationMillisecondsSumFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18341,6 +18362,13 @@ definition:
         - name: http_client_request_size_bytes_total
           description: Measures the size of HTTP request messages.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for http_client_request_size_bytes_total
               type:
@@ -18351,14 +18379,14 @@ definition:
                     type: named
                     name: HttpClientRequestSizeBytesTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18377,6 +18405,13 @@ definition:
         - name: http_client_response_size_bytes_total
           description: Measures the size of HTTP response messages.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for http_client_response_size_bytes_total
               type:
@@ -18387,14 +18422,14 @@ definition:
                     type: named
                     name: HttpClientResponseSizeBytesTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18413,6 +18448,13 @@ definition:
         - name: ndc_prometheus_query_total
           description: Total number of query requests
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for ndc_prometheus_query_total
               type:
@@ -18423,14 +18465,14 @@ definition:
                     type: named
                     name: NdcPrometheusQueryTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18449,6 +18491,13 @@ definition:
         - name: ndc_prometheus_query_total_time_bucket
           description: Total time taken to plan and execute a query, in seconds
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for ndc_prometheus_query_total_time_bucket
               type:
@@ -18459,14 +18508,14 @@ definition:
                     type: named
                     name: NdcPrometheusQueryTotalTimeBucketFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18485,6 +18534,13 @@ definition:
         - name: ndc_prometheus_query_total_time_count
           description: Total time taken to plan and execute a query, in seconds
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for ndc_prometheus_query_total_time_count
               type:
@@ -18495,14 +18551,14 @@ definition:
                     type: named
                     name: NdcPrometheusQueryTotalTimeCountFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18521,6 +18577,13 @@ definition:
         - name: ndc_prometheus_query_total_time_sum
           description: Total time taken to plan and execute a query, in seconds
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for ndc_prometheus_query_total_time_sum
               type:
@@ -18531,14 +18594,14 @@ definition:
                     type: named
                     name: NdcPrometheusQueryTotalTimeSumFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18557,6 +18620,13 @@ definition:
         - name: net_conntrack_dialer_conn_attempted_total
           description: Total number of connections attempted by the given dialer a given name.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for net_conntrack_dialer_conn_attempted_total
               type:
@@ -18567,14 +18637,14 @@ definition:
                     type: named
                     name: NetConntrackDialerConnAttemptedTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18593,6 +18663,13 @@ definition:
         - name: net_conntrack_dialer_conn_closed_total
           description: Total number of connections closed which originated from the dialer of a given name.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for net_conntrack_dialer_conn_closed_total
               type:
@@ -18603,14 +18680,14 @@ definition:
                     type: named
                     name: NetConntrackDialerConnClosedTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18629,6 +18706,13 @@ definition:
         - name: net_conntrack_dialer_conn_established_total
           description: Total number of connections successfully established by the given dialer a given name.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for net_conntrack_dialer_conn_established_total
               type:
@@ -18639,14 +18723,14 @@ definition:
                     type: named
                     name: NetConntrackDialerConnEstablishedTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18665,6 +18749,13 @@ definition:
         - name: net_conntrack_dialer_conn_failed_total
           description: Total number of connections failed to dial by the dialer a given name.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for net_conntrack_dialer_conn_failed_total
               type:
@@ -18675,14 +18766,14 @@ definition:
                     type: named
                     name: NetConntrackDialerConnFailedTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18701,6 +18792,13 @@ definition:
         - name: otel_scope_info
           description: Instrumentation Scope metadata
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for otel_scope_info
               type:
@@ -18711,14 +18809,14 @@ definition:
                     type: named
                     name: OtelScopeInfoFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18737,6 +18835,13 @@ definition:
         - name: process_cpu_seconds_total
           description: Total user and system CPU time spent in seconds.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_cpu_seconds_total
               type:
@@ -18747,14 +18852,14 @@ definition:
                     type: named
                     name: ProcessCpuSecondsTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18773,6 +18878,13 @@ definition:
         - name: process_max_fds
           description: Maximum number of open file descriptors.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_max_fds
               type:
@@ -18783,14 +18895,14 @@ definition:
                     type: named
                     name: ProcessMaxFdsFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18809,6 +18921,13 @@ definition:
         - name: process_network_receive_bytes_total
           description: Number of bytes received by the process over the network.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_network_receive_bytes_total
               type:
@@ -18819,14 +18938,14 @@ definition:
                     type: named
                     name: ProcessNetworkReceiveBytesTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18845,6 +18964,13 @@ definition:
         - name: process_network_transmit_bytes_total
           description: Number of bytes sent by the process over the network.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_network_transmit_bytes_total
               type:
@@ -18855,14 +18981,14 @@ definition:
                     type: named
                     name: ProcessNetworkTransmitBytesTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18881,6 +19007,13 @@ definition:
         - name: process_open_fds
           description: Number of open file descriptors.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_open_fds
               type:
@@ -18891,14 +19024,14 @@ definition:
                     type: named
                     name: ProcessOpenFdsFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18917,6 +19050,13 @@ definition:
         - name: process_resident_memory_bytes
           description: Resident memory size in bytes.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_resident_memory_bytes
               type:
@@ -18927,14 +19067,14 @@ definition:
                     type: named
                     name: ProcessResidentMemoryBytesFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18953,6 +19093,13 @@ definition:
         - name: process_start_time_seconds
           description: Start time of the process since unix epoch in seconds.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_start_time_seconds
               type:
@@ -18963,14 +19110,14 @@ definition:
                     type: named
                     name: ProcessStartTimeSecondsFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -18989,6 +19136,13 @@ definition:
         - name: process_virtual_memory_bytes
           description: Virtual memory size in bytes.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_virtual_memory_bytes
               type:
@@ -18999,14 +19153,14 @@ definition:
                     type: named
                     name: ProcessVirtualMemoryBytesFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -19025,6 +19179,13 @@ definition:
         - name: process_virtual_memory_max_bytes
           description: Maximum amount of virtual memory available in bytes.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for process_virtual_memory_max_bytes
               type:
@@ -19035,14 +19196,14 @@ definition:
                     type: named
                     name: ProcessVirtualMemoryMaxBytesFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -19061,6 +19222,13 @@ definition:
         - name: promhttp_metric_handler_errors_total
           description: Total number of internal errors encountered by the promhttp metric handler.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for promhttp_metric_handler_errors_total
               type:
@@ -19071,14 +19239,14 @@ definition:
                     type: named
                     name: PromhttpMetricHandlerErrorsTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -19097,6 +19265,13 @@ definition:
         - name: promhttp_metric_handler_requests_in_flight
           description: Current number of scrapes being served.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for promhttp_metric_handler_requests_in_flight
               type:
@@ -19107,14 +19282,14 @@ definition:
                     type: named
                     name: PromhttpMetricHandlerRequestsInFlightFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -19133,6 +19308,13 @@ definition:
         - name: promhttp_metric_handler_requests_total
           description: Total number of scrapes by HTTP status code.
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for promhttp_metric_handler_requests_total
               type:
@@ -19143,14 +19325,14 @@ definition:
                     type: named
                     name: PromhttpMetricHandlerRequestsTotalFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -19169,6 +19351,13 @@ definition:
         - name: target_info
           description: Target metadata
           arguments:
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             fn:
               description: PromQL aggregation operators and functions for target_info
               type:
@@ -19179,14 +19368,14 @@ definition:
                     type: named
                     name: TargetInfoFunctions
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query.
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Duration
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -19364,6 +19553,13 @@ definition:
                 underlying_type:
                   type: named
                   name: Timestamp
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             query:
               description: The raw promQL query
               type:
@@ -19377,7 +19573,7 @@ definition:
                   type: named
                   name: Timestamp
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:
@@ -19411,6 +19607,13 @@ definition:
                 underlying_type:
                   type: named
                   name: Timestamp
+            flat:
+              description: Flatten nested the values group to the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             instance:
               type:
                 type: named
@@ -19427,7 +19630,7 @@ definition:
                   type: named
                   name: Timestamp
             step:
-              description: Query resolution step width in duration format or float number of seconds.
+              description: Query resolution step width in duration format or float number of seconds
               type:
                 type: nullable
                 underlying_type:

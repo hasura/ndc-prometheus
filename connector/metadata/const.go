@@ -265,6 +265,7 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 }
 
 const (
+	ArgumentKeyFlat      = "flat"
 	ArgumentKeyTime      = "time"
 	ArgumentKeyTimeout   = "timeout"
 	ArgumentKeyStart     = "start"
@@ -293,11 +294,15 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 		Type:        schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
 	},
 	ArgumentKeyStep: {
-		Description: utils.ToPtr("Query resolution step width in duration format or float number of seconds."),
+		Description: utils.ToPtr("Query resolution step width in duration format or float number of seconds"),
 		Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
 	ArgumentKeyOffset: {
-		Description: utils.ToPtr("The offset modifier allows changing the time offset for individual instant and range vectors in a query."),
+		Description: utils.ToPtr("The offset modifier allows changing the time offset for individual instant and range vectors in a query"),
 		Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
+	},
+	ArgumentKeyFlat: {
+		Description: utils.ToPtr("Flatten nested the values group to the root array"),
+		Type:        schema.NewNullableNamedType(string(ScalarBoolean)).Encode(),
 	},
 }

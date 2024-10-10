@@ -1055,3 +1055,44 @@ definition:
     enable: true
   graphql:
     typeName: HttpClientResponseSizeBytesTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Timestamp
+  representation: Timestamp
+  graphql:
+    comparisonExpressionTypeName: Timestamp_comparison_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Decimal
+  representation: Decimal
+  graphql:
+    comparisonExpressionTypeName: Decimal_comparison_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: JSON
+  representation: JSON
+  graphql:
+    comparisonExpressionTypeName: JSON_comparison_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: String
+  representation: String
+  graphql:
+    comparisonExpressionTypeName: String_comparison_exp
+

@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
@@ -109,6 +110,7 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo
 	objectName := strcase.ToCamel(name)
 	scb.ObjectTypes[objectName] = objectType
 
+	slices.Sort(labelEnums)
 	labelEnumScalarName := fmt.Sprintf("%sLabel", objectName)
 	scalarType := schema.NewScalarType()
 	scalarType.Representation = schema.NewTypeRepresentationEnum(labelEnums).Encode()

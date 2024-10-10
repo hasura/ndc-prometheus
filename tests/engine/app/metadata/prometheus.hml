@@ -238,7 +238,6 @@ definition:
               - instance
               - job
               - otel_scope_name
-              - otel_scope_version
           aggregate_functions: {}
           comparison_operators: {}
         ProcessCpuSecondsTotalLabel:
@@ -3865,6 +3864,51 @@ definition:
               type:
                 type: named
                 name: String
+        NativeQueryLabelBoolExp:
+          description: The boolean expression for native query labels
+          fields:
+            _eq:
+              description: The equality operator
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            _in:
+              description: The in-array operator
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            _neq:
+              description: The not-equality operator
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            _nin:
+              description: The not-in-array operator
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            _nregex:
+              description: The falsy regular expression operator
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            _regex:
+              description: The regular expression operator
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         NdcPrometheusQueryTotal:
           fields:
             collection:
@@ -9057,10 +9101,6 @@ definition:
                 type: named
                 name: LabelSet
             otel_scope_name:
-              type:
-                type: named
-                name: String
-            otel_scope_version:
               type:
                 type: named
                 name: String
@@ -17509,6 +17549,21 @@ definition:
                 element_type:
                   type: named
                   name: RuleGroup
+        ServiceUpBoolExp:
+          description: Boolean expression of the native query service_up
+          fields:
+            instance:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NativeQueryLabelBoolExp
+            job:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: NativeQueryLabelBoolExp
         ServiceUpResult:
           fields:
             instance:
@@ -18234,7 +18289,7 @@ definition:
           description: Measures the duration of outbound HTTP requests.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18277,7 +18332,7 @@ definition:
           description: Measures the duration of outbound HTTP requests.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18320,7 +18375,7 @@ definition:
           description: Measures the duration of outbound HTTP requests.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18363,7 +18418,7 @@ definition:
           description: Measures the size of HTTP request messages.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18406,7 +18461,7 @@ definition:
           description: Measures the size of HTTP response messages.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18449,7 +18504,7 @@ definition:
           description: Total number of query requests
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18492,7 +18547,7 @@ definition:
           description: Total time taken to plan and execute a query, in seconds
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18535,7 +18590,7 @@ definition:
           description: Total time taken to plan and execute a query, in seconds
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18578,7 +18633,7 @@ definition:
           description: Total time taken to plan and execute a query, in seconds
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18621,7 +18676,7 @@ definition:
           description: Total number of connections attempted by the given dialer a given name.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18664,7 +18719,7 @@ definition:
           description: Total number of connections closed which originated from the dialer of a given name.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18707,7 +18762,7 @@ definition:
           description: Total number of connections successfully established by the given dialer a given name.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18750,7 +18805,7 @@ definition:
           description: Total number of connections failed to dial by the dialer a given name.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18793,7 +18848,7 @@ definition:
           description: Instrumentation Scope metadata
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18836,7 +18891,7 @@ definition:
           description: Total user and system CPU time spent in seconds.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18879,7 +18934,7 @@ definition:
           description: Maximum number of open file descriptors.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18922,7 +18977,7 @@ definition:
           description: Number of bytes received by the process over the network.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -18965,7 +19020,7 @@ definition:
           description: Number of bytes sent by the process over the network.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19008,7 +19063,7 @@ definition:
           description: Number of open file descriptors.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19051,7 +19106,7 @@ definition:
           description: Resident memory size in bytes.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19094,7 +19149,7 @@ definition:
           description: Start time of the process since unix epoch in seconds.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19137,7 +19192,7 @@ definition:
           description: Virtual memory size in bytes.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19180,7 +19235,7 @@ definition:
           description: Maximum amount of virtual memory available in bytes.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19223,7 +19278,7 @@ definition:
           description: Total number of internal errors encountered by the promhttp metric handler.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19266,7 +19321,7 @@ definition:
           description: Current number of scrapes being served.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19309,7 +19364,7 @@ definition:
           description: Total number of scrapes by HTTP status code.
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19352,7 +19407,7 @@ definition:
           description: Target metadata
           arguments:
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19554,7 +19609,7 @@ definition:
                   type: named
                   name: Timestamp
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19608,7 +19663,7 @@ definition:
                   type: named
                   name: Timestamp
             flat:
-              description: Flatten nested the values group to the root array
+              description: Flatten grouped values out the root array
               type:
                 type: nullable
                 underlying_type:
@@ -19650,6 +19705,13 @@ definition:
                 underlying_type:
                   type: named
                   name: Duration
+            where:
+              description: Boolean expression of the native query service_up
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ServiceUpBoolExp
           result_type:
             type: array
             element_type:

@@ -74,6 +74,9 @@ definition:
     - name: flat
       type: Boolean
       description: Flatten nested the values group to the root array
+    - name: where
+      type: ServiceUpBoolExp
+      description: Boolean expression of the native query service_up
   source:
     dataConnectorName: prometheus
     dataConnectorCommand:
@@ -90,4 +93,82 @@ definition:
   permissions:
     - role: admin
       allowExecution: true
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: NativeQueryLabelBoolExp
+  description: The boolean expression for native query labels
+  fields:
+    - name: _eq
+      type: String
+      description: The equality operator
+    - name: _in
+      type: JSON
+      description: The in-array operator
+    - name: _neq
+      type: String
+      description: The not-equality operator
+    - name: _nin
+      type: JSON
+      description: The not-in-array operator
+    - name: _nregex
+      type: String
+      description: The falsy regular expression operator
+    - name: _regex
+      type: String
+      description: The regular expression operator
+  graphql:
+    typeName: NativeQueryLabelBoolExp
+    inputTypeName: NativeQueryLabelBoolExp_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: NativeQueryLabelBoolExp
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: NativeQueryLabelBoolExp
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - _eq
+          - _in
+          - _neq
+          - _nin
+          - _nregex
+          - _regex
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ServiceUpBoolExp
+  description: Boolean expression of the native query service_up
+  fields:
+    - name: instance
+      type: NativeQueryLabelBoolExp
+    - name: job
+      type: NativeQueryLabelBoolExp
+  graphql:
+    typeName: ServiceUpBoolExp
+    inputTypeName: ServiceUpBoolExp_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: ServiceUpBoolExp
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ServiceUpBoolExp
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - instance
+          - job
 

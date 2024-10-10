@@ -153,57 +153,6 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo
 	return nil
 }
 
-func (scb *connectorSchemaBuilder) buildNativeQueries() error {
-	for name, nq := range scb.Metadata.NativeOperations.Queries {
-		if err := scb.checkDuplicatedOperation(name); err != nil {
-			return err
-		}
-		if err := scb.buildNativeQuery(name, &nq); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (scb *connectorSchemaBuilder) buildNativeQuery(name string, query *NativeQuery) error {
-	fn := schema.FunctionInfo{
-		Name:        name,
-		Description: query.Description,
-		Arguments:   createNativeQueryArguments(),
-	}
-	for key, arg := range query.Arguments {
-		if _, ok := fn.Arguments[key]; ok {
-			return fmt.Errorf("argument `%s` is already used by the function", key)
-		}
-		fn.Arguments[key] = schema.ArgumentInfo{
-			Description: arg.Description,
-			Type:        schema.NewNamedType(string(ScalarString)).Encode(),
-		}
-	}
-
-	if len(query.Labels) > 0 {
-		objectType := schema.ObjectType{
-			Fields: createQueryResultValuesObjectFields(),
-		}
-
-		for key, label := range query.Labels {
-			objectType.Fields[key] = schema.ObjectField{
-				Description: label.Description,
-				Type:        schema.NewNamedType(string(ScalarString)).Encode(),
-			}
-		}
-
-		objectName := fmt.Sprintf("%sResult", strcase.ToCamel(name))
-		scb.ObjectTypes[objectName] = objectType
-		fn.ResultType = schema.NewArrayType(schema.NewNamedType(objectName)).Encode()
-	} else {
-		fn.ResultType = schema.NewArrayType(schema.NewNamedType(objectName_QueryResultValues)).Encode()
-	}
-
-	scb.Functions[name] = fn
-	return nil
-}
-
 func (scb *connectorSchemaBuilder) checkDuplicatedOperation(name string) error {
 	err := fmt.Errorf("duplicated operation name: %s", name)
 	if _, ok := scb.Functions[name]; ok {

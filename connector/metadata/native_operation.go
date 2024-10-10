@@ -7,6 +7,7 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/iancoleman/strcase"
 )
 
 // The variable syntax for native queries is ${<name>} which is compatible with Grafana
@@ -37,6 +38,76 @@ type NativeQuery struct {
 	Labels map[string]LabelInfo `json:"labels" yaml:"labels"`
 	// Information of input arguments
 	Arguments map[string]NativeQueryArgumentInfo `json:"arguments" yaml:"arguments"`
+}
+
+func (scb *connectorSchemaBuilder) buildNativeQueries() error {
+	for name, nq := range scb.Metadata.NativeOperations.Queries {
+		if err := scb.checkDuplicatedOperation(name); err != nil {
+			return err
+		}
+		if err := scb.buildNativeQuery(name, &nq); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (scb *connectorSchemaBuilder) buildNativeQuery(name string, query *NativeQuery) error {
+	fn := schema.FunctionInfo{
+		Name:        name,
+		Description: query.Description,
+		Arguments:   createNativeQueryArguments(),
+	}
+	for key, arg := range query.Arguments {
+		if _, ok := fn.Arguments[key]; ok {
+			return fmt.Errorf("argument `%s` is already used by the function", key)
+		}
+		fn.Arguments[key] = schema.ArgumentInfo{
+			Description: arg.Description,
+			Type:        schema.NewNamedType(string(ScalarString)).Encode(),
+		}
+	}
+
+	if len(query.Labels) > 0 {
+		resultType := schema.ObjectType{
+			Fields: createQueryResultValuesObjectFields(),
+		}
+
+		boolExpType := schema.ObjectType{
+			Description: utils.ToPtr(fmt.Sprintf("Boolean expression of the native query %s", name)),
+			Fields:      schema.ObjectTypeFields{},
+		}
+
+		for key, label := range query.Labels {
+			// build boolean expression argument
+			boolExpType.Fields[key] = schema.ObjectField{
+				Type: schema.NewNullableNamedType(objectName_NativeQueryLabelBoolExp).Encode(),
+			}
+
+			// build the result object type
+			resultType.Fields[key] = schema.ObjectField{
+				Description: label.Description,
+				Type:        schema.NewNamedType(string(ScalarString)).Encode(),
+			}
+		}
+
+		objectName := fmt.Sprintf("%sResult", strcase.ToCamel(name))
+		scb.ObjectTypes[objectName] = resultType
+
+		boolExpObjectName := fmt.Sprintf("%sBoolExp", strcase.ToCamel(name))
+		scb.ObjectTypes[boolExpObjectName] = boolExpType
+		fn.Arguments[ArgumentKeyWhere] = schema.ArgumentInfo{
+			Description: boolExpType.Description,
+			Type:        schema.NewNullableNamedType(boolExpObjectName).Encode(),
+		}
+
+		fn.ResultType = schema.NewArrayType(schema.NewNamedType(objectName)).Encode()
+	} else {
+		fn.ResultType = schema.NewArrayType(schema.NewNamedType(objectName_QueryResultValues)).Encode()
+	}
+
+	scb.Functions[name] = fn
+	return nil
 }
 
 // FindNativeQueryVariableNames find possible variables in the native query

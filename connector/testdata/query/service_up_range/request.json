@@ -8,9 +8,13 @@
       "type": "literal",
       "value": "node"
     },
-    "time": {
+    "start": {
       "type": "literal",
-      "value": "2024-10-10T00:00:00Z"
+      "value": "2024-09-20T00:00:00Z"
+    },
+    "step": {
+      "type": "literal",
+      "value": "1h"
     },
     "timeout": {
       "type": "literal",

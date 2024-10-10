@@ -67,7 +67,7 @@ The connector can detect if you want to request an instant query or range query 
 
 The range query mode is default If none of the timestamp operators is set.
 
-The `timestamp` and `value` fields are the result of the instant query. If the request is a range query, `timestamp` and `value` are picked the last item of the `values` series.
+The `timestamp` and `value` fields are the result of the instant query. If the request is a range query, `timestamp` and `value` are picked as the last item of the `values` series.
 
 #### Common arguments
 
@@ -75,7 +75,7 @@ The `timestamp` and `value` fields are the result of the instant query. If the r
 - `offset`: the offset modifier allows changing the time offset for individual instant and range vectors in a query.
 - `timeout`: the evaluation timeout of the request.
 - `fn`: the array of composable PromQL functions.
-- `flat`: flatten grouped values out the root array. Use the runtime setting if the value is null.
+- `flat`: flatten grouped values out of the root array. Use the runtime setting if the value is null.
 
 #### Aggregation
 
@@ -155,13 +155,14 @@ The native query is exposed as a read-only function with 2 required fields `job`
 - `time`: Evaluation timestamp. Use this argument if you want to run an instant query.
 - `step`: the query resolution step width in duration format or float number of seconds. The step should be explicitly set for range queries. Even though the connector can estimate the approximate step width the result may be empty due to too far interval.
 - `timeout`: the evaluation timeout of the request.
-- `flat`: flatten grouped values out the root array. Use the runtime setting if the value is null
+- `flat`: flatten grouped values out of the root array. Use the runtime setting if the value is null
+- `where`: boolean expression to post-filter results by labels. This argument is designed for permissions.
 
 ### Prometheus APIs
 
 #### Raw PromQL query
 
-Execute a raw PromQL query directly. This API should be used by the admin only. The result contains labels and values only.
+Execute a raw PromQL query directly. This API should only be used by the admin. The result contains labels and values only.
 
 ```gql
 {

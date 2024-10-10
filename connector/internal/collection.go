@@ -71,11 +71,21 @@ func (qce *QueryCollectionExecutor) Execute(ctx context.Context) (*schema.RowSet
 		}, nil
 	}
 
+	flat, err := utils.DecodeNullableBoolean(qce.Arguments[metadata.ArgumentKeyFlat])
+	if err != nil {
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("expected boolean type for the flat field, got: %v", err), map[string]any{
+			"field": metadata.ArgumentKeyFlat,
+		})
+	}
+	if flat == nil {
+		flat = &qce.Runtime.Flat
+	}
+
 	var rawResults []map[string]any
 	if expressions.Timestamp != nil {
-		rawResults, err = qce.queryInstant(ctx, queryString, expressions)
+		rawResults, err = qce.queryInstant(ctx, queryString, expressions, *flat)
 	} else {
-		rawResults, err = qce.queryRange(ctx, queryString, expressions)
+		rawResults, err = qce.queryRange(ctx, queryString, expressions, *flat)
 	}
 
 	if err != nil {
@@ -93,8 +103,9 @@ func (qce *QueryCollectionExecutor) Execute(ctx context.Context) (*schema.RowSet
 	}, nil
 }
 
-func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryString string, predicate *CollectionRequest) ([]map[string]any, error) {
+func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryString string, predicate *CollectionRequest, flat bool) ([]map[string]any, error) {
 	timeout := qce.Arguments[metadata.ArgumentKeyTimeout]
+
 	timestamp, err := qce.getComparisonValue(predicate.Timestamp)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), map[string]any{
@@ -119,11 +130,11 @@ func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryStrin
 		vector = vector[:*qce.Request.Query.Limit]
 	}
 
-	results := createQueryResultsFromVector(vector, qce.Metric.Labels, qce.Runtime)
+	results := createQueryResultsFromVector(vector, qce.Metric.Labels, qce.Runtime, flat)
 	return results, nil
 }
 
-func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString string, predicate *CollectionRequest) ([]map[string]any, error) {
+func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString string, predicate *CollectionRequest, flat bool) ([]map[string]any, error) {
 	step := qce.Arguments[metadata.ArgumentKeyStep]
 	timeout := qce.Arguments[metadata.ArgumentKeyTimeout]
 
@@ -154,7 +165,7 @@ func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString 
 		}
 		matrix = matrix[*qce.Request.Query.Offset:]
 	}
-	results := createQueryResultsFromMatrix(matrix, qce.Metric.Labels, qce.Runtime)
+	results := createQueryResultsFromMatrix(matrix, qce.Metric.Labels, qce.Runtime, flat)
 
 	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(results) {
 		results = results[:*qce.Request.Query.Limit]

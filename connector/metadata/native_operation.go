@@ -57,7 +57,7 @@ func ReplaceNativeQueryVariable(query string, name string, value string) string 
 
 func createNativeQueryArguments() schema.FunctionInfoArguments {
 	arguments := schema.FunctionInfoArguments{}
-	for _, key := range []string{ArgumentKeyStart, ArgumentKeyEnd, ArgumentKeyStep, ArgumentKeyTime, ArgumentKeyTimeout} {
+	for _, key := range []string{ArgumentKeyStart, ArgumentKeyEnd, ArgumentKeyStep, ArgumentKeyTime, ArgumentKeyTimeout, ArgumentKeyFlat} {
 		arguments[key] = defaultArgumentInfos[key]
 	}
 	return arguments

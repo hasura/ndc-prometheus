@@ -158,11 +158,21 @@ func (nqe *NativeQueryExecutor) execute(ctx context.Context, params *nativeQuery
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
+	flat, err := utils.DecodeNullableBoolean(nqe.Arguments[metadata.ArgumentKeyFlat])
+	if err != nil {
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("expected boolean type for the flat field, got: %v", err), map[string]any{
+			"field": metadata.ArgumentKeyFlat,
+		})
+	}
+	if flat == nil {
+		flat = &nqe.Runtime.Flat
+	}
+
 	var rawResults []map[string]any
 	if _, ok := nqe.Arguments[metadata.ArgumentKeyTime]; ok {
-		rawResults, err = nqe.queryInstant(ctx, queryString, params)
+		rawResults, err = nqe.queryInstant(ctx, queryString, params, *flat)
 	} else {
-		rawResults, err = nqe.queryRange(ctx, queryString, params)
+		rawResults, err = nqe.queryRange(ctx, queryString, params, *flat)
 	}
 
 	if err != nil {
@@ -184,28 +194,28 @@ func (nqe *NativeQueryExecutor) execute(ctx context.Context, params *nativeQuery
 	}, nil
 }
 
-func (nqe *NativeQueryExecutor) queryInstant(ctx context.Context, queryString string, params *nativeQueryParameters) ([]map[string]any, error) {
+func (nqe *NativeQueryExecutor) queryInstant(ctx context.Context, queryString string, params *nativeQueryParameters, flat bool) ([]map[string]any, error) {
 	vector, _, err := nqe.Client.Query(ctx, queryString, params.Timestamp, params.Timeout)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
-	results := createQueryResultsFromVector(vector, nqe.NativeQuery.Labels, nqe.Runtime)
+	results := createQueryResultsFromVector(vector, nqe.NativeQuery.Labels, nqe.Runtime, flat)
 
 	return results, nil
 }
 
-func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString string, params *nativeQueryParameters) ([]map[string]any, error) {
+func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString string, params *nativeQueryParameters, flat bool) ([]map[string]any, error) {
 	matrix, _, err := nqe.Client.QueryRange(ctx, queryString, params.Start, params.End, params.Step, params.Timeout)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	results := createQueryResultsFromMatrix(matrix, nqe.NativeQuery.Labels, nqe.Runtime)
+	results := createQueryResultsFromMatrix(matrix, nqe.NativeQuery.Labels, nqe.Runtime, flat)
 
 	return results, nil
 }
 
-func createQueryResultsFromVector(vector model.Vector, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
+func createQueryResultsFromVector(vector model.Vector, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings, flat bool) []map[string]any {
 	results := make([]map[string]any, len(vector))
 	for i, item := range vector {
 		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
@@ -219,7 +229,7 @@ func createQueryResultsFromVector(vector model.Vector, labels map[string]metadat
 		for label := range labels {
 			r[label] = string(item.Metric[model.LabelName(label)])
 		}
-		if !runtime.Flat {
+		if !flat {
 			r[metadata.ValuesKey] = []map[string]any{
 				{
 					metadata.TimestampKey: ts,
@@ -234,8 +244,8 @@ func createQueryResultsFromVector(vector model.Vector, labels map[string]metadat
 	return results
 }
 
-func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
-	if runtime.Flat {
+func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings, flat bool) []map[string]any {
+	if flat {
 		return createFlatQueryResultsFromMatrix(matrix, labels, runtime)
 	}
 

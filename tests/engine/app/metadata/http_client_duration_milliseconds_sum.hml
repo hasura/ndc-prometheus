@@ -573,6 +573,9 @@ definition:
     - name: timeout
       type: Duration
       description: Evaluation timeout
+    - name: flat
+      type: Boolean
+      description: Flatten nested the values group to the root array
   source:
     dataConnectorName: prometheus
     collection: http_client_duration_milliseconds_sum

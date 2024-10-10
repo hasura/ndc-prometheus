@@ -85,7 +85,7 @@ func createQueryResultValuesObjectFields() schema.ObjectTypeFields {
 
 func createCollectionArguments() schema.CollectionInfoArguments {
 	arguments := schema.CollectionInfoArguments{}
-	for _, key := range []string{ArgumentKeyStep, ArgumentKeyTimeout, ArgumentKeyOffset} {
+	for _, key := range []string{ArgumentKeyStep, ArgumentKeyTimeout, ArgumentKeyOffset, ArgumentKeyFlat} {
 		arguments[key] = defaultArgumentInfos[key]
 	}
 	return arguments

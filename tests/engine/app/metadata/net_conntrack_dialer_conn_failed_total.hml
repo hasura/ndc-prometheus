@@ -548,6 +548,9 @@ definition:
     - name: timeout
       type: Duration
       description: Evaluation timeout
+    - name: flat
+      type: Boolean
+      description: Flatten nested the values group to the root array
   source:
     dataConnectorName: prometheus
     collection: net_conntrack_dialer_conn_failed_total

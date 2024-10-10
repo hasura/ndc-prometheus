@@ -51,9 +51,10 @@ type updateCommand struct {
 	Exclude       []*regexp.Regexp
 	ExcludeLabels []ExcludeLabels
 
-	coroutines     int
-	existedMetrics map[string]any
-	lock           sync.Mutex
+	coroutines      int
+	apiFormatExists bool
+	existedMetrics  map[string]any
+	lock            sync.Mutex
 }
 
 // SetMetadataMetric sets the metadata metric item
@@ -246,6 +247,7 @@ func (uc *updateCommand) validateNativeQueries(ctx context.Context) error {
 	if len(uc.Config.Metadata.NativeOperations.Queries) == 0 {
 		return nil
 	}
+	uc.checkAPIFormatQueryExist(ctx)
 
 	newNativeQueries := make(map[string]metadata.NativeQuery)
 	for key, nativeQuery := range uc.Config.Metadata.NativeOperations.Queries {
@@ -271,7 +273,7 @@ func (uc *updateCommand) validateNativeQueries(ctx context.Context) error {
 				return fmt.Errorf("invalid argument type `%s` in the native query `%s`", k, key)
 			}
 		}
-		_, err = uc.Client.FormatQuery(ctx, query)
+		err = uc.validateQuery(ctx, query)
 		if err != nil {
 			return fmt.Errorf("invalid native query %s: %s", key, err)
 		}
@@ -289,6 +291,25 @@ func (uc *updateCommand) validateNativeQueries(ctx context.Context) error {
 	uc.Config.Metadata.NativeOperations.Queries = newNativeQueries
 
 	return nil
+}
+
+func (uc *updateCommand) checkAPIFormatQueryExist(ctx context.Context) {
+	_, err := uc.Client.FormatQuery(ctx, "up")
+	uc.apiFormatExists = err == nil
+
+	if err != nil {
+		slog.Debug("failed to request /api/v1/format_query endpoint", slog.String("error", err.Error()))
+	}
+}
+
+func (uc *updateCommand) validateQuery(ctx context.Context, query string) error {
+	if uc.apiFormatExists {
+		_, err := uc.Client.FormatQuery(ctx, query)
+		return err
+	}
+
+	_, _, err := uc.Client.Query(ctx, query, "now", "30s")
+	return err
 }
 
 func (uc *updateCommand) writeConfigFile() error {

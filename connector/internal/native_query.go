@@ -110,7 +110,7 @@ func (nqe *NativeQueryExecutor) execute(ctx context.Context, params *NativeQuery
 	}
 
 	var rawResults []map[string]any
-	if _, ok := nqe.Arguments[metadata.ArgumentKeyTime]; ok {
+	if !utils.IsNil(params.Timestamp) {
 		rawResults, err = nqe.queryInstant(ctx, queryString, params, *flat)
 	} else {
 		rawResults, err = nqe.queryRange(ctx, queryString, params, *flat)

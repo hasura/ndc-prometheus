@@ -1,88 +1,52 @@
 {
-  "arguments": {
-    "instance": {
-      "type": "literal",
-      "value": "localhost:9090"
-    },
-    "job": {
-      "type": "literal",
-      "value": "node"
-    },
-    "start": {
-      "type": "literal",
-      "value": "2024-09-20T00:00:00Z"
-    },
-    "step": {
-      "type": "literal",
-      "value": "1h"
-    },
-    "timeout": {
-      "type": "literal",
-      "value": "1m"
-    },
-    "where": {
-      "type": "literal",
-      "value": {
-        "job": { "_neq": "node" }
-      }
-    }
-  },
   "collection": "service_up",
-  "collection_relationships": {},
   "query": {
     "fields": {
-      "__value": {
-        "column": "__value",
+      "job": { "type": "column", "column": "job", "fields": null },
+      "instance": { "type": "column", "column": "instance", "fields": null },
+      "timestamp": { "type": "column", "column": "timestamp", "fields": null },
+      "value": { "type": "column", "column": "value", "fields": null },
+      "values": {
+        "type": "column",
+        "column": "values",
         "fields": {
+          "type": "array",
           "fields": {
+            "type": "object",
             "fields": {
-              "instance": {
-                "column": "instance",
-                "type": "column"
-              },
-              "job": {
-                "column": "job",
-                "type": "column"
-              },
-              "labels": {
-                "column": "labels",
-                "type": "column"
-              },
               "timestamp": {
+                "type": "column",
                 "column": "timestamp",
-                "type": "column"
+                "fields": null
               },
-              "value": {
-                "column": "value",
-                "type": "column"
-              },
-              "values": {
-                "column": "values",
-                "fields": {
-                  "fields": {
-                    "fields": {
-                      "timestamp": {
-                        "column": "timestamp",
-                        "type": "column"
-                      },
-                      "value": {
-                        "column": "value",
-                        "type": "column"
-                      }
-                    },
-                    "type": "object"
-                  },
-                  "type": "array"
-                },
-                "type": "column"
-              }
-            },
-            "type": "object"
-          },
-          "type": "array"
-        },
-        "type": "column"
+              "value": { "type": "column", "column": "value", "fields": null }
+            }
+          }
+        }
       }
+    },
+    "predicate": {
+      "type": "and",
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "timestamp", "path": [] },
+          "operator": "_gt",
+          "value": { "type": "scalar", "value": "2024-10-11" }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "job", "path": [] },
+          "operator": "_nregex",
+          "value": { "type": "scalar", "value": "node" }
+        }
+      ]
     }
-  }
+  },
+  "arguments": {
+    "instance": { "type": "literal", "value": "node-exporter:9100" },
+    "job": { "type": "literal", "value": "node" },
+    "step": { "type": "literal", "value": "1d" }
+  },
+  "collection_relationships": {}
 }

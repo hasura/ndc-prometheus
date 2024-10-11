@@ -118,18 +118,8 @@ func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryStrin
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	qce.sortVector(vector, predicate.OrderBy)
-
-	if qce.Request.Query.Offset != nil && *qce.Request.Query.Offset > 0 {
-		if len(vector) <= *qce.Request.Query.Offset {
-			return []map[string]any{}, nil
-		}
-		vector = vector[*qce.Request.Query.Offset:]
-	}
-	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(vector) {
-		vector = vector[:*qce.Request.Query.Limit]
-	}
-
+	sortVector(vector, predicate.OrderBy)
+	vector = paginateVector(vector, qce.Request.Query)
 	results := createQueryResultsFromVector(vector, qce.Metric.Labels, qce.Runtime, flat)
 	return results, nil
 }
@@ -157,21 +147,10 @@ func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString 
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	qce.sortMatrix(matrix, predicate.OrderBy)
-
-	if qce.Request.Query.Offset != nil && *qce.Request.Query.Offset > 0 {
-		if len(matrix) <= *qce.Request.Query.Offset {
-			return []map[string]any{}, nil
-		}
-		matrix = matrix[*qce.Request.Query.Offset:]
-	}
+	sortMatrix(matrix, predicate.OrderBy)
 	results := createQueryResultsFromMatrix(matrix, qce.Metric.Labels, qce.Runtime, flat)
 
-	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(results) {
-		results = results[:*qce.Request.Query.Limit]
-	}
-
-	return results, nil
+	return paginateQueryResults(results, qce.Request.Query), nil
 }
 
 func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionRequest) (string, bool, error) {

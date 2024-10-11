@@ -144,6 +144,8 @@ func (nqe *NativeQueryExecutor) queryInstant(ctx context.Context, queryString st
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
+	sortVector(vector, params.OrderBy)
+	vector = paginateVector(vector, nqe.Request.Query)
 	results := createQueryResultsFromVector(vector, nqe.NativeQuery.Labels, nqe.Runtime, flat)
 
 	return results, nil
@@ -161,9 +163,11 @@ func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString stri
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
+
+	sortMatrix(matrix, params.OrderBy)
 	results := createQueryResultsFromMatrix(matrix, nqe.NativeQuery.Labels, nqe.Runtime, flat)
 
-	return results, nil
+	return paginateQueryResults(results, nqe.Request.Query), nil
 }
 
 func (nqe *NativeQueryExecutor) filterVectorResults(vector model.Vector, expr schema.Expression) (model.Vector, error) {

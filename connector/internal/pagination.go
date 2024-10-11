@@ -6,10 +6,11 @@ import (
 	"strings"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
+	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/prometheus/common/model"
 )
 
-func (qce *QueryCollectionExecutor) sortVector(vector model.Vector, sortElements []ColumnOrder) {
+func sortVector(vector model.Vector, sortElements []ColumnOrder) {
 	if len(sortElements) == 0 {
 		return
 	}
@@ -58,7 +59,7 @@ func (qce *QueryCollectionExecutor) sortVector(vector model.Vector, sortElements
 	})
 }
 
-func (qce *QueryCollectionExecutor) sortMatrix(matrix model.Matrix, sortElements []ColumnOrder) {
+func sortMatrix(matrix model.Matrix, sortElements []ColumnOrder) {
 	if len(sortElements) == 0 {
 		return
 	}
@@ -134,4 +135,32 @@ func (qce *QueryCollectionExecutor) sortMatrix(matrix model.Matrix, sortElements
 		}
 		return 0
 	})
+}
+
+func paginateVector(vector model.Vector, q schema.Query) model.Vector {
+	if q.Offset != nil && *q.Offset > 0 {
+		if len(vector) <= *q.Offset {
+			return model.Vector{}
+		}
+		vector = vector[*q.Offset:]
+	}
+	if q.Limit != nil && *q.Limit < len(vector) {
+		vector = vector[:*q.Limit]
+	}
+	return vector
+}
+
+func paginateQueryResults(results []map[string]any, q schema.Query) []map[string]any {
+	if q.Offset != nil && *q.Offset > 0 {
+		if len(results) <= *q.Offset {
+			return []map[string]any{}
+		}
+		results = results[*q.Offset:]
+	}
+
+	if q.Limit != nil && *q.Limit < len(results) {
+		results = results[:*q.Limit]
+	}
+
+	return results
 }

@@ -46,7 +46,9 @@
   "arguments": {
     "instance": { "type": "literal", "value": "node-exporter:9100" },
     "job": { "type": "literal", "value": "node" },
-    "step": { "type": "literal", "value": "1m" }
+    "step": { "type": "literal", "value": "1m" },
+    "timeout": { "type": "literal", "value": "1m" },
+    "flat": { "type": "literal", "value": true }
   },
   "collection_relationships": {}
 }

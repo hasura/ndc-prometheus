@@ -159,7 +159,7 @@ func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString stri
 
 	span := trace.SpanFromContext(ctx)
 	span.AddEvent("post_filter_results", trace.WithAttributes(utils.JSONAttribute("expression", params.Expression)))
-	matrix, err = nqe.filterMatrixResults(matrix, params.Expression)
+	matrix, err = nqe.filterMatrixResults(matrix, params)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
@@ -176,7 +176,7 @@ func (nqe *NativeQueryExecutor) filterVectorResults(vector model.Vector, expr sc
 	}
 	results := model.Vector{}
 	for _, item := range vector {
-		valid, err := nqe.validateLabelBoolExp(item.Metric, expr)
+		valid, err := nqe.validateBoolExp(item.Metric, item.Value, expr)
 		if err != nil {
 			return nil, err
 		}
@@ -187,34 +187,82 @@ func (nqe *NativeQueryExecutor) filterVectorResults(vector model.Vector, expr sc
 	return results, nil
 }
 
-func (nqe *NativeQueryExecutor) filterMatrixResults(matrix model.Matrix, expr schema.Expression) (model.Matrix, error) {
-	if expr == nil || len(matrix) == 0 {
+func (nqe *NativeQueryExecutor) filterMatrixResults(matrix model.Matrix, params *NativeQueryRequest) (model.Matrix, error) {
+	if params.Expression == nil || len(matrix) == 0 {
 		return matrix, nil
 	}
 	results := model.Matrix{}
 	for _, item := range matrix {
-		valid, err := nqe.validateLabelBoolExp(item.Metric, expr)
-		if err != nil {
-			return nil, err
+		if !params.HasValueBoolExp {
+			valid, err := nqe.validateBoolExp(item.Metric, 0, params.Expression)
+			if err != nil {
+				return nil, err
+			}
+			if valid {
+				results = append(results, item)
+			}
+			continue
 		}
-		if valid {
-			results = append(results, item)
+
+		newItem := model.SampleStream{
+			Metric:     item.Metric,
+			Histograms: item.Histograms,
+		}
+
+		for _, v := range item.Values {
+			valid, err := nqe.validateBoolExp(item.Metric, v.Value, params.Expression)
+			if err != nil {
+				return nil, err
+			}
+			if valid {
+				newItem.Values = append(newItem.Values, v)
+			}
+		}
+
+		if len(newItem.Values) > 0 {
+			results = append(results, &newItem)
 		}
 	}
 	return results, nil
 }
 
-func (nqe *NativeQueryExecutor) validateLabelBoolExp(labels model.Metric, expr schema.Expression) (bool, error) {
+func (nqe *NativeQueryExecutor) validateBoolExp(labels model.Metric, value model.SampleValue, expr schema.Expression) (bool, error) {
 	switch exprs := expr.Interface().(type) {
 	case *schema.ExpressionAnd:
 		for _, e := range exprs.Expressions {
-			valid, err := nqe.validateLabelBoolExp(labels, e)
+			valid, err := nqe.validateBoolExp(labels, value, e)
 			if !valid || err != nil {
 				return false, err
 			}
 		}
 		return true, nil
 	case *schema.ExpressionBinaryComparisonOperator:
+		if exprs.Column.Name == metadata.ValueKey {
+			floatValue, err := getComparisonValueFloat64(exprs.Value, nqe.Variables)
+			if err != nil {
+				return false, err
+			}
+			if floatValue == nil {
+				return true, nil
+			}
+			switch exprs.Operator {
+			case metadata.Equal:
+				return value.Equal(model.SampleValue(*floatValue)), nil
+			case metadata.NotEqual:
+				return !value.Equal(model.SampleValue(*floatValue)), nil
+			case metadata.Least:
+				return float64(value) < *floatValue, nil
+			case metadata.LeastOrEqual:
+				return float64(value) <= *floatValue, nil
+			case metadata.Greater:
+				return float64(value) > *floatValue, nil
+			case metadata.GreaterOrEqual:
+				return float64(value) >= *floatValue, nil
+			default:
+				return false, fmt.Errorf("unsupported value operator %s", exprs.Operator)
+			}
+		}
+
 		labelValue := labels[model.LabelName(exprs.Column.Name)]
 		switch exprs.Operator {
 		case metadata.Equal, metadata.NotEqual, metadata.Regex, metadata.NotRegex:
@@ -255,7 +303,7 @@ func (nqe *NativeQueryExecutor) validateLabelBoolExp(labels model.Metric, expr s
 			}
 		}
 	case *schema.ExpressionNot:
-		valid, err := nqe.validateLabelBoolExp(labels, exprs.Expression)
+		valid, err := nqe.validateBoolExp(labels, value, exprs.Expression)
 		if err != nil {
 			return false, err
 		}
@@ -265,7 +313,7 @@ func (nqe *NativeQueryExecutor) validateLabelBoolExp(labels model.Metric, expr s
 			return true, nil
 		}
 		for _, e := range exprs.Expressions {
-			valid, err := nqe.validateLabelBoolExp(labels, e)
+			valid, err := nqe.validateBoolExp(labels, value, e)
 			if err != nil {
 				return false, err
 			}

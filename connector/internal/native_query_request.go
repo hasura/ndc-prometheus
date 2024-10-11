@@ -10,14 +10,15 @@ import (
 
 // NativeQueryRequest the structured native request which is evaluated from the raw expression
 type NativeQueryRequest struct {
-	Timestamp  any
-	Start      any
-	End        any
-	Timeout    any
-	Step       any
-	OrderBy    []ColumnOrder
-	Variables  map[string]any
-	Expression schema.Expression
+	Timestamp       any
+	Start           any
+	End             any
+	Timeout         any
+	Step            any
+	OrderBy         []ColumnOrder
+	Variables       map[string]any
+	Expression      schema.Expression
+	HasValueBoolExp bool
 }
 
 // EvalNativeQueryRequest evaluates the requested collection data of the query request
@@ -61,6 +62,20 @@ func (pr *NativeQueryRequest) evalQueryPredicate(expression schema.Expression) (
 			}
 		}
 		return schema.NewExpressionAnd(exprs...), nil
+	case *schema.ExpressionOr:
+		exprs := []schema.ExpressionEncoder{}
+		for _, nestedExpr := range expr.Expressions {
+			evalExpr, err := pr.evalQueryPredicate(nestedExpr)
+			if err != nil {
+				return nil, err
+			}
+			if evalExpr != nil {
+				exprs = append(exprs, evalExpr)
+			}
+		}
+		return schema.NewExpressionOr(exprs...), nil
+	case *schema.ExpressionNot, *schema.ExpressionUnaryComparisonOperator:
+		return expr, nil
 	case *schema.ExpressionBinaryComparisonOperator:
 		if expr.Column.Type != schema.ComparisonTargetTypeColumn {
 			return nil, fmt.Errorf("%s: unsupported comparison target `%s`", expr.Column.Name, expr.Column.Type)
@@ -102,6 +117,9 @@ func (pr *NativeQueryRequest) evalQueryPredicate(expression schema.Expression) (
 			default:
 				return nil, fmt.Errorf("unsupported operator `%s` for the timestamp", expr.Operator)
 			}
+		case metadata.ValueKey:
+			pr.HasValueBoolExp = true
+			return expr, nil
 		default:
 			return expr, nil
 		}

@@ -354,11 +354,7 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(operator *schem
 	if operator == nil {
 		return "", nil
 	}
-	value, err := qce.getComparisonValue(operator.Value)
-	if err != nil {
-		return "", fmt.Errorf("invalid value expression: %s", err)
-	}
-	v, err := utils.DecodeNullableFloat[float64](value)
+	v, err := getComparisonValueFloat64(operator.Value, qce.Variables)
 	if err != nil {
 		return "", fmt.Errorf("invalid value expression: %s", err)
 	}

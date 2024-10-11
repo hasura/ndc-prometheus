@@ -6,11 +6,11 @@ This connector is built using the [Go Data Connector SDK](https://github.com/has
 
 ## Features
 
-### Metrics Collection
+### Metrics
 
 #### How it works
 
-The connector can introspect and automatically transform available metrics on the Prometheus server to collection queries. Each collection has a common structure:
+The connector can introspect and automatically transform available metrics on the Prometheus server to collection queries. Each metric has a common structure:
 
 ```gql
 {
@@ -108,7 +108,7 @@ The equivalent GraphQL query will be:
 
 #### How it works
 
-When simple queries don't meet your need you can define native queries in [the configuration file](./tests/configuration/configuration.yaml) with prepared variables with the `${<name>}` template.
+When simple queries don't meet your need you can define native queries in [the configuration file](./tests/configuration/configuration.yaml) with prepared variables with the `${<name>}` template. Native queries are defined as collections.
 
 ```yaml
 metadata:
@@ -131,16 +131,17 @@ The native query is exposed as a read-only function with 2 required fields `job`
 ```gql
 {
   service_up(
-    start: "2024-09-24T00:00:00Z"
-    job: "node"
-    instance: "localhost:9090"
+    args: { step: "1m", job: "node", instance: "node-exporter:9100" }
+    where: {
+      timestamp: { _gt: "2024-10-11T00:00:00Z" }
+      job: { _in: ["node"] }
+    }
   ) {
-    timestamp
-    value
-    labels
+    job
+    instance
     values {
-      value
       timestamp
+      value
     }
   }
 }
@@ -149,14 +150,8 @@ The native query is exposed as a read-only function with 2 required fields `job`
 > [!NOTE]
 > Labels aren't automatically added. You need to define them manually.
 
-#### Common arguments
-
-- `start` & `end`: time range arguments for the range query.
-- `time`: Evaluation timestamp. Use this argument if you want to run an instant query.
-- `step`: the query resolution step width in duration format or float number of seconds. The step should be explicitly set for range queries. Even though the connector can estimate the approximate step width the result may be empty due to too far interval.
-- `timeout`: the evaluation timeout of the request.
-- `flat`: flatten grouped values out of the root array. Use the runtime setting if the value is null
-- `where`: boolean expression to post-filter results by labels. This argument is designed for permissions.
+> [!NOTE]
+> Label and value boolean expressions in `where` are used to filter results after the query was executed.
 
 ### Prometheus APIs
 

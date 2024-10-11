@@ -178,6 +178,14 @@ func getComparisonValue(input schema.ComparisonValue, variables map[string]any) 
 	}
 }
 
+func getComparisonValueFloat64(input schema.ComparisonValue, variables map[string]any) (*float64, error) {
+	rawValue, err := getComparisonValue(input, variables)
+	if err != nil {
+		return nil, err
+	}
+	return utils.DecodeNullableFloat[float64](rawValue)
+}
+
 func getComparisonValueString(input schema.ComparisonValue, variables map[string]any) (*string, error) {
 	rawValue, err := getComparisonValue(input, variables)
 	if err != nil {

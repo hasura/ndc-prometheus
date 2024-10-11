@@ -20,7 +20,7 @@ type Decimal struct {
 func NewDecimal[T comparable](value T) (Decimal, error) {
 	result := Decimal{}
 	if err := result.FromValue(value); err != nil {
-		return Decimal{}, nil
+		return Decimal{}, err
 	}
 	return result, nil
 }
@@ -50,7 +50,7 @@ func (bi Decimal) MarshalJSON() ([]byte, error) {
 func (bi *Decimal) UnmarshalJSON(b []byte) error {
 	var value any
 	if err := json.Unmarshal(b, &value); err != nil {
-		return err
+		return fmt.Errorf("invalid decimal value: %s", err)
 	}
 
 	return bi.FromValue(value)

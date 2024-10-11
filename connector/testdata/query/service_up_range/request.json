@@ -31,7 +31,7 @@
         {
           "type": "binary_comparison_operator",
           "column": { "type": "column", "name": "timestamp", "path": [] },
-          "operator": "_eq",
+          "operator": "_gt",
           "value": { "type": "scalar", "value": "2024-10-11" }
         },
         {
@@ -46,9 +46,9 @@
   "arguments": {
     "instance": { "type": "literal", "value": "node-exporter:9100" },
     "job": { "type": "literal", "value": "node" },
-    "step": { "type": "literal", "value": "1m" },
+    "step": { "type": "literal", "value": "1d" },
     "timeout": { "type": "literal", "value": "1m" },
-    "flat": { "type": "literal", "value": true }
+    "flat": { "type": "literal", "value": false }
   },
   "collection_relationships": {}
 }

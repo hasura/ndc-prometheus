@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-	"slices"
 
 	"github.com/hasura/ndc-prometheus/connector/internal"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
@@ -84,15 +83,14 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 	span.SetAttributes(utils.JSONAttribute("arguments", arguments))
 
 	if request.Collection == metadata.FunctionPromQLQuery {
-		executor := &internal.NativeQueryExecutor{
-			Tracer:      state.Tracer,
-			Client:      state.Client,
-			Runtime:     c.runtime,
-			Request:     request,
-			NativeQuery: &metadata.NativeQuery{},
-			Arguments:   arguments,
+		executor := &internal.RawQueryExecutor{
+			Tracer:    state.Tracer,
+			Client:    state.Client,
+			Runtime:   c.runtime,
+			Request:   request,
+			Arguments: arguments,
 		}
-		result, err := executor.ExecuteRaw(ctx)
+		result, err := executor.Execute(ctx)
 		if err != nil {
 			span.SetStatus(codes.Error, "failed to execute raw query")
 			span.RecordError(err)
@@ -121,6 +119,7 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 			Request:     request,
 			NativeQuery: &nativeQuery,
 			Arguments:   arguments,
+			Variables:   variables,
 		}
 		result, err := executor.Execute(ctx)
 		if err != nil {
@@ -179,7 +178,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 		requestVars = []schema.QueryRequestVariablesElem{make(schema.QueryRequestVariablesElem)}
 	}
 
-	if slices.Contains([]string{metadata.FunctionPromQLQuery}, request.Collection) || c.apiHandler.QueryExists(request.Collection) {
+	if c.apiHandler.QueryExists(request.Collection) {
 		return &schema.ExplainResponse{
 			Details: schema.ExplainResponseDetails{},
 		}, nil
@@ -189,6 +188,26 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 	if err != nil {
 		return nil, err
 	}
+
+	if request.Collection == metadata.FunctionPromQLQuery {
+		executor := &internal.RawQueryExecutor{
+			Tracer:    state.Tracer,
+			Client:    state.Client,
+			Request:   request,
+			Arguments: arguments,
+		}
+		_, queryString, err := executor.Explain(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		return &schema.ExplainResponse{
+			Details: schema.ExplainResponseDetails{
+				"query": queryString,
+			},
+		}, nil
+	}
+
 	if nativeQuery, ok := c.metadata.NativeOperations.Queries[request.Collection]; ok {
 		executor := &internal.NativeQueryExecutor{
 			Tracer:      state.Tracer,

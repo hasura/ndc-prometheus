@@ -302,7 +302,7 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 		Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
 	ArgumentKeyFlat: {
-		Description: utils.ToPtr("Flatten nested the values group to the root array"),
+		Description: utils.ToPtr("Flatten grouped values out the root array"),
 		Type:        schema.NewNullableNamedType(string(ScalarBoolean)).Encode(),
 	},
 }

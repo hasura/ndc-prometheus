@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"slices"
@@ -211,38 +210,4 @@ func (le *LabelExpressionBuilder) evalLabelComparison(operator string, value any
 	}
 
 	return true, nil
-}
-
-func decodeStringSlice(value any) ([]string, error) {
-	if utils.IsNil(value) {
-		return nil, nil
-	}
-	var err error
-	sliceValue := []string{}
-	if str, ok := value.(string); ok {
-		// try to parse the slice from the json string
-		err = json.Unmarshal([]byte(str), &sliceValue)
-	} else {
-		sliceValue, err = utils.DecodeStringSlice(value)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	return sliceValue, nil
-}
-
-func intersection[T comparable](sliceA []T, sliceB []T) []T {
-	var result []T
-	if len(sliceA) == 0 || len(sliceB) == 0 {
-		return result
-	}
-
-	for _, a := range sliceA {
-		if slices.Contains(sliceB, a) {
-			result = append(result, a)
-		}
-	}
-
-	return result
 }

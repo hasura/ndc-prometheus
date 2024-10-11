@@ -118,18 +118,8 @@ func (qce *QueryCollectionExecutor) queryInstant(ctx context.Context, queryStrin
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	qce.sortVector(vector, predicate.OrderBy)
-
-	if qce.Request.Query.Offset != nil && *qce.Request.Query.Offset > 0 {
-		if len(vector) <= *qce.Request.Query.Offset {
-			return []map[string]any{}, nil
-		}
-		vector = vector[*qce.Request.Query.Offset:]
-	}
-	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(vector) {
-		vector = vector[:*qce.Request.Query.Limit]
-	}
-
+	sortVector(vector, predicate.OrderBy)
+	vector = paginateVector(vector, qce.Request.Query)
 	results := createQueryResultsFromVector(vector, qce.Metric.Labels, qce.Runtime, flat)
 	return results, nil
 }
@@ -157,21 +147,10 @@ func (qce *QueryCollectionExecutor) queryRange(ctx context.Context, queryString 
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	qce.sortMatrix(matrix, predicate.OrderBy)
-
-	if qce.Request.Query.Offset != nil && *qce.Request.Query.Offset > 0 {
-		if len(matrix) <= *qce.Request.Query.Offset {
-			return []map[string]any{}, nil
-		}
-		matrix = matrix[*qce.Request.Query.Offset:]
-	}
+	sortMatrix(matrix, predicate.OrderBy)
 	results := createQueryResultsFromMatrix(matrix, qce.Metric.Labels, qce.Runtime, flat)
 
-	if qce.Request.Query.Limit != nil && *qce.Request.Query.Limit < len(results) {
-		results = results[:*qce.Request.Query.Limit]
-	}
-
-	return results, nil
+	return paginateQueryResults(results, qce.Request.Query), nil
 }
 
 func (qce *QueryCollectionExecutor) buildQueryString(predicate *CollectionRequest) (string, bool, error) {
@@ -375,11 +354,7 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(operator *schem
 	if operator == nil {
 		return "", nil
 	}
-	value, err := qce.getComparisonValue(operator.Value)
-	if err != nil {
-		return "", fmt.Errorf("invalid value expression: %s", err)
-	}
-	v, err := utils.DecodeNullableFloat[float64](value)
+	v, err := getComparisonValueFloat64(operator.Value, qce.Variables)
 	if err != nil {
 		return "", fmt.Errorf("invalid value expression: %s", err)
 	}
@@ -396,22 +371,4 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(operator *schem
 
 func (qce *QueryCollectionExecutor) getComparisonValue(input schema.ComparisonValue) (any, error) {
 	return getComparisonValue(input, qce.Variables)
-}
-
-func getComparisonValue(input schema.ComparisonValue, variables map[string]any) (any, error) {
-	if len(input) == 0 {
-		return nil, nil
-	}
-
-	switch v := input.Interface().(type) {
-	case *schema.ComparisonValueScalar:
-		return v.Value, nil
-	case *schema.ComparisonValueVariable:
-		if value, ok := variables[v.Name]; ok {
-			return value, nil
-		}
-		return nil, fmt.Errorf("variable %s does not exist", v.Name)
-	default:
-		return nil, fmt.Errorf("invalid comparison value: %v", input)
-	}
 }

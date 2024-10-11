@@ -28,6 +28,10 @@ type NativeQueryExecutor struct {
 // Explain explains the query request
 func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*NativeQueryRequest, string, error) {
 	params, err := EvalNativeQueryRequest(nqe.Request, nqe.Arguments, nqe.Variables)
+	if err != nil {
+		return nil, "", err
+	}
+
 	queryString := nqe.NativeQuery.Query
 	for key, arg := range nqe.Arguments {
 		switch key {
@@ -246,10 +250,36 @@ func (nqe *NativeQueryExecutor) validateLabelBoolExp(labels model.Metric, expr s
 				return !slices.Contains(value, string(labelValue)), nil
 			}
 		}
-		// case *schema.ExpressionExists:
-		// case *schema.ExpressionNot:
-		// case *schema.ExpressionOr:
-		// case *schema.ExpressionUnaryComparisonOperator:
+	case *schema.ExpressionNot:
+		valid, err := nqe.validateLabelBoolExp(labels, exprs.Expression)
+		if err != nil {
+			return false, err
+		}
+		return !valid, nil
+	case *schema.ExpressionOr:
+		if len(exprs.Expressions) == 0 {
+			return true, nil
+		}
+		for _, e := range exprs.Expressions {
+			valid, err := nqe.validateLabelBoolExp(labels, e)
+			if err != nil {
+				return false, err
+			}
+			if valid {
+				return true, nil
+			}
+		}
+		return false, nil
+	case *schema.ExpressionUnaryComparisonOperator:
+		switch exprs.Operator {
+		case schema.UnaryComparisonOperatorIsNull:
+			_, ok := labels[model.LabelName(exprs.Column.Name)]
+			return !ok, nil
+		default:
+			return false, fmt.Errorf("unsupported comparison operator %s", exprs.Operator)
+		}
+	default:
+		return false, fmt.Errorf("unsupported expression %v", expr)
 	}
 	return false, nil
 }

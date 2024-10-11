@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 
 	"github.com/hasura/ndc-sdk-go/utils"
 )
@@ -16,7 +17,7 @@ type Decimal struct {
 	raw   *string
 }
 
-// NewDecimal creates a BigDecimal instance
+// NewDecimal creates a Decimal instance
 func NewDecimal[T comparable](value T) (Decimal, error) {
 	result := Decimal{}
 	if err := result.FromValue(value); err != nil {
@@ -25,9 +26,37 @@ func NewDecimal[T comparable](value T) (Decimal, error) {
 	return result, nil
 }
 
+// NewDecimalValue creates a Decimal instance from a number value
+func NewDecimalValue[T int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | float32 | float64](value T) Decimal {
+	v := float64(value)
+	return Decimal{value: &v}
+}
+
 // ScalarName get the schema name of the scalar
 func (bd Decimal) IsNil() bool {
 	return bd.raw == nil
+}
+
+// Value returns the decimal value
+func (bd Decimal) Value() any {
+	if bd.value == nil {
+		if bd.raw != nil {
+			return *bd.raw
+		}
+		return "NaN"
+	}
+
+	if math.IsNaN(*bd.value) {
+		return "NaN"
+	}
+	if *bd.value > 0 && math.IsInf(*bd.value, 1) {
+		return "Inf"
+	}
+	if *bd.value < 0 && math.IsInf(*bd.value, -1) {
+		return "-Inf"
+	}
+
+	return *bd.value
 }
 
 // Stringer implements fmt.Stringer interface.
@@ -35,10 +64,8 @@ func (bd Decimal) String() string {
 	if bd.raw != nil {
 		return *bd.raw
 	}
-	if bd.value != nil {
-		return fmt.Sprint(*bd.value)
-	}
-	return "Inf"
+
+	return fmt.Sprint(bd.Value())
 }
 
 // MarshalJSON implements json.Marshaler.

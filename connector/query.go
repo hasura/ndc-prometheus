@@ -195,6 +195,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 			Client:    state.Client,
 			Request:   request,
 			Arguments: arguments,
+			Runtime:   c.runtime,
 		}
 		_, queryString, err := executor.Explain(ctx)
 		if err != nil {
@@ -215,6 +216,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 			Request:     request,
 			NativeQuery: &nativeQuery,
 			Arguments:   arguments,
+			Runtime:     c.runtime,
 		}
 		_, queryString, err := executor.Explain(ctx)
 		if err != nil {
@@ -245,6 +247,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 				Metric:    collection,
 				Variables: requestVars[0],
 				Arguments: arguments,
+				Runtime:   c.runtime,
 			}
 
 			_, queryString, _, err := executor.Explain(ctx)

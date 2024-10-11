@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"slices"
 	"time"
 
@@ -120,6 +121,16 @@ func formatTimestamp(ts model.Time, format metadata.TimestampFormat, unixTime cl
 func formatValue(value model.SampleValue, format metadata.ValueFormat) any {
 	switch format {
 	case metadata.ValueFloat64:
+		if math.IsNaN(float64(value)) {
+			return "NaN"
+		}
+		if value > 0 && math.IsInf(float64(value), 1) {
+			return "Inf"
+		}
+		if value < 0 && math.IsInf(float64(value), -1) {
+			return "-Inf"
+		}
+
 		return float64(value)
 	default:
 		return value.String()

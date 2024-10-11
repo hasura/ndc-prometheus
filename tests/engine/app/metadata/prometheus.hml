@@ -3864,51 +3864,6 @@ definition:
               type:
                 type: named
                 name: String
-        NativeQueryLabelBoolExp:
-          description: The boolean expression for native query labels
-          fields:
-            _eq:
-              description: The equality operator
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            _in:
-              description: The in-array operator
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: JSON
-            _neq:
-              description: The not-equality operator
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            _nin:
-              description: The not-in-array operator
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: JSON
-            _nregex:
-              description: The falsy regular expression operator
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            _regex:
-              description: The regular expression operator
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
         NdcPrometheusQueryTotal:
           fields:
             collection:
@@ -17549,22 +17504,7 @@ definition:
                 element_type:
                   type: named
                   name: RuleGroup
-        ServiceUpBoolExp:
-          description: Boolean expression of the native query service_up
-          fields:
-            instance:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: NativeQueryLabelBoolExp
-            job:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: NativeQueryLabelBoolExp
-        ServiceUpResult:
+        ServiceUp:
           fields:
             instance:
               type:
@@ -19403,6 +19343,47 @@ definition:
           type: PromhttpMetricHandlerRequestsTotal
           uniqueness_constraints: {}
           foreign_keys: {}
+        - name: service_up
+          arguments:
+            flat:
+              description: Flatten grouped values out the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            instance:
+              type:
+                type: named
+                name: String
+            job:
+              type:
+                type: named
+                name: String
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: ServiceUp
+          uniqueness_constraints: {}
+          foreign_keys: {}
         - name: target_info
           description: Target metadata
           arguments:
@@ -19653,70 +19634,6 @@ definition:
             element_type:
               type: named
               name: QueryResultValues
-        - name: service_up
-          arguments:
-            end:
-              description: End timestamp. Use this argument if you want to run an range query
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Timestamp
-            flat:
-              description: Flatten grouped values out the root array
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-            instance:
-              type:
-                type: named
-                name: String
-            job:
-              type:
-                type: named
-                name: String
-            start:
-              description: Start timestamp. Use this argument if you want to run an range query
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Timestamp
-            step:
-              description: Query resolution step width in duration format or float number of seconds
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Duration
-            time:
-              description: Evaluation timestamp. Use this argument if you want to run an instant query
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Timestamp
-            timeout:
-              description: Evaluation timeout
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Duration
-            where:
-              description: Boolean expression of the native query service_up
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: ServiceUpBoolExp
-          result_type:
-            type: array
-            element_type:
-              type: named
-              name: ServiceUpResult
       procedures: []
     capabilities:
       version: 0.1.6

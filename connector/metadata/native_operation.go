@@ -53,60 +53,45 @@ func (scb *connectorSchemaBuilder) buildNativeQueries() error {
 }
 
 func (scb *connectorSchemaBuilder) buildNativeQuery(name string, query *NativeQuery) error {
-	fn := schema.FunctionInfo{
-		Name:        name,
-		Description: query.Description,
-		Arguments:   createNativeQueryArguments(),
-	}
+
+	arguments := createCollectionArguments()
 	for key, arg := range query.Arguments {
-		if _, ok := fn.Arguments[key]; ok {
+		if _, ok := arguments[key]; ok {
 			return fmt.Errorf("argument `%s` is already used by the function", key)
 		}
-		fn.Arguments[key] = schema.ArgumentInfo{
+		arguments[key] = schema.ArgumentInfo{
 			Description: arg.Description,
 			Type:        schema.NewNamedType(string(ScalarString)).Encode(),
 		}
 	}
 
-	if len(query.Labels) > 0 {
-		resultType := schema.ObjectType{
-			Fields: createQueryResultValuesObjectFields(),
-		}
-
-		boolExpType := schema.ObjectType{
-			Description: utils.ToPtr(fmt.Sprintf("Boolean expression of the native query %s", name)),
-			Fields:      schema.ObjectTypeFields{},
-		}
-
-		for key, label := range query.Labels {
-			// build boolean expression argument
-			boolExpType.Fields[key] = schema.ObjectField{
-				Type: schema.NewNullableNamedType(objectName_NativeQueryLabelBoolExp).Encode(),
-			}
-
-			// build the result object type
-			resultType.Fields[key] = schema.ObjectField{
-				Description: label.Description,
-				Type:        schema.NewNamedType(string(ScalarString)).Encode(),
-			}
-		}
-
-		objectName := fmt.Sprintf("%sResult", strcase.ToCamel(name))
-		scb.ObjectTypes[objectName] = resultType
-
-		boolExpObjectName := fmt.Sprintf("%sBoolExp", strcase.ToCamel(name))
-		scb.ObjectTypes[boolExpObjectName] = boolExpType
-		fn.Arguments[ArgumentKeyWhere] = schema.ArgumentInfo{
-			Description: boolExpType.Description,
-			Type:        schema.NewNullableNamedType(boolExpObjectName).Encode(),
-		}
-
-		fn.ResultType = schema.NewArrayType(schema.NewNamedType(objectName)).Encode()
-	} else {
-		fn.ResultType = schema.NewArrayType(schema.NewNamedType(objectName_QueryResultValues)).Encode()
+	resultType := schema.ObjectType{
+		Fields: createQueryResultValuesObjectFields(),
 	}
 
-	scb.Functions[name] = fn
+	for key, label := range query.Labels {
+		resultType.Fields[key] = schema.ObjectField{
+			Description: label.Description,
+			Type:        schema.NewNamedType(string(ScalarString)).Encode(),
+		}
+	}
+
+	objectName := strcase.ToCamel(name)
+	if _, ok := scb.ObjectTypes[objectName]; ok {
+		objectName = fmt.Sprintf("%sResult", strcase.ToCamel(name))
+	}
+	scb.ObjectTypes[objectName] = resultType
+	collection := schema.CollectionInfo{
+		Name:                  name,
+		Type:                  objectName,
+		Arguments:             arguments,
+		Description:           query.Description,
+		ForeignKeys:           schema.CollectionInfoForeignKeys{},
+		UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
+	}
+
+	scb.Collections[name] = collection
+
 	return nil
 }
 
@@ -126,16 +111,11 @@ func ReplaceNativeQueryVariable(query string, name string, value string) string 
 	return strings.ReplaceAll(query, fmt.Sprintf("${%s}", name), value)
 }
 
-func createNativeQueryArguments() schema.FunctionInfoArguments {
+func createPromQLQueryArguments() schema.FunctionInfoArguments {
 	arguments := schema.FunctionInfoArguments{}
 	for _, key := range []string{ArgumentKeyStart, ArgumentKeyEnd, ArgumentKeyStep, ArgumentKeyTime, ArgumentKeyTimeout, ArgumentKeyFlat} {
 		arguments[key] = defaultArgumentInfos[key]
 	}
-	return arguments
-}
-
-func createPromQLQueryArguments() schema.FunctionInfoArguments {
-	arguments := createNativeQueryArguments()
 	arguments[ArgumentKeyQuery] = schema.ArgumentInfo{
 		Description: utils.ToPtr("The raw promQL query"),
 		Type:        schema.NewNamedType(string(ScalarString)).Encode(),

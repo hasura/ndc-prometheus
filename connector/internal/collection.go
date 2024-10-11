@@ -397,21 +397,3 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(operator *schem
 func (qce *QueryCollectionExecutor) getComparisonValue(input schema.ComparisonValue) (any, error) {
 	return getComparisonValue(input, qce.Variables)
 }
-
-func getComparisonValue(input schema.ComparisonValue, variables map[string]any) (any, error) {
-	if len(input) == 0 {
-		return nil, nil
-	}
-
-	switch v := input.Interface().(type) {
-	case *schema.ComparisonValueScalar:
-		return v.Value, nil
-	case *schema.ComparisonValueVariable:
-		if value, ok := variables[v.Name]; ok {
-			return value, nil
-		}
-		return nil, fmt.Errorf("variable %s does not exist", v.Name)
-	default:
-		return nil, fmt.Errorf("invalid comparison value: %v", input)
-	}
-}

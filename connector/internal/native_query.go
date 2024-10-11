@@ -3,31 +3,17 @@ package internal
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"slices"
 	"strconv"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel/trace"
 )
-
-// nativeQueryParameters the structured arguments which is evaluated from the raw expression
-type nativeQueryParameters struct {
-	Timestamp any
-	Start     any
-	End       any
-	Timeout   any
-	Step      any
-	Where     map[string]NativeQueryLabelBoolExp
-}
-
-// NewNativeQueryParameters creates a nativeQueryParameters instance
-func NewNativeQueryParameters() *nativeQueryParameters {
-	return &nativeQueryParameters{
-		Where: make(map[string]NativeQueryLabelBoolExp),
-	}
-}
 
 type NativeQueryExecutor struct {
 	Client      *client.Client
@@ -36,37 +22,19 @@ type NativeQueryExecutor struct {
 	Request     *schema.QueryRequest
 	NativeQuery *metadata.NativeQuery
 	Arguments   map[string]any
-
-	selection schema.NestedField
+	Variables   map[string]any
 }
 
 // Explain explains the query request
-func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*nativeQueryParameters, string, error) {
-	var err error
-	params := NewNativeQueryParameters()
+func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*NativeQueryRequest, string, error) {
+	params, err := EvalNativeQueryRequest(nqe.Request, nqe.Arguments, nqe.Variables)
 	queryString := nqe.NativeQuery.Query
 	for key, arg := range nqe.Arguments {
 		switch key {
-		case metadata.ArgumentKeyStart:
-			params.Start = arg
-		case metadata.ArgumentKeyEnd:
-			params.End = arg
 		case metadata.ArgumentKeyStep:
 			params.Step = arg
-		case metadata.ArgumentKeyTime:
-			params.Timestamp = arg
 		case metadata.ArgumentKeyTimeout:
 			params.Timeout = arg
-		case metadata.ArgumentKeyWhere:
-			if utils.IsNil(arg) {
-				continue
-			}
-
-			boolExps, err := decodeNativeQueryLabelBoolExps(arg)
-			if err != nil {
-				return nil, "", schema.UnprocessableContentError(err.Error(), nil)
-			}
-			params.Where = boolExps
 		default:
 			argInfo, ok := nqe.NativeQuery.Arguments[key]
 			if ok {
@@ -106,39 +74,9 @@ func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*nativeQueryParame
 
 	if unresolvedArguments := metadata.FindNativeQueryVariableNames(queryString); len(unresolvedArguments) > 0 {
 		return nil, "", schema.BadRequestError(fmt.Sprintf("unresolved variables %v in the Prometheus query", unresolvedArguments), map[string]any{
-			"query": queryString,
+			"collection": nqe.Request.Collection,
+			"query":      queryString,
 		})
-	}
-
-	return params, queryString, nil
-}
-
-// ExplainRaw explains the raw promQL query request
-func (nqe *NativeQueryExecutor) ExplainRaw(ctx context.Context) (*nativeQueryParameters, string, error) {
-	params := NewNativeQueryParameters()
-	var err error
-	var queryString string
-	for key, arg := range nqe.Arguments {
-		switch key {
-		case metadata.ArgumentKeyStart:
-			params.Start = arg
-		case metadata.ArgumentKeyEnd:
-			params.End = arg
-		case metadata.ArgumentKeyStep:
-			params.Step = arg
-		case metadata.ArgumentKeyTime:
-			params.Timestamp = arg
-		case metadata.ArgumentKeyTimeout:
-			params.Timeout = arg
-		case metadata.ArgumentKeyQuery:
-			queryString, err = utils.DecodeString(arg)
-			if err != nil {
-				return nil, "", schema.UnprocessableContentError(err.Error(), nil)
-			}
-			if queryString == "" {
-				return nil, "", schema.UnprocessableContentError("the query argument must not be empty", nil)
-			}
-		}
 	}
 
 	return params, queryString, nil
@@ -156,24 +94,7 @@ func (nqe *NativeQueryExecutor) Execute(ctx context.Context) (*schema.RowSet, er
 	return nqe.execute(ctx, params, queryString)
 }
 
-// ExecuteRaw executes the raw promQL query request
-func (nqe *NativeQueryExecutor) ExecuteRaw(ctx context.Context) (*schema.RowSet, error) {
-	ctx, span := nqe.Tracer.Start(ctx, "Execute Raw PromQL Query")
-	defer span.End()
-	params, queryString, err := nqe.ExplainRaw(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return nqe.execute(ctx, params, queryString)
-}
-
-func (nqe *NativeQueryExecutor) execute(ctx context.Context, params *nativeQueryParameters, queryString string) (*schema.RowSet, error) {
-	var err error
-	nqe.selection, err = utils.EvalFunctionSelectionFieldValue(nqe.Request)
-	if err != nil {
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	}
-
+func (nqe *NativeQueryExecutor) execute(ctx context.Context, params *NativeQueryRequest, queryString string) (*schema.RowSet, error) {
 	flat, err := utils.DecodeNullableBoolean(nqe.Arguments[metadata.ArgumentKeyFlat])
 	if err != nil {
 		return nil, schema.UnprocessableContentError(fmt.Sprintf("expected boolean type for the flat field, got: %v", err), map[string]any{
@@ -195,46 +116,140 @@ func (nqe *NativeQueryExecutor) execute(ctx context.Context, params *nativeQuery
 		return nil, err
 	}
 
-	results, err := utils.EvalNestedColumnFields(nqe.selection, rawResults)
+	results, err := utils.EvalObjectsWithColumnSelection(nqe.Request.Query.Fields, rawResults)
 	if err != nil {
 		return nil, err
 	}
 
 	return &schema.RowSet{
 		Aggregates: schema.RowSetAggregates{},
-		Rows: []map[string]any{
-			{
-				"__value": results,
-			},
-		},
+		Rows:       results,
 	}, nil
 }
 
-func (nqe *NativeQueryExecutor) queryInstant(ctx context.Context, queryString string, params *nativeQueryParameters, flat bool) ([]map[string]any, error) {
+func (nqe *NativeQueryExecutor) queryInstant(ctx context.Context, queryString string, params *NativeQueryRequest, flat bool) ([]map[string]any, error) {
 	vector, _, err := nqe.Client.Query(ctx, queryString, params.Timestamp, params.Timeout)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
 	span := trace.SpanFromContext(ctx)
-	span.AddEvent("post_filter_results", trace.WithAttributes(utils.JSONAttribute("where", params.Where)))
-	vector = nqe.filterVectorResults(vector, params.Where)
+	span.AddEvent("post_filter_results", trace.WithAttributes(utils.JSONAttribute("expression", params.Expression)))
+	vector, err = nqe.filterVectorResults(vector, params.Expression)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	}
 
 	results := createQueryResultsFromVector(vector, nqe.NativeQuery.Labels, nqe.Runtime, flat)
 
 	return results, nil
 }
 
-func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString string, params *nativeQueryParameters, flat bool) ([]map[string]any, error) {
+func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString string, params *NativeQueryRequest, flat bool) ([]map[string]any, error) {
 	matrix, _, err := nqe.Client.QueryRange(ctx, queryString, params.Start, params.End, params.Step, params.Timeout)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
 	span := trace.SpanFromContext(ctx)
-	span.AddEvent("post_filter_results", trace.WithAttributes(utils.JSONAttribute("where", params.Where)))
-	matrix = nqe.filterMatrixResults(matrix, params.Where)
+	span.AddEvent("post_filter_results", trace.WithAttributes(utils.JSONAttribute("expression", params.Expression)))
+	matrix, err = nqe.filterMatrixResults(matrix, params.Expression)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	}
 	results := createQueryResultsFromMatrix(matrix, nqe.NativeQuery.Labels, nqe.Runtime, flat)
 
 	return results, nil
+}
+
+func (nqe *NativeQueryExecutor) filterVectorResults(vector model.Vector, expr schema.Expression) (model.Vector, error) {
+	if expr == nil || len(vector) == 0 {
+		return vector, nil
+	}
+	results := model.Vector{}
+	for _, item := range vector {
+		valid, err := nqe.validateLabelBoolExp(item.Metric, expr)
+		if err != nil {
+			return nil, err
+		}
+		if valid {
+			results = append(results, item)
+		}
+	}
+	return results, nil
+}
+
+func (nqe *NativeQueryExecutor) filterMatrixResults(matrix model.Matrix, expr schema.Expression) (model.Matrix, error) {
+	if expr == nil || len(matrix) == 0 {
+		return matrix, nil
+	}
+	results := model.Matrix{}
+	for _, item := range matrix {
+		valid, err := nqe.validateLabelBoolExp(item.Metric, expr)
+		if err != nil {
+			return nil, err
+		}
+		if valid {
+			results = append(results, item)
+		}
+	}
+	return results, nil
+}
+
+func (nqe *NativeQueryExecutor) validateLabelBoolExp(labels model.Metric, expr schema.Expression) (bool, error) {
+	switch exprs := expr.Interface().(type) {
+	case *schema.ExpressionAnd:
+		for _, e := range exprs.Expressions {
+			valid, err := nqe.validateLabelBoolExp(labels, e)
+			if !valid || err != nil {
+				return false, err
+			}
+		}
+		return true, nil
+	case *schema.ExpressionBinaryComparisonOperator:
+		labelValue := labels[model.LabelName(exprs.Column.Name)]
+		switch exprs.Operator {
+		case metadata.Equal, metadata.NotEqual, metadata.Regex, metadata.NotRegex:
+			value, err := getComparisonValueString(exprs.Value, nqe.Variables)
+			if err != nil {
+				return false, err
+			}
+			if value == nil {
+				return true, nil
+			}
+			if exprs.Operator == metadata.Equal {
+				return *value == string(labelValue), nil
+			}
+			if exprs.Operator == metadata.NotEqual {
+				return *value != string(labelValue), nil
+			}
+
+			regex, err := regexp.Compile(*value)
+			if err != nil {
+				return false, fmt.Errorf("invalid regular expression %s: %s", *value, err)
+			}
+			if exprs.Operator == metadata.Regex {
+				return regex.MatchString(string(labelValue)), nil
+			}
+			return !regex.MatchString(string(labelValue)), nil
+		case metadata.In, metadata.NotIn:
+			value, err := getComparisonValueStringSlice(exprs.Value, nqe.Variables)
+			if err != nil {
+				return false, fmt.Errorf("failed to decode string array; %s", err)
+			}
+			if value == nil {
+				return true, nil
+			}
+			if exprs.Operator == metadata.In {
+				return slices.Contains(value, string(labelValue)), nil
+			} else {
+				return !slices.Contains(value, string(labelValue)), nil
+			}
+		}
+		// case *schema.ExpressionExists:
+		// case *schema.ExpressionNot:
+		// case *schema.ExpressionOr:
+		// case *schema.ExpressionUnaryComparisonOperator:
+	}
+	return false, nil
 }

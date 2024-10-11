@@ -195,7 +195,6 @@ const (
 	objectName_HoltWintersInput           = "HoltWintersInput"
 	objectName_PredictLinearInput         = "PredictLinearInput"
 	objectName_QuantileOverTimeInput      = "QuantileOverTimeInput"
-	objectName_NativeQueryLabelBoolExp    = "NativeQueryLabelBoolExp"
 )
 
 var defaultObjectTypes = map[string]schema.ObjectType{
@@ -263,35 +262,6 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 			},
 		},
 	},
-	objectName_NativeQueryLabelBoolExp: {
-		Description: utils.ToPtr("The boolean expression for native query labels"),
-		Fields: schema.ObjectTypeFields{
-			Equal: schema.ObjectField{
-				Description: utils.ToPtr("The equality operator"),
-				Type:        schema.NewNullableNamedType(string(ScalarString)).Encode(),
-			},
-			NotEqual: schema.ObjectField{
-				Description: utils.ToPtr("The not-equality operator"),
-				Type:        schema.NewNullableNamedType(string(ScalarString)).Encode(),
-			},
-			In: schema.ObjectField{
-				Description: utils.ToPtr("The in-array operator"),
-				Type:        schema.NewNullableNamedType(string(ScalarJSON)).Encode(),
-			},
-			NotIn: schema.ObjectField{
-				Description: utils.ToPtr("The not-in-array operator"),
-				Type:        schema.NewNullableNamedType(string(ScalarJSON)).Encode(),
-			},
-			Regex: schema.ObjectField{
-				Description: utils.ToPtr("The regular expression operator"),
-				Type:        schema.NewNullableNamedType(string(ScalarString)).Encode(),
-			},
-			NotRegex: schema.ObjectField{
-				Description: utils.ToPtr("The falsy regular expression operator"),
-				Type:        schema.NewNullableNamedType(string(ScalarString)).Encode(),
-			},
-		},
-	},
 }
 
 const (
@@ -304,7 +274,6 @@ const (
 	ArgumentKeyOffset    = "offset"
 	ArgumentKeyQuery     = "query"
 	ArgumentKeyFunctions = "fn"
-	ArgumentKeyWhere     = "where"
 )
 
 var defaultArgumentInfos = map[string]schema.ArgumentInfo{

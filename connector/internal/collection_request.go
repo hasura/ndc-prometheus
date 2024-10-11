@@ -28,10 +28,10 @@ type CollectionRequest struct {
 	Timestamp        schema.ComparisonValue
 	Start            schema.ComparisonValue
 	End              schema.ComparisonValue
+	OrderBy          []ColumnOrder
 	Value            *schema.ExpressionBinaryComparisonOperator
 	LabelExpressions map[string]*LabelExpression
 	Functions        []KeyValue
-	OrderBy          []ColumnOrder
 }
 
 // EvalCollectionRequest evaluates the requested collection data of the query request
@@ -67,24 +67,11 @@ func EvalCollectionRequest(request *schema.QueryRequest, arguments map[string]an
 		}
 	}
 
-	if request.Query.OrderBy != nil {
-		for _, elem := range request.Query.OrderBy.Elements {
-			switch target := elem.Target.Interface().(type) {
-			case *schema.OrderByColumn:
-				if slices.Contains([]string{metadata.LabelsKey, metadata.ValuesKey}, target.Name) {
-					return nil, fmt.Errorf("ordering by `%s` is unsupported", target.Name)
-				}
-
-				orderBy := ColumnOrder{
-					Name:       target.Name,
-					Descending: elem.OrderDirection == schema.OrderDirectionDesc,
-				}
-				result.OrderBy = append(result.OrderBy, orderBy)
-			default:
-				return nil, fmt.Errorf("support ordering by column only, got: %v", elem.Target)
-			}
-		}
+	orderBy, err := evalCollectionOrderBy(request.Query.OrderBy)
+	if err != nil {
+		return nil, err
 	}
+	result.OrderBy = orderBy
 	return result, nil
 }
 
@@ -141,4 +128,28 @@ func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) er
 	}
 
 	return nil
+}
+
+func evalCollectionOrderBy(orderBy *schema.OrderBy) ([]ColumnOrder, error) {
+	var results []ColumnOrder
+	if orderBy == nil {
+		return results, nil
+	}
+	for _, elem := range orderBy.Elements {
+		switch target := elem.Target.Interface().(type) {
+		case *schema.OrderByColumn:
+			if slices.Contains([]string{metadata.LabelsKey, metadata.ValuesKey}, target.Name) {
+				return nil, fmt.Errorf("ordering by `%s` is unsupported", target.Name)
+			}
+
+			orderBy := ColumnOrder{
+				Name:       target.Name,
+				Descending: elem.OrderDirection == schema.OrderDirectionDesc,
+			}
+			results = append(results, orderBy)
+		default:
+			return nil, fmt.Errorf("support ordering by column only, got: %v", elem.Target)
+		}
+	}
+	return results, nil
 }

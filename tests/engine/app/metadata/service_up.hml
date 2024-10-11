@@ -2,7 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: ServiceUpResult
+  name: ServiceUp
   fields:
     - name: instance
       type: String!
@@ -21,17 +21,17 @@ definition:
       type: "[QueryResultValue!]!"
       description: An array of query result values
   graphql:
-    typeName: ServiceUpResult
-    inputTypeName: ServiceUpResult_input
+    typeName: ServiceUp
+    inputTypeName: ServiceUp_input
   dataConnectorTypeMapping:
     - dataConnectorName: prometheus
-      dataConnectorObjectType: ServiceUpResult
+      dataConnectorObjectType: ServiceUp
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: ServiceUpResult
+  typeName: ServiceUp
   permissions:
     - role: admin
       output:
@@ -44,131 +44,90 @@ definition:
           - values
 
 ---
-kind: Command
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ServiceUp_bool_exp
+  operand:
+    object:
+      type: ServiceUp
+      comparableFields:
+        - fieldName: instance
+          booleanExpressionType: String_bool_exp
+        - fieldName: job
+          booleanExpressionType: String_bool_exp
+        - fieldName: labels
+          booleanExpressionType: LabelSet_bool_exp
+        - fieldName: timestamp
+          booleanExpressionType: Timestamp_bool_exp
+        - fieldName: value
+          booleanExpressionType: Decimal_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ServiceUp_bool_exp
+
+---
+kind: Model
 version: v1
 definition:
   name: service_up
-  outputType: "[ServiceUpResult!]!"
+  objectType: ServiceUp
   arguments:
-    - name: end
-      type: Timestamp
-      description: End timestamp. Use this argument if you want to run an range query
+    - name: flat
+      type: Boolean
+      description: Flatten grouped values out the root array
     - name: instance
       type: String!
     - name: job
       type: String!
-    - name: start
-      type: Timestamp
-      description: Start timestamp. Use this argument if you want to run an range query
+    - name: offset
+      type: Duration
+      description: The offset modifier allows changing the time offset for individual
+        instant and range vectors in a query
     - name: step
       type: Duration
-      description: Query resolution step width in duration format or float number of
-        seconds.
-    - name: time
-      type: Timestamp
-      description: Evaluation timestamp. Use this argument if you want to run an
-        instant query
+      description: Query resolution step width in duration format or float number of seconds
     - name: timeout
       type: Duration
       description: Evaluation timeout
-    - name: flat
-      type: Boolean
-      description: Flatten nested the values group to the root array
-    - name: where
-      type: ServiceUpBoolExp
-      description: Boolean expression of the native query service_up
   source:
     dataConnectorName: prometheus
-    dataConnectorCommand:
-      function: service_up
+    collection: service_up
+  filterExpressionType: ServiceUp_bool_exp
+  orderableFields:
+    - fieldName: instance
+      orderByDirections:
+        enableAll: true
+    - fieldName: job
+      orderByDirections:
+        enableAll: true
+    - fieldName: labels
+      orderByDirections:
+        enableAll: true
+    - fieldName: timestamp
+      orderByDirections:
+        enableAll: true
+    - fieldName: value
+      orderByDirections:
+        enableAll: true
   graphql:
-    rootFieldName: service_up
-    rootFieldKind: Query
+    selectMany:
+      queryRootField: service_up
+    selectUniques: []
+    argumentsInputType: service_up_arguments
+    orderByExpressionType: service_up_order_by
 
 ---
-kind: CommandPermissions
+kind: ModelPermissions
 version: v1
 definition:
-  commandName: service_up
+  modelName: service_up
   permissions:
     - role: admin
-      allowExecution: true
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: NativeQueryLabelBoolExp
-  description: The boolean expression for native query labels
-  fields:
-    - name: _eq
-      type: String
-      description: The equality operator
-    - name: _in
-      type: JSON
-      description: The in-array operator
-    - name: _neq
-      type: String
-      description: The not-equality operator
-    - name: _nin
-      type: JSON
-      description: The not-in-array operator
-    - name: _nregex
-      type: String
-      description: The falsy regular expression operator
-    - name: _regex
-      type: String
-      description: The regular expression operator
-  graphql:
-    typeName: NativeQueryLabelBoolExp
-    inputTypeName: NativeQueryLabelBoolExp_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: NativeQueryLabelBoolExp
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: NativeQueryLabelBoolExp
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - _eq
-          - _in
-          - _neq
-          - _nin
-          - _nregex
-          - _regex
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: ServiceUpBoolExp
-  description: Boolean expression of the native query service_up
-  fields:
-    - name: instance
-      type: NativeQueryLabelBoolExp
-    - name: job
-      type: NativeQueryLabelBoolExp
-  graphql:
-    typeName: ServiceUpBoolExp
-    inputTypeName: ServiceUpBoolExp_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: ServiceUpBoolExp
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: ServiceUpBoolExp
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - instance
-          - job
+      select:
+        filter: null
 

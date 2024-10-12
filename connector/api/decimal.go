@@ -61,11 +61,11 @@ func (bd Decimal) Value() any {
 
 // Stringer implements fmt.Stringer interface.
 func (bd Decimal) String() string {
-	if bd.raw != nil {
-		return *bd.raw
+	v := bd.Value()
+	if v == nil {
+		return "NaN"
 	}
-
-	return fmt.Sprint(bd.Value())
+	return fmt.Sprint(v)
 }
 
 // MarshalJSON implements json.Marshaler.

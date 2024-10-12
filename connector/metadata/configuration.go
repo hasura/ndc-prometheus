@@ -81,11 +81,11 @@ type RuntimeFormatSettings struct {
 	// The serialization format for value
 	Value ValueFormat `json:"value" yaml:"value" jsonschema:"enum=string,enum=float64,default=string"`
 	// The serialization format for not-a-number values
-	NaN any `json:"nan" yaml:"nan" jsonschema:"oneof_type=string;number"`
+	NaN any `json:"nan" yaml:"nan" jsonschema:"oneof_type=string;number;null"`
 	// The serialization format for infinite values
-	Inf any `json:"inf" yaml:"inf" jsonschema:"oneof_type=string;number"`
+	Inf any `json:"inf" yaml:"inf" jsonschema:"oneof_type=string;number;null"`
 	// The serialization format for negative infinite values
-	NegativeInf any `json:"negative_inf" yaml:"negative_inf" jsonschema:"oneof_type=string;number"`
+	NegativeInf any `json:"negative_inf" yaml:"negative_inf" jsonschema:"oneof_type=string;number;null"`
 }
 
 // RuntimeSettings contain settings for the runtime engine

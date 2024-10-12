@@ -2,18 +2,14 @@
   {
     "rows": [
       {
-        "job": "ndc-prometheus",
-        "timestamp": "2024-10-12T03:15:00Z",
-        "value": 0.14237288135593218
+        "job": "ndc-prometheus"
       }
     ]
   },
   {
     "rows": [
       {
-        "job": "node",
-        "timestamp": "2024-10-12T03:15:00Z",
-        "value": 1.5050847457627117
+        "job": "node"
       }
     ]
   }

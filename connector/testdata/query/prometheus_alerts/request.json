@@ -24,10 +24,6 @@
               "state": {
                 "column": "state",
                 "type": "column"
-              },
-              "value": {
-                "column": "value",
-                "type": "column"
               }
             },
             "type": "object"

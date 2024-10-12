@@ -7,8 +7,7 @@
             "activeAt": "0001-01-01T00:00:00Z",
             "annotations": null,
             "labels": null,
-            "state": "",
-            "value": "Inf"
+            "state": ""
           },
           {
             "activeAt": "2024-10-12T03:13:18.098308379Z",
@@ -22,8 +21,7 @@
               "job": "node",
               "severity": "page"
             },
-            "state": "firing",
-            "value": "0e+00"
+            "state": "firing"
           }
         ]
       }

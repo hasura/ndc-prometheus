@@ -448,6 +448,9 @@
             },
             {
               "type": "number"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -458,6 +461,9 @@
             },
             {
               "type": "number"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -468,6 +474,9 @@
             },
             {
               "type": "number"
+            },
+            {
+              "type": "null"
             }
           ]
         }

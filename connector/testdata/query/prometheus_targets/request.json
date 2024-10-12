@@ -8,54 +8,6 @@
         "column": "__value",
         "fields": {
           "fields": {
-            "activeTargets": {
-              "column": "activeTargets",
-              "fields": {
-                "fields": {
-                  "fields": {
-                    "discoveredLabels": {
-                      "column": "discoveredLabels",
-                      "type": "column"
-                    },
-                    "globalUrl": {
-                      "column": "globalUrl",
-                      "type": "column"
-                    },
-                    "health": {
-                      "column": "health",
-                      "type": "column"
-                    },
-                    "labels": {
-                      "column": "labels",
-                      "type": "column"
-                    },
-                    "lastError": {
-                      "column": "lastError",
-                      "type": "column"
-                    },
-                    "lastScrape": {
-                      "column": "lastScrape",
-                      "type": "column"
-                    },
-                    "lastScrapeDuration": {
-                      "column": "lastScrapeDuration",
-                      "type": "column"
-                    },
-                    "scrapePool": {
-                      "column": "scrapePool",
-                      "type": "column"
-                    },
-                    "scrapeUrl": {
-                      "column": "scrapeUrl",
-                      "type": "column"
-                    }
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              "type": "column"
-            },
             "droppedTargets": {
               "column": "droppedTargets",
               "fields": {

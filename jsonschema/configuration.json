@@ -440,13 +440,46 @@
             "float64"
           ],
           "default": "string"
+        },
+        "nan": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        },
+        "inf": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        },
+        "negative_inf": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         }
       },
       "additionalProperties": false,
       "type": "object",
       "required": [
         "timestamp",
-        "value"
+        "value",
+        "nan",
+        "inf",
+        "negative_inf"
       ]
     },
     "RuntimeSettings": {

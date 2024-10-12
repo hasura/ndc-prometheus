@@ -3864,6 +3864,34 @@ definition:
               type:
                 type: named
                 name: String
+        NdcPrometheusQueryLatencyAvg:
+          fields:
+            collection:
+              type:
+                type: named
+                name: String
+            labels:
+              description: Labels of the metric
+              type:
+                type: named
+                name: LabelSet
+            timestamp:
+              description: An instant timestamp or the last timestamp of a range query result
+              type:
+                type: named
+                name: Timestamp
+            value:
+              description: Value of the instant query or the last value of a range query
+              type:
+                type: named
+                name: Decimal
+            values:
+              description: An array of query result values
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: QueryResultValue
         NdcPrometheusQueryTotal:
           fields:
             collection:
@@ -18438,6 +18466,47 @@ definition:
                   type: named
                   name: Duration
           type: HttpClientResponseSizeBytesTotal
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: ndc_prometheus_query_latency_avg
+          arguments:
+            flat:
+              description: Flatten grouped values out the root array
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            interval:
+              type:
+                type: named
+                name: Duration
+            job:
+              type:
+                type: named
+                name: String
+            offset:
+              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            step:
+              description: Query resolution step width in duration format or float number of seconds
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            timeout:
+              description: Evaluation timeout
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+          type: NdcPrometheusQueryLatencyAvg
           uniqueness_constraints: {}
           foreign_keys: {}
         - name: ndc_prometheus_query_total

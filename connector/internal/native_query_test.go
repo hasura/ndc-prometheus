@@ -73,10 +73,10 @@ func TestFilterVectorResults(t *testing.T) {
 				schema.NewExpressionBinaryComparisonOperator(
 					*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
 					"_in",
-					schema.NewComparisonValueScalar([]string{"foo"}),
+					schema.NewComparisonValueScalar([]string{"ndc-prometheus"}),
 				),
 			).Encode(),
-			Expected: model.Vector{},
+			Expected: vectorFixtures,
 		},
 		{
 			Name: "nin",

@@ -2,9 +2,7 @@
   "collection": "process_cpu_seconds_total",
   "query": {
     "fields": {
-      "job": { "type": "column", "column": "job", "fields": null },
-      "value": { "type": "column", "column": "value", "fields": null },
-      "timestamp": { "type": "column", "column": "timestamp", "fields": null }
+      "job": { "type": "column", "column": "job", "fields": null }
     },
     "limit": 1,
     "order_by": {

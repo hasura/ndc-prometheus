@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"slices"
 	"time"
 
@@ -17,7 +18,7 @@ func createQueryResultsFromVector(vector model.Vector, labels map[string]metadat
 	results := make([]map[string]any, len(vector))
 	for i, item := range vector {
 		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
-		value := formatValue(item.Value, runtime.Format.Value)
+		value := formatValue(item.Value, runtime.Format)
 		r := map[string]any{
 			metadata.TimestampKey: ts,
 			metadata.ValueKey:     value,
@@ -65,7 +66,7 @@ func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]me
 		values := make([]map[string]any, valuesLen)
 		for i, value := range item.Values {
 			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
-			v := formatValue(value.Value, runtime.Format.Value)
+			v := formatValue(value.Value, runtime.Format)
 			values[i] = map[string]any{
 				metadata.TimestampKey: ts,
 				metadata.ValueKey:     v,
@@ -89,7 +90,7 @@ func createFlatQueryResultsFromMatrix(matrix model.Matrix, labels map[string]met
 	for _, item := range matrix {
 		for _, value := range item.Values {
 			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
-			v := formatValue(value.Value, runtime.Format.Value)
+			v := formatValue(value.Value, runtime.Format)
 			r := map[string]any{
 				metadata.LabelsKey:    item.Metric,
 				metadata.TimestampKey: ts,
@@ -117,9 +118,19 @@ func formatTimestamp(ts model.Time, format metadata.TimestampFormat, unixTime cl
 	}
 }
 
-func formatValue(value model.SampleValue, format metadata.ValueFormat) any {
-	switch format {
+func formatValue(value model.SampleValue, format metadata.RuntimeFormatSettings) any {
+	switch format.Value {
 	case metadata.ValueFloat64:
+		if math.IsNaN(float64(value)) {
+			return format.NaN
+		}
+		if value > 0 && math.IsInf(float64(value), 1) {
+			return format.Inf
+		}
+		if value < 0 && math.IsInf(float64(value), -1) {
+			return format.NegativeInf
+		}
+
 		return float64(value)
 	default:
 		return value.String()

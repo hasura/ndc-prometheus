@@ -3,6 +3,7 @@ package metadata
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
@@ -12,6 +13,7 @@ import (
 
 // The variable syntax for native queries is ${<name>} which is compatible with Grafana
 var promQLVariableRegex = regexp.MustCompile(`\${(\w+)}`)
+var allowedNativeQueryScalars = []ScalarName{ScalarString, ScalarDuration, ScalarInt64, ScalarFloat64}
 
 // NativeOperations the list of native query and mutation definitions
 type NativeOperations struct {
@@ -59,9 +61,18 @@ func (scb *connectorSchemaBuilder) buildNativeQuery(name string, query *NativeQu
 		if _, ok := arguments[key]; ok {
 			return fmt.Errorf("argument `%s` is already used by the function", key)
 		}
+		scalarName := arg.Type
+		if arg.Type != "" {
+			if !slices.Contains(allowedNativeQueryScalars, ScalarName(arg.Type)) {
+				return fmt.Errorf("%s: unsupported native query argument type %s; argument: %s ", name, scalarName, key)
+			}
+		} else {
+			scalarName = string(ScalarString)
+		}
+
 		arguments[key] = schema.ArgumentInfo{
 			Description: arg.Description,
-			Type:        schema.NewNamedType(string(ScalarString)).Encode(),
+			Type:        schema.NewNamedType(scalarName).Encode(),
 		}
 	}
 

@@ -12,6 +12,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/prometheus/common/model"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -138,12 +139,16 @@ func (nqe *NativeQueryExecutor) queryInstant(ctx context.Context, queryString st
 	}
 
 	span := trace.SpanFromContext(ctx)
-	span.AddEvent("post_filter_results", trace.WithAttributes(utils.JSONAttribute("expression", params.Expression)))
+	span.AddEvent("post_filter", trace.WithAttributes(
+		utils.JSONAttribute("expression", params.Expression),
+		attribute.Int("pre_filter_count", len(vector)),
+	))
 	vector, err = nqe.filterVectorResults(vector, params.Expression)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
+	span.AddEvent("post_filter_results", trace.WithAttributes(attribute.Int("post_filter_count", len(vector))))
 	sortVector(vector, params.OrderBy)
 	vector = paginateVector(vector, nqe.Request.Query)
 	results := createQueryResultsFromVector(vector, nqe.NativeQuery.Labels, nqe.Runtime, flat)
@@ -158,12 +163,16 @@ func (nqe *NativeQueryExecutor) queryRange(ctx context.Context, queryString stri
 	}
 
 	span := trace.SpanFromContext(ctx)
-	span.AddEvent("post_filter_results", trace.WithAttributes(utils.JSONAttribute("expression", params.Expression)))
+	span.AddEvent("post_filter", trace.WithAttributes(
+		utils.JSONAttribute("expression", params.Expression),
+		attribute.Int("pre_filter_count", len(matrix)),
+	))
 	matrix, err = nqe.filterMatrixResults(matrix, params)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
+	span.AddEvent("post_filter_results", trace.WithAttributes(attribute.Int("post_filter_count", len(matrix))))
 	sortMatrix(matrix, params.OrderBy)
 	results := createQueryResultsFromMatrix(matrix, nqe.NativeQuery.Labels, nqe.Runtime, flat)
 

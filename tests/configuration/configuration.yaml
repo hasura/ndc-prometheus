@@ -197,6 +197,15 @@ metadata:
         telemetry_sdk_version: {}
   native_operations:
     queries:
+      ndc_prometheus_query_latency_avg:
+        query: sum by (collection)(rate(ndc_prometheus_query_total_time_sum{job="${job}"}[${interval}])) / sum by (collection)(rate(ndc_prometheus_query_total_time_count{job="${job}"}[${interval}]))
+        labels:
+          collection: {}
+        arguments:
+          interval:
+            type: Duration
+          job:
+            type: String
       service_up:
         query: up{job="${job}", instance="${instance}"}
         labels:
@@ -213,4 +222,7 @@ runtime:
   format:
     timestamp: rfc3339
     value: float64
+    nan: null
+    inf: "+Inf"
+    negative_inf: "-Inf"
   concurrency_limit: 3

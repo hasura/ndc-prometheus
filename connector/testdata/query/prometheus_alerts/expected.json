@@ -1,0 +1,32 @@
+[
+  {
+    "rows": [
+      {
+        "__value": [
+          {
+            "activeAt": "0001-01-01T00:00:00Z",
+            "annotations": null,
+            "labels": null,
+            "state": "",
+            "value": "Inf"
+          },
+          {
+            "activeAt": "2024-10-12T03:13:18.098308379Z",
+            "annotations": {
+              "description": "localhost:9090 of job node has been down for more than 30 seconds.",
+              "summary": "Instance localhost:9090 down"
+            },
+            "labels": {
+              "alertname": "service_down",
+              "instance": "localhost:9090",
+              "job": "node",
+              "severity": "page"
+            },
+            "state": "firing",
+            "value": "0e+00"
+          }
+        ]
+      }
+    ]
+  }
+]

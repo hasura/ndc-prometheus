@@ -1,0 +1,46 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "activeTargets": [
+            {
+              "discoveredLabels": null,
+              "globalUrl": "http://ndc-prometheus:8080/metrics",
+              "health": "up",
+              "labels": null,
+              "lastError": "",
+              "lastScrape": "2024-10-12T03:16:16.681827745Z",
+              "lastScrapeDuration": 0.001393954,
+              "scrapePool": "ndc-prometheus",
+              "scrapeUrl": "http://ndc-prometheus:8080/metrics"
+            },
+            {
+              "discoveredLabels": null,
+              "globalUrl": "http://5893b3d406d4:9090/metrics",
+              "health": "down",
+              "labels": null,
+              "lastError": "server returned HTTP status 401 Unauthorized",
+              "lastScrape": "2024-10-12T03:16:16.864732196Z",
+              "lastScrapeDuration": 0.000372829,
+              "scrapePool": "node",
+              "scrapeUrl": "http://localhost:9090/metrics"
+            },
+            {
+              "discoveredLabels": null,
+              "globalUrl": "http://node-exporter:9100/metrics",
+              "health": "up",
+              "labels": null,
+              "lastError": "",
+              "lastScrape": "2024-10-12T03:16:16.22396947Z",
+              "lastScrapeDuration": 0.036783044,
+              "scrapePool": "node",
+              "scrapeUrl": "http://node-exporter:9100/metrics"
+            }
+          ],
+          "droppedTargets": []
+        }
+      }
+    ]
+  }
+]

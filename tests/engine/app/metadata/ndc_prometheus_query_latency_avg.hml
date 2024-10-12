@@ -1,0 +1,125 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: NdcPrometheusQueryLatencyAvg
+  fields:
+    - name: collection
+      type: String!
+    - name: labels
+      type: LabelSet!
+      description: Labels of the metric
+    - name: timestamp
+      type: Timestamp!
+      description: An instant timestamp or the last timestamp of a range query result
+    - name: value
+      type: Decimal!
+      description: Value of the instant query or the last value of a range query
+    - name: values
+      type: "[QueryResultValue!]!"
+      description: An array of query result values
+  graphql:
+    typeName: NdcPrometheusQueryLatencyAvg
+    inputTypeName: NdcPrometheusQueryLatencyAvg_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: prometheus
+      dataConnectorObjectType: NdcPrometheusQueryLatencyAvg
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: NdcPrometheusQueryLatencyAvg
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - collection
+          - labels
+          - timestamp
+          - value
+          - values
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryLatencyAvg_bool_exp
+  operand:
+    object:
+      type: NdcPrometheusQueryLatencyAvg
+      comparableFields:
+        - fieldName: collection
+          booleanExpressionType: String_bool_exp
+        - fieldName: labels
+          booleanExpressionType: LabelSet_bool_exp
+        - fieldName: timestamp
+          booleanExpressionType: Timestamp_bool_exp
+        - fieldName: value
+          booleanExpressionType: Decimal_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryLatencyAvg_bool_exp
+
+---
+kind: Model
+version: v1
+definition:
+  name: ndc_prometheus_query_latency_avg
+  objectType: NdcPrometheusQueryLatencyAvg
+  arguments:
+    - name: flat
+      type: Boolean
+      description: Flatten grouped values out the root array
+    - name: interval
+      type: Duration!
+    - name: job
+      type: String!
+    - name: offset
+      type: Duration
+      description: The offset modifier allows changing the time offset for individual
+        instant and range vectors in a query
+    - name: step
+      type: Duration
+      description: Query resolution step width in duration format or float number of seconds
+    - name: timeout
+      type: Duration
+      description: Evaluation timeout
+  source:
+    dataConnectorName: prometheus
+    collection: ndc_prometheus_query_latency_avg
+  filterExpressionType: NdcPrometheusQueryLatencyAvg_bool_exp
+  orderableFields:
+    - fieldName: collection
+      orderByDirections:
+        enableAll: true
+    - fieldName: labels
+      orderByDirections:
+        enableAll: true
+    - fieldName: timestamp
+      orderByDirections:
+        enableAll: true
+    - fieldName: value
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: ndc_prometheus_query_latency_avg
+    selectUniques: []
+    argumentsInputType: ndc_prometheus_query_latency_avg_arguments
+    orderByExpressionType: ndc_prometheus_query_latency_avg_order_by
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ndc_prometheus_query_latency_avg
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

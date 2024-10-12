@@ -65,6 +65,21 @@ func (uc *updateCommand) SetMetadataMetric(key string, info metadata.MetricInfo)
 	uc.existedMetrics[key] = true
 }
 
+// MetricExists check if the metric exists
+func (uc *updateCommand) MetricExists(key string) bool {
+	uc.lock.Lock()
+	defer uc.lock.Unlock()
+	_, ok := uc.existedMetrics[key]
+	return ok
+}
+
+// SetMetricExists marks if the metric as existent
+func (uc *updateCommand) SetMetricExists(key string) {
+	uc.lock.Lock()
+	defer uc.lock.Unlock()
+	uc.existedMetrics[key] = true
+}
+
 func introspectSchema(ctx context.Context, args *UpdateArguments) error {
 	start := time.Now()
 	slog.Info("introspecting metadata", slog.String("dir", args.Dir))
@@ -184,13 +199,14 @@ func (uc *updateCommand) introspectMetric(ctx context.Context, key string, infos
 			continue
 		}
 
-		if _, ok := uc.existedMetrics[key]; ok {
+		if uc.MetricExists(key) {
 			slog.Warn(fmt.Sprintf("metric %s exists", key))
 		}
+
 		switch metricType {
 		case model.MetricTypeGauge, model.MetricTypeGaugeHistogram:
 			for _, suffix := range []string{"sum", "bucket", "count"} {
-				uc.existedMetrics[fmt.Sprintf("%s_%s", key, suffix)] = true
+				uc.SetMetricExists(fmt.Sprintf("%s_%s", key, suffix))
 			}
 		}
 
@@ -350,8 +366,11 @@ var defaultConfiguration = metadata.Configuration{
 		UnixTimeUnit:     client.UnixTimeSecond,
 		ConcurrencyLimit: 5,
 		Format: metadata.RuntimeFormatSettings{
-			Timestamp: metadata.TimestampUnix,
-			Value:     metadata.ValueFloat64,
+			Timestamp:   metadata.TimestampUnix,
+			Value:       metadata.ValueFloat64,
+			NaN:         "NaN",
+			Inf:         "+Inf",
+			NegativeInf: "-Inf",
 		},
 	},
 }

@@ -20,3 +20,6 @@ runtime:
   format:
     timestamp: unix
     value: float64
+    nan: "NaN"
+    inf: "+Inf"
+    negative_inf: "-Inf"

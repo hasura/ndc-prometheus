@@ -43,14 +43,14 @@ func (bd Decimal) Value() any {
 		if bd.raw != nil {
 			return *bd.raw
 		}
-		return "NaN"
+		return nil
 	}
 
 	if math.IsNaN(*bd.value) {
 		return "NaN"
 	}
 	if *bd.value > 0 && math.IsInf(*bd.value, 1) {
-		return "Inf"
+		return "+Inf"
 	}
 	if *bd.value < 0 && math.IsInf(*bd.value, -1) {
 		return "-Inf"
@@ -70,7 +70,11 @@ func (bd Decimal) String() string {
 
 // MarshalJSON implements json.Marshaler.
 func (bi Decimal) MarshalJSON() ([]byte, error) {
-	return json.Marshal(bi.String())
+	v := bi.Value()
+	if v != nil {
+		v = fmt.Sprint(v)
+	}
+	return json.Marshal(v)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.

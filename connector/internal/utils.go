@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math"
 	"slices"
+	"strconv"
 	"time"
 
-	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
@@ -17,7 +17,7 @@ import (
 func createQueryResultsFromVector(vector model.Vector, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings, flat bool) []map[string]any {
 	results := make([]map[string]any, len(vector))
 	for i, item := range vector {
-		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
+		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp)
 		value := formatValue(item.Value, runtime.Format)
 		r := map[string]any{
 			metadata.TimestampKey: ts,
@@ -65,7 +65,7 @@ func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]me
 		valuesLen := len(item.Values)
 		values := make([]map[string]any, valuesLen)
 		for i, value := range item.Values {
-			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
+			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp)
 			v := formatValue(value.Value, runtime.Format)
 			values[i] = map[string]any{
 				metadata.TimestampKey: ts,
@@ -89,7 +89,7 @@ func createFlatQueryResultsFromMatrix(matrix model.Matrix, labels map[string]met
 
 	for _, item := range matrix {
 		for _, value := range item.Values {
-			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp, runtime.UnixTimeUnit)
+			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp)
 			v := formatValue(value.Value, runtime.Format)
 			r := map[string]any{
 				metadata.LabelsKey:    item.Metric,
@@ -109,12 +109,18 @@ func createFlatQueryResultsFromMatrix(matrix model.Matrix, labels map[string]met
 	return results
 }
 
-func formatTimestamp(ts model.Time, format metadata.TimestampFormat, unixTime client.UnixTimeUnit) any {
+func formatTimestamp(ts model.Time, format metadata.TimestampFormat) any {
 	switch format {
-	case metadata.TimestampRFC3339:
-		return ts.Time().Format(time.RFC3339)
+	case metadata.TimestampUnix:
+		return ts.Unix()
+	case metadata.TimestampUnixMilli:
+		return ts.Time().UnixMilli()
+	case metadata.TimestampUnixMicro:
+		return ts.Time().UnixMicro()
+	case metadata.TimestampUnixNano:
+		return strconv.FormatInt(ts.UnixNano(), 10)
 	default:
-		return ts.Unix() * int64(time.Second/unixTime.Duration())
+		return ts.Time().Format(time.RFC3339)
 	}
 }
 

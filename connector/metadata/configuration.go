@@ -62,8 +62,16 @@ type GeneratorSettings struct {
 type TimestampFormat string
 
 const (
+	// Represents the timestamp as a Unix timestamp in RFC3339 string.
 	TimestampRFC3339 TimestampFormat = "rfc3339"
-	TimestampUnix    TimestampFormat = "unix"
+	// Represents the timestamp as a Unix timestamp in seconds.
+	TimestampUnix TimestampFormat = "unix"
+	// Represents the timestamp as a Unix timestamp in milliseconds.
+	TimestampUnixMilli TimestampFormat = "unix_ms"
+	// Represents the timestamp as a Unix timestamp in microseconds.
+	TimestampUnixMicro TimestampFormat = "unix_us"
+	// Represents the timestamp as a Unix timestamp in nanoseconds.
+	TimestampUnixNano TimestampFormat = "unix_ns"
 )
 
 // ValueFormat the format for value serialization
@@ -77,7 +85,7 @@ const (
 // RuntimeFormatSettings format settings for timestamps and values in runtime
 type RuntimeFormatSettings struct {
 	// The serialization format for timestamp
-	Timestamp TimestampFormat `json:"timestamp" yaml:"timestamp" jsonschema:"enum=rfc3339,enum=unix,default=unix"`
+	Timestamp TimestampFormat `json:"timestamp" yaml:"timestamp" jsonschema:"enum=rfc3339,enum=unix,enum=unix_ms,enum=unix_us,enum=unix_ns,default=unix"`
 	// The serialization format for value
 	Value ValueFormat `json:"value" yaml:"value" jsonschema:"enum=string,enum=float64,default=string"`
 	// The serialization format for not-a-number values
@@ -93,7 +101,7 @@ type RuntimeSettings struct {
 	// Flatten value points to the root array
 	Flat bool `json:"flat" yaml:"flat"`
 	// The default unit for unix timestamp
-	UnixTimeUnit client.UnixTimeUnit `json:"unix_time_unit" yaml:"unix_time_unit" jsonschema:"enum=s,enum=ms,default=s"`
+	UnixTimeUnit client.UnixTimeUnit `json:"unix_time_unit" yaml:"unix_time_unit" jsonschema:"enum=s,enum=ms,enum=us,enum=ns,default=s"`
 	// The serialization format for response fields
 	Format RuntimeFormatSettings `json:"format" yaml:"format"`
 	// The concurrency limit of queries if there are many variables in a single query

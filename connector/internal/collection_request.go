@@ -95,14 +95,14 @@ func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) er
 					return errors.New("unsupported multiple equality for the timestamp")
 				}
 				pr.Timestamp = expr.Value
-			case metadata.Least:
+			case metadata.Least, metadata.LeastOrEqual:
 				if pr.End != nil {
-					return errors.New("unsupported multiple _lt expressions for the timestamp")
+					return errors.New("unsupported multiple _lt or _lte expressions for the timestamp")
 				}
 				pr.End = expr.Value
-			case metadata.Greater:
+			case metadata.Greater, metadata.GreaterOrEqual:
 				if pr.Start != nil {
-					return errors.New("unsupported multiple _gt expressions for the timestamp")
+					return errors.New("unsupported multiple _gt or _gt expressions for the timestamp")
 				}
 				pr.Start = expr.Value
 			default:

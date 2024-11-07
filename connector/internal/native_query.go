@@ -78,7 +78,7 @@ func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*NativeQueryReques
 	}
 
 	if unresolvedArguments := metadata.FindNativeQueryVariableNames(queryString); len(unresolvedArguments) > 0 {
-		return nil, "", schema.BadRequestError(fmt.Sprintf("unresolved variables %v in the Prometheus query", unresolvedArguments), map[string]any{
+		return nil, "", schema.UnprocessableContentError(fmt.Sprintf("unresolved variables %v in the query", unresolvedArguments), map[string]any{
 			"collection": nqe.Request.Collection,
 			"query":      queryString,
 		})

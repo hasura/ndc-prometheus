@@ -409,13 +409,13 @@ func findNativeQueryVariables(nq metadata.NativeQuery) (map[string]metadata.Nati
 
 		if match[0] > 0 && nq.Query[match[0]-1] == '[' {
 			// duration variables should be bounded by square brackets
-			if match[1] >= queryLength-1 || nq.Query[match[1]] != ']' {
+			if match[1] >= queryLength || nq.Query[match[1]] != ']' {
 				return nil, fmt.Errorf("invalid promQL range syntax")
 			}
 			argumentInfo.Type = string(metadata.ScalarDuration)
 		} else if match[0] > 0 && nq.Query[match[0]-1] == '"' {
 			// duration variables should be bounded by double quotes
-			if match[1] >= queryLength-1 || nq.Query[match[1]] != '"' {
+			if match[1] >= queryLength || nq.Query[match[1]] != '"' {
 				return nil, fmt.Errorf("invalid promQL string syntax")
 			}
 			argumentInfo.Type = string(metadata.ScalarString)

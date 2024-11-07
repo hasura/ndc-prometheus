@@ -74,9 +74,11 @@ var defaultScalars = map[string]schema.ScalarType{
 	string(ScalarTimestamp): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-			Equal:   schema.NewComparisonOperatorEqual().Encode(),
-			Least:   schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
-			Greater: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
+			Equal:          schema.NewComparisonOperatorEqual().Encode(),
+			Least:          schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
+			LeastOrEqual:   schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
+			Greater:        schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
+			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
 		},
 		Representation: schema.NewTypeRepresentationTimestamp().Encode(),
 	},

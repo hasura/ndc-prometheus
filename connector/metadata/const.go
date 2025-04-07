@@ -45,24 +45,34 @@ var defaultScalars = map[string]schema.ScalarType{
 	string(ScalarString): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-			Equal:    schema.NewComparisonOperatorEqual().Encode(),
-			In:       schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarJSON))).Encode(),
-			NotEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
-			Regex:    schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
-			NotRegex: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).Encode(),
-			NotIn:    schema.NewComparisonOperatorCustom(schema.NewArrayType(schema.NewNamedType(string(ScalarString)))).Encode(),
+			Equal: schema.NewComparisonOperatorEqual().Encode(),
+			In: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarJSON))).
+				Encode(),
+			NotEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
+				Encode(),
+			Regex: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
+				Encode(),
+			NotRegex: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
+				Encode(),
+			NotIn: schema.NewComparisonOperatorCustom(schema.NewArrayType(schema.NewNamedType(string(ScalarString)))).
+				Encode(),
 		},
 		Representation: schema.NewTypeRepresentationString().Encode(),
 	},
 	string(ScalarDecimal): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-			Equal:          schema.NewComparisonOperatorEqual().Encode(),
-			NotEqual:       schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
-			Least:          schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
-			LeastOrEqual:   schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
-			Greater:        schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
-			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).Encode(),
+			Equal: schema.NewComparisonOperatorEqual().Encode(),
+			NotEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+				Encode(),
+			Least: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+				Encode(),
+			LeastOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+				Encode(),
+			Greater: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+				Encode(),
+			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+				Encode(),
 		},
 		Representation: schema.NewTypeRepresentationBigDecimal().Encode(),
 	},
@@ -74,11 +84,15 @@ var defaultScalars = map[string]schema.ScalarType{
 	string(ScalarTimestamp): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-			Equal:          schema.NewComparisonOperatorEqual().Encode(),
-			Least:          schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
-			LeastOrEqual:   schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
-			Greater:        schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
-			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).Encode(),
+			Equal: schema.NewComparisonOperatorEqual().Encode(),
+			Least: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+				Encode(),
+			LeastOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+				Encode(),
+			Greater: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+				Encode(),
+			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+				Encode(),
 		},
 		Representation: schema.NewTypeRepresentationTimestamp().Encode(),
 	},
@@ -203,10 +217,12 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 	objectName_QueryResultValue: {
 		Description: utils.ToPtr("A value of the query result"),
 		Fields:      createQueryResultValueObjectFields(),
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	},
 	objectName_QueryResultValues: {
 		Description: utils.ToPtr("A general query result with values and labels"),
 		Fields:      createQueryResultValuesObjectFields(),
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	},
 	objectName_ValueBoundaryInput: {
 		Description: utils.ToPtr("Boundary input arguments"),
@@ -220,23 +236,29 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 				Type:        schema.NewNamedType(string(ScalarFloat64)).Encode(),
 			},
 		},
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	},
 	objectName_HoltWintersInput: {
 		Description: utils.ToPtr("Input arguments for the holt_winters function"),
 		Fields: schema.ObjectTypeFields{
 			"sf": schema.ObjectField{
-				Description: utils.ToPtr("The lower the smoothing factor sf, the more importance is given to old data. Must be between 0 and 1"),
-				Type:        schema.NewNamedType(string(ScalarFloat64)).Encode(),
+				Description: utils.ToPtr(
+					"The lower the smoothing factor sf, the more importance is given to old data. Must be between 0 and 1",
+				),
+				Type: schema.NewNamedType(string(ScalarFloat64)).Encode(),
 			},
 			"tf": schema.ObjectField{
-				Description: utils.ToPtr("The higher the trend factor tf, the more trends in the data is considered. Must be between 0 and 1"),
-				Type:        schema.NewNamedType(string(ScalarFloat64)).Encode(),
+				Description: utils.ToPtr(
+					"The higher the trend factor tf, the more trends in the data is considered. Must be between 0 and 1",
+				),
+				Type: schema.NewNamedType(string(ScalarFloat64)).Encode(),
 			},
 			"range": schema.ObjectField{
 				Description: utils.ToPtr("The range value"),
 				Type:        schema.NewNamedType(string(ScalarDuration)).Encode(),
 			},
 		},
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	},
 	objectName_PredictLinearInput: {
 		Description: utils.ToPtr("Input arguments for the predict_linear function"),
@@ -250,6 +272,7 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 				Type:        schema.NewNamedType(string(ScalarDuration)).Encode(),
 			},
 		},
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	},
 	objectName_QuantileOverTimeInput: {
 		Description: utils.ToPtr("Input arguments for the quantile_over_time function"),
@@ -263,6 +286,7 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 				Type:        schema.NewNamedType(string(ScalarDuration)).Encode(),
 			},
 		},
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	},
 }
 
@@ -280,28 +304,38 @@ const (
 
 var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 	ArgumentKeyTime: {
-		Description: utils.ToPtr("Evaluation timestamp. Use this argument if you want to run an instant query"),
-		Type:        schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
+		Description: utils.ToPtr(
+			"Evaluation timestamp. Use this argument if you want to run an instant query",
+		),
+		Type: schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
 	},
 	ArgumentKeyTimeout: {
 		Description: utils.ToPtr("Evaluation timeout"),
 		Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
 	ArgumentKeyStart: {
-		Description: utils.ToPtr("Start timestamp. Use this argument if you want to run an range query"),
-		Type:        schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
+		Description: utils.ToPtr(
+			"Start timestamp. Use this argument if you want to run an range query",
+		),
+		Type: schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
 	},
 	ArgumentKeyEnd: {
-		Description: utils.ToPtr("End timestamp. Use this argument if you want to run an range query"),
-		Type:        schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
+		Description: utils.ToPtr(
+			"End timestamp. Use this argument if you want to run an range query",
+		),
+		Type: schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
 	},
 	ArgumentKeyStep: {
-		Description: utils.ToPtr("Query resolution step width in duration format or float number of seconds"),
-		Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
+		Description: utils.ToPtr(
+			"Query resolution step width in duration format or float number of seconds",
+		),
+		Type: schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
 	ArgumentKeyOffset: {
-		Description: utils.ToPtr("The offset modifier allows changing the time offset for individual instant and range vectors in a query"),
-		Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
+		Description: utils.ToPtr(
+			"The offset modifier allows changing the time offset for individual instant and range vectors in a query",
+		),
+		Type: schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
 	ArgumentKeyFlat: {
 		Description: utils.ToPtr("Flatten grouped values out the root array"),

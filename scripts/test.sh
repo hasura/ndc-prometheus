@@ -1,14 +1,25 @@
 #!/bin/bash
-set -o pipefail
+set -eo pipefail
 
 trap 'docker compose down' EXIT
 
 mkdir -p ./tmp
 
-if [ ! -f ./tmp/ndc-test ]; then
-  curl -L https://github.com/hasura/ndc-spec/releases/download/v0.1.6/ndc-test-x86_64-unknown-linux-gnu -o ./tmp/ndc-test
-  chmod +x ./tmp/ndc-test
+NDC_TEST_VERSION=v0.2.0
+NDC_TEST_PATH=./tmp/ndc-test
+
+if [ ! -f "$NDC_TEST_PATH" ]; then
+  if [ "$(uname -m)" == "arm64" ]; then
+    curl -L https://github.com/hasura/ndc-spec/releases/download/$NDC_TEST_VERSION/ndc-test-aarch64-apple-darwin -o $NDC_TEST_PATH
+  elif [ $(uname) == "Darwin" ]; then
+    curl -L https://github.com/hasura/ndc-spec/releases/download/$NDC_TEST_VERSION/ndc-test-x86_64-apple-darwin -o $NDC_TEST_PATH
+  else
+    curl -L https://github.com/hasura/ndc-spec/releases/download/$NDC_TEST_VERSION/ndc-test-x86_64-unknown-linux-gnu -o $NDC_TEST_PATH
+  fi
+
+  chmod +x $NDC_TEST_PATH
 fi
+
 
 http_wait() {
   printf "$1:\t "
@@ -31,7 +42,7 @@ docker compose -f ./compose.base.yaml up -d prometheus node-exporter alertmanage
 http_wait http://localhost:8080/health
 http_wait http://admin:test@localhost:9090/-/healthy
 
-./tmp/ndc-test test --endpoint http://localhost:8080
+$NDC_TEST_PATH test --endpoint http://localhost:8080
 
 # go tests
 go test -v -coverpkg=./connector/... -race -timeout 3m -coverprofile=coverage.out ./...

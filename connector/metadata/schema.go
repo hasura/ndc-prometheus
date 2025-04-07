@@ -18,7 +18,7 @@ type connectorSchemaBuilder struct {
 	Functions   map[string]schema.FunctionInfo
 }
 
-// BuildConnectorSchema builds the schema for the data connector from metadata
+// BuildConnectorSchema builds the schema for the data connector from metadata.
 func BuildConnectorSchema(metadata *Metadata) (*schema.SchemaResponse, error) {
 	builder := &connectorSchemaBuilder{
 		Metadata:    metadata,
@@ -29,7 +29,8 @@ func BuildConnectorSchema(metadata *Metadata) (*schema.SchemaResponse, error) {
 				Name:        FunctionPromQLQuery,
 				Description: utils.ToPtr("Execute a raw promQL query"),
 				Arguments:   createPromQLQueryArguments(),
-				ResultType:  schema.NewArrayType(schema.NewNamedType(objectName_QueryResultValues)).Encode(),
+				ResultType: schema.NewArrayType(schema.NewNamedType(objectName_QueryResultValues)).
+					Encode(),
 			},
 		},
 		Collections: map[string]schema.CollectionInfo{},
@@ -38,6 +39,7 @@ func BuildConnectorSchema(metadata *Metadata) (*schema.SchemaResponse, error) {
 	if err := builder.buildMetrics(); err != nil {
 		return nil, err
 	}
+
 	if err := builder.buildNativeQueries(); err != nil {
 		return nil, err
 	}
@@ -46,9 +48,9 @@ func BuildConnectorSchema(metadata *Metadata) (*schema.SchemaResponse, error) {
 }
 
 func (scb *connectorSchemaBuilder) buildSchemaResponse() *schema.SchemaResponse {
-
 	functions := make([]schema.FunctionInfo, 0, len(scb.Functions))
 	collections := make([]schema.CollectionInfo, 0, len(scb.Collections))
+
 	for _, fn := range scb.Functions {
 		functions = append(functions, fn)
 	}
@@ -73,9 +75,11 @@ func (scb *connectorSchemaBuilder) buildMetrics() error {
 			for _, suffix := range []string{"sum", "count", "bucket"} {
 				metricName := fmt.Sprintf("%s_%s", name, suffix)
 				labels := info.Labels
+
 				if suffix == "bucket" {
 					labels["le"] = LabelInfo{}
 				}
+
 				if err := scb.buildMetricsItem(metricName, info, labels); err != nil {
 					return err
 				}
@@ -86,19 +90,26 @@ func (scb *connectorSchemaBuilder) buildMetrics() error {
 			}
 		}
 	}
+
 	return nil
 }
 
-func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo, labels map[string]LabelInfo) error {
+func (scb *connectorSchemaBuilder) buildMetricsItem(
+	name string,
+	info MetricInfo,
+	labels map[string]LabelInfo,
+) error {
 	if err := scb.checkDuplicatedOperation(name); err != nil {
 		return err
 	}
 
 	objectType := schema.ObjectType{
-		Fields: createQueryResultValuesObjectFields(),
+		Fields:      createQueryResultValuesObjectFields(),
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	}
 
 	labelEnums := make([]string, 0, len(labels))
+
 	for key, label := range labels {
 		labelEnums = append(labelEnums, key)
 		objectType.Fields[key] = schema.ObjectField{
@@ -111,23 +122,33 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo
 	scb.ObjectTypes[objectName] = objectType
 
 	slices.Sort(labelEnums)
-	labelEnumScalarName := fmt.Sprintf("%sLabel", objectName)
+
+	labelEnumScalarName := objectName + "Label"
 	scalarType := schema.NewScalarType()
 	scalarType.Representation = schema.NewTypeRepresentationEnum(labelEnums).Encode()
 	scb.ScalarTypes[labelEnumScalarName] = *scalarType
-	scb.ObjectTypes[buildLabelJoinObjectTypeName(objectName)] = createLabelJoinObjectType(labelEnumScalarName)
-	scb.ObjectTypes[buildLabelReplaceObjectTypeName(objectName)] = createLabelReplaceObjectType(labelEnumScalarName)
+	scb.ObjectTypes[buildLabelJoinObjectTypeName(objectName)] = createLabelJoinObjectType(
+		labelEnumScalarName,
+	)
+	scb.ObjectTypes[buildLabelReplaceObjectTypeName(objectName)] = createLabelReplaceObjectType(
+		labelEnumScalarName,
+	)
 
 	// build promQL functions argument
-	promQLFnsObjectName := fmt.Sprintf("%sFunctions", objectName)
-	promQLFnsObject := schema.ObjectType{
-		Fields: createPromQLFunctionObjectFields(objectName, labelEnumScalarName),
-	}
+	promQLFnsObjectName := objectName + "Functions"
+	promQLFnsObject := schema.NewObjectType(
+		createPromQLFunctionObjectFields(objectName, labelEnumScalarName),
+		schema.ObjectTypeForeignKeys{},
+		nil,
+	)
+
 	for _, fnName := range []PromQLFunctionName{Sum, Min, Max, Avg, Stddev, Stdvar, Count, Group} {
 		promQLFnsObject.Fields[string(fnName)] = schema.ObjectField{
-			Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(labelEnumScalarName))).Encode(),
+			Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(labelEnumScalarName))).
+				Encode(),
 		}
 	}
+
 	promQLFnsObject.Fields[string(CountValues)] = schema.ObjectField{
 		Type: schema.NewNullableType(schema.NewNamedType(labelEnumScalarName)).Encode(),
 	}
@@ -136,8 +157,9 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo
 
 	arguments := createCollectionArguments()
 	arguments[ArgumentKeyFunctions] = schema.ArgumentInfo{
-		Description: utils.ToPtr(fmt.Sprintf("PromQL aggregation operators and functions for %s", name)),
-		Type:        schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(promQLFnsObjectName))).Encode(),
+		Description: utils.ToPtr("PromQL aggregation operators and functions for " + name),
+		Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(promQLFnsObjectName))).
+			Encode(),
 	}
 
 	collection := schema.CollectionInfo{
@@ -145,11 +167,11 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(name string, info MetricInfo
 		Type:                  objectName,
 		Arguments:             arguments,
 		Description:           info.Description,
-		ForeignKeys:           schema.CollectionInfoForeignKeys{},
 		UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
 	}
 
 	scb.Collections[name] = collection
+
 	return nil
 }
 
@@ -158,6 +180,7 @@ func (scb *connectorSchemaBuilder) checkDuplicatedOperation(name string) error {
 	if _, ok := scb.Functions[name]; ok {
 		return err
 	}
+
 	if _, ok := scb.Collections[name]; ok {
 		return err
 	}

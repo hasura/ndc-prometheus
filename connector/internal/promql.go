@@ -9,25 +9,30 @@ import (
 	"github.com/hasura/ndc-sdk-go/utils"
 )
 
-// ValueBoundaryInput represents the lower and upper input arguments
+// ValueBoundaryInput represents the lower and upper input arguments.
 type ValueBoundaryInput struct {
 	Min float64 `mapstructure:"min"`
 	Max float64 `mapstructure:"max"`
 }
 
-// LabelJoinInput represents input arguments for the replace_label function
+// LabelJoinInput represents input arguments for the replace_label function.
 type LabelJoinInput struct {
 	DestLabel    string   `mapstructure:"dest_label"`
 	Separator    string   `mapstructure:"separator"`
 	SourceLabels []string `mapstructure:"source_labels"`
 }
 
-// String implements the fmt.Stringer interface
+// String implements the fmt.Stringer interface.
 func (lji LabelJoinInput) String() string {
-	return fmt.Sprintf(`"%s", "%s"%s`, lji.DestLabel, lji.Separator, buildPromQLParametersFromStringSlice(lji.SourceLabels))
+	return fmt.Sprintf(
+		`"%s", "%s"%s`,
+		lji.DestLabel,
+		lji.Separator,
+		buildPromQLParametersFromStringSlice(lji.SourceLabels),
+	)
 }
 
-// LabelReplaceInput represents input arguments for the replace_label function
+// LabelReplaceInput represents input arguments for the replace_label function.
 type LabelReplaceInput struct {
 	DestLabel   string `mapstructure:"dest_label"`
 	Replacement string `mapstructure:"replacement"`
@@ -35,45 +40,60 @@ type LabelReplaceInput struct {
 	Regex       string `mapstructure:"regex"`
 }
 
-// String implements the fmt.Stringer interface
+// String implements the fmt.Stringer interface.
 func (lri LabelReplaceInput) String() string {
-	return fmt.Sprintf(`"%s", "%s", "%s", "%s"`, lri.DestLabel, lri.Replacement, lri.SourceLabel, lri.Regex)
+	return fmt.Sprintf(
+		`"%s", "%s", "%s", "%s"`,
+		lri.DestLabel,
+		lri.Replacement,
+		lri.SourceLabel,
+		lri.Regex,
+	)
 }
 
-// HoltWintersInput represents input arguments of the holt_winters function
+// HoltWintersInput represents input arguments of the holt_winters function.
 type HoltWintersInput struct {
 	Sf    float64
 	Tf    float64
 	Range client.RangeResolution
 }
 
-// FromValue decodes data from any value
+// FromValue decodes data from any value.
 func (hwi *HoltWintersInput) FromValue(value any, unixTimeUnit client.UnixTimeUnit) error {
 	m, ok := value.(map[string]any)
 	if !ok {
 		return fmt.Errorf("invalid HoltWintersInput value, expected map, got: %v", value)
 	}
+
 	sf, err := utils.GetFloat[float64](m, "sf")
 	if err != nil {
-		return fmt.Errorf("invalid HoltWintersInput smoothing factor: %s", err)
+		return fmt.Errorf("invalid HoltWintersInput smoothing factor: %w", err)
 	}
+
 	if sf <= 0 || sf >= 1 {
-		return fmt.Errorf("invalid HoltWintersInput smoothing factor. Expected: 0 < sf < 1, got: %f", sf)
+		return fmt.Errorf(
+			"invalid HoltWintersInput smoothing factor. Expected: 0 < sf < 1, got: %f",
+			sf,
+		)
 	}
 
 	tf, err := utils.GetFloat[float64](m, "tf")
 	if err != nil {
-		return fmt.Errorf("invalid HoltWintersInput tf: %s", err)
+		return fmt.Errorf("invalid HoltWintersInput tf: %w", err)
 	}
 
 	if tf <= 0 || tf >= 1 {
-		return fmt.Errorf("invalid HoltWintersInput trend factor. Expected: 0 < tf < 1, got: %f", sf)
+		return fmt.Errorf(
+			"invalid HoltWintersInput trend factor. Expected: 0 < tf < 1, got: %f",
+			sf,
+		)
 	}
 
 	rng, err := client.ParseRangeResolution(m["range"], unixTimeUnit)
 	if err != nil {
-		return fmt.Errorf("invalid HoltWintersInput range: %s", err)
+		return fmt.Errorf("invalid HoltWintersInput range: %w", err)
 	}
+
 	if rng == nil {
 		return errors.New("the range property of HoltWintersInput is required")
 	}
@@ -85,27 +105,29 @@ func (hwi *HoltWintersInput) FromValue(value any, unixTimeUnit client.UnixTimeUn
 	return nil
 }
 
-// PredictLinearInput represents input arguments of the predict_linear function
+// PredictLinearInput represents input arguments of the predict_linear function.
 type PredictLinearInput struct {
 	T     float64
 	Range client.RangeResolution
 }
 
-// FromValue decodes data from any value
+// FromValue decodes data from any value.
 func (pli *PredictLinearInput) FromValue(value any, unixTimeUnit client.UnixTimeUnit) error {
 	m, ok := value.(map[string]any)
 	if !ok {
 		return fmt.Errorf("invalid PredictLinearInput value, expected map, got: %v", value)
 	}
+
 	t, err := utils.GetFloat[float64](m, "t")
 	if err != nil {
-		return fmt.Errorf("invalid PredictLinearInput t: %s", err)
+		return fmt.Errorf("invalid PredictLinearInput t: %w", err)
 	}
 
 	rng, err := client.ParseRangeResolution(m["range"], unixTimeUnit)
 	if err != nil {
-		return fmt.Errorf("invalid PredictLinearInput range: %s", err)
+		return fmt.Errorf("invalid PredictLinearInput range: %w", err)
 	}
+
 	if rng == nil {
 		return errors.New("the range property of PredictLinearInput is required")
 	}
@@ -116,21 +138,22 @@ func (pli *PredictLinearInput) FromValue(value any, unixTimeUnit client.UnixTime
 	return nil
 }
 
-// QuantileOverTimeInput represents input arguments of the quantile_over_time function
+// QuantileOverTimeInput represents input arguments of the quantile_over_time function.
 type QuantileOverTimeInput struct {
 	Quantile float64
 	Range    client.RangeResolution
 }
 
-// FromValue decodes data from any value
+// FromValue decodes data from any value.
 func (qoti *QuantileOverTimeInput) FromValue(value any, unixTimeUnit client.UnixTimeUnit) error {
 	m, ok := value.(map[string]any)
 	if !ok {
 		return fmt.Errorf("invalid PredictLinearInput value, expected map, got: %v", value)
 	}
+
 	quantile, err := utils.GetFloat[float64](m, "quantile")
 	if err != nil {
-		return fmt.Errorf("invalid PredictLinearInput quantile: %s", err)
+		return fmt.Errorf("invalid PredictLinearInput quantile: %w", err)
 	}
 
 	if quantile < 0 || quantile > 1 {
@@ -139,8 +162,9 @@ func (qoti *QuantileOverTimeInput) FromValue(value any, unixTimeUnit client.Unix
 
 	rng, err := client.ParseRangeResolution(m["range"], unixTimeUnit)
 	if err != nil {
-		return fmt.Errorf("invalid PredictLinearInput range: %s", err)
+		return fmt.Errorf("invalid PredictLinearInput range: %w", err)
 	}
+
 	if rng == nil {
 		return errors.New("the range property of PredictLinearInput is required")
 	}

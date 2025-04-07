@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
@@ -12,20 +11,20 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
-// AlertState models the state of an alert
-// @enum firing, inactive, pending
+// AlertState represents an alert state enum.
+// @enum firing, inactive, pending.
 type AlertState string
 
 // Alert models an active alert.
 type Alert struct {
-	ActiveAt    time.Time      `json:"activeAt"`
+	ActiveAt    time.Time      `json:"active_at"`
 	Annotations model.LabelSet `json:"annotations"`
 	Labels      model.LabelSet `json:"labels"`
 	State       AlertState     `json:"state"`
 	Value       Decimal        `json:"value"`
 }
 
-// FunctionPrometheusRules return a list of all active alerts
+// FunctionPrometheusRules return a list of all active alerts.
 func FunctionPrometheusAlerts(ctx context.Context, state *metadata.State) ([]Alert, error) {
 	ctx, span := state.Tracer.Start(ctx, "Prometheus Alerts")
 	defer span.End()
@@ -34,17 +33,23 @@ func FunctionPrometheusAlerts(ctx context.Context, state *metadata.State) ([]Ale
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to get Prometheus alerts")
 		span.RecordError(err)
+
 		return nil, err
 	}
 
 	results := make([]Alert, len(rawResults.Alerts))
-	for _, item := range rawResults.Alerts {
+
+	for i, item := range rawResults.Alerts {
 		value, err := NewDecimal(item.Value)
 		if err != nil {
-			return nil, schema.InternalServerError(fmt.Sprintf("failed to decode alert value %s", item.Value), map[string]any{
-				"error": err.Error(),
-			})
+			return nil, schema.InternalServerError(
+				"failed to decode alert value "+item.Value,
+				map[string]any{
+					"error": err.Error(),
+				},
+			)
 		}
+
 		r := Alert{
 			ActiveAt:    item.ActiveAt,
 			Annotations: item.Annotations,
@@ -52,14 +57,17 @@ func FunctionPrometheusAlerts(ctx context.Context, state *metadata.State) ([]Ale
 			State:       AlertState(item.State),
 			Value:       value,
 		}
-		results = append(results, r)
+		results[i] = r
 	}
 
 	return results, nil
 }
 
-// FunctionPrometheusAlertmanagers return an overview of the current state of the Prometheus alertmanager discovery
-func FunctionPrometheusAlertmanagers(ctx context.Context, state *metadata.State) (v1.AlertManagersResult, error) {
+// FunctionPrometheusAlertmanagers return an overview of the current state of the Prometheus alertmanager discovery.
+func FunctionPrometheusAlertmanagers(
+	ctx context.Context,
+	state *metadata.State,
+) (v1.AlertManagersResult, error) {
 	ctx, span := state.Tracer.Start(ctx, "Prometheus Alertmanagers")
 	defer span.End()
 
@@ -67,6 +75,7 @@ func FunctionPrometheusAlertmanagers(ctx context.Context, state *metadata.State)
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to get Prometheus alertmanagers")
 		span.RecordError(err)
+
 		return v1.AlertManagersResult{}, err
 	}
 

@@ -14,7 +14,12 @@ import (
 // Series returns the list of [time series] that match a certain label set.
 // Google Managed Prometheus supports GET method only so the base API library doesn't work.
 // [time series](https://prometheus.io/docs/prometheus/latest/querying/api/#finding-series-by-label-matchers)
-func (c *Client) Series(ctx context.Context, matches []string, startTime, endTime time.Time, limit uint64) ([]model.LabelSet, v1.Warnings, error) {
+func (c *Client) Series(
+	ctx context.Context,
+	matches []string,
+	startTime, endTime time.Time,
+	limit uint64,
+) ([]model.LabelSet, v1.Warnings, error) {
 	u := c.client.URL("/api/v1/series", nil)
 	q := u.Query()
 
@@ -25,6 +30,7 @@ func (c *Client) Series(ctx context.Context, matches []string, startTime, endTim
 	if !startTime.IsZero() {
 		q.Set("start", formatTime(startTime))
 	}
+
 	if !endTime.IsZero() {
 		q.Set("end", formatTime(endTime))
 	}
@@ -32,19 +38,21 @@ func (c *Client) Series(ctx context.Context, matches []string, startTime, endTim
 	if limit > 0 {
 		q.Set("limit", strconv.FormatUint(limit, 10))
 	}
+
 	u.RawQuery = q.Encode()
 
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	_, body, warnings, err := c.do(ctx, req)
+	body, warnings, err := c.do(ctx, req)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	var mset []model.LabelSet
+
 	return mset, warnings, json.Unmarshal(body, &mset)
 }
 

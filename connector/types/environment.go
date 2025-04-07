@@ -11,34 +11,36 @@ var (
 	errEnvironmentEitherValueOrEnv = errors.New("only one of value or valueFromEnv is allowed")
 )
 
-// EnvironmentValue represents either a literal string or an environment reference
+// EnvironmentValue represents either a literal string or an environment reference.
 type EnvironmentValue struct {
-	Value    *string `json:"value,omitempty" yaml:"value,omitempty" jsonschema:"oneof_required=value"`
-	Variable *string `json:"env,omitempty" yaml:"env,omitempty" jsonschema:"oneof_required=env"`
+	Value    *string `json:"value,omitempty" jsonschema:"oneof_required=value" yaml:"value,omitempty"`
+	Variable *string `json:"env,omitempty"   jsonschema:"oneof_required=env"   yaml:"env,omitempty"`
 }
 
-// NewEnvironmentValue create an EnvironmentValue with a literal value
+// NewEnvironmentValue create an EnvironmentValue with a literal value.
 func NewEnvironmentValue(value string) EnvironmentValue {
 	return EnvironmentValue{
 		Value: &value,
 	}
 }
 
-// NewEnvironmentVariable create an EnvironmentValue with a variable name
+// NewEnvironmentVariable create an EnvironmentValue with a variable name.
 func NewEnvironmentVariable(name string) EnvironmentValue {
 	return EnvironmentValue{
 		Variable: &name,
 	}
 }
 
-// Validate checks if the current instance is valid
+// Validate checks if the current instance is valid.
 func (ev EnvironmentValue) Validate() error {
 	if ev.Value == nil && ev.Variable == nil {
 		return errEnvironmentValueRequired
 	}
+
 	if ev.Value != nil && ev.Variable != nil {
 		return errEnvironmentEitherValueOrEnv
 	}
+
 	if ev.Variable != nil && *ev.Variable == "" {
 		return errEnvironmentVariableRequired
 	}
@@ -46,11 +48,12 @@ func (ev EnvironmentValue) Validate() error {
 	return nil
 }
 
-// Get gets literal value or from system environment
+// Get gets literal value or from system environment.
 func (ev EnvironmentValue) Get() (string, error) {
 	if err := ev.Validate(); err != nil {
 		return "", err
 	}
+
 	if ev.Value != nil {
 		return *ev.Value, nil
 	}

@@ -1,20 +1,14 @@
+// The Hasura Prometheus Connector allows for connecting to a Prometheus database
+// giving you an instant GraphQL API on top of your Prometheus data.
 package main
 
 import (
 	prom "github.com/hasura/ndc-prometheus/connector"
-	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/connector"
 )
 
-// Start the connector server at http://localhost:8080
-//
-//	go run . serve
-//
-// See [NDC Go SDK] for more information.
-//
-// [NDC Go SDK]: https://github.com/hasura/ndc-sdk-go
 func main() {
-	if err := connector.Start[metadata.Configuration, metadata.State](
+	if err := connector.Start(
 		prom.NewPrometheusConnector(),
 		connector.WithMetricsPrefix("ndc_prometheus"),
 		connector.WithDefaultServiceName("ndc_prometheus"),

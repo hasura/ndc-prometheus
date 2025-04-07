@@ -3,7 +3,7 @@ OUTPUT_DIR := _output
 
 .PHONY: format
 format:
-	gofmt -w -s .
+	golangci-lint fmt
 
 .PHONY: test
 test:
@@ -13,7 +13,7 @@ test:
 # https://golangci-lint.run/usage/install
 .PHONY: lint
 lint:
-	golangci-lint run
+	golangci-lint run --fix
 
 # clean the output directory
 .PHONY: clean
@@ -40,7 +40,7 @@ ci-build-configuration: clean
 
 .PHONY: build-supergraph-test
 build-supergraph-test:
-	docker compose up -d --build
+	docker compose up -d --build ndc-prometheus
 	cd tests/engine && \
 		ddn connector-link update prometheus --add-all-resources --subgraph ./app/subgraph.yaml && \
 		ddn supergraph build local

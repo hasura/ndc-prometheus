@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if err := jsonSchemaConfiguration(); err != nil {
-		panic(fmt.Errorf("failed to write jsonschema for configuration: %s", err))
+		panic(fmt.Errorf("failed to write jsonschema for configuration: %w", err))
 	}
 }
 
@@ -20,9 +20,11 @@ func jsonSchemaConfiguration() error {
 	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/client", "../connector/client"); err != nil {
 		return err
 	}
+
 	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/metadata", "../connector/metadata"); err != nil {
 		return err
 	}
+
 	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/types", "../connector/types"); err != nil {
 		return err
 	}
@@ -34,5 +36,5 @@ func jsonSchemaConfiguration() error {
 		return err
 	}
 
-	return os.WriteFile("configuration.json", schemaBytes, 0644)
+	return os.WriteFile("configuration.json", schemaBytes, 0o644)
 }

@@ -3,7 +3,7 @@ services:
     build:
       context: engine
       dockerfile_inline: |-
-        FROM ghcr.io/hasura/v3-engine:f56a9eecf6e9eca9fdc56bf332f9a06f5ad4cdb5
+        FROM ghcr.io/hasura/v3-engine
         COPY ./build /md/
     develop:
       watch:

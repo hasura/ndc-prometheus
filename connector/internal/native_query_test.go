@@ -39,7 +39,7 @@ func TestFilterVectorResults(t *testing.T) {
 			Name: "equal",
 			Expression: schema.NewExpressionAnd(
 				schema.NewExpressionBinaryComparisonOperator(
-					*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+					*schema.NewComparisonTargetColumn("job"),
 					"_eq",
 					schema.NewComparisonValueScalar("foo"),
 				),
@@ -50,7 +50,7 @@ func TestFilterVectorResults(t *testing.T) {
 			Name: "is_null",
 			Expression: schema.NewExpressionAnd(
 				schema.NewExpressionUnaryComparisonOperator(
-					*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+					*schema.NewComparisonTargetColumn("job"),
 					schema.UnaryComparisonOperatorIsNull,
 				),
 			).Encode(),
@@ -60,7 +60,7 @@ func TestFilterVectorResults(t *testing.T) {
 			Name: "neq",
 			Expression: schema.NewExpressionAnd(
 				schema.NewExpressionBinaryComparisonOperator(
-					*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+					*schema.NewComparisonTargetColumn("job"),
 					"_neq",
 					schema.NewComparisonValueScalar("foo"),
 				),
@@ -71,7 +71,7 @@ func TestFilterVectorResults(t *testing.T) {
 			Name: "in",
 			Expression: schema.NewExpressionAnd(
 				schema.NewExpressionBinaryComparisonOperator(
-					*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+					*schema.NewComparisonTargetColumn("job"),
 					"_in",
 					schema.NewComparisonValueScalar([]string{"ndc-prometheus"}),
 				),
@@ -82,7 +82,7 @@ func TestFilterVectorResults(t *testing.T) {
 			Name: "nin",
 			Expression: schema.NewExpressionAnd(
 				schema.NewExpressionBinaryComparisonOperator(
-					*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+					*schema.NewComparisonTargetColumn("job"),
 					"_nin",
 					schema.NewComparisonValueScalar([]string{"foo"}),
 				),
@@ -137,7 +137,7 @@ func TestFilterMatrixResults(t *testing.T) {
 			Request: &NativeQueryRequest{
 				Expression: schema.NewExpressionOr(
 					schema.NewExpressionBinaryComparisonOperator(
-						*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+						*schema.NewComparisonTargetColumn("job"),
 						"_eq",
 						schema.NewComparisonValueScalar("foo"),
 					),
@@ -151,12 +151,12 @@ func TestFilterMatrixResults(t *testing.T) {
 				HasValueBoolExp: true,
 				Expression: schema.NewExpressionOr(
 					schema.NewExpressionBinaryComparisonOperator(
-						*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+						*schema.NewComparisonTargetColumn("job"),
 						"_regex",
 						schema.NewComparisonValueScalar("foo"),
 					),
 					schema.NewExpressionBinaryComparisonOperator(
-						*schema.NewComparisonTargetColumn("value", []string{}, []schema.PathElement{}),
+						*schema.NewComparisonTargetColumn("value"),
 						"_gte",
 						schema.NewComparisonValueScalar(0),
 					),
@@ -170,12 +170,12 @@ func TestFilterMatrixResults(t *testing.T) {
 				HasValueBoolExp: true,
 				Expression: schema.NewExpressionNot(schema.NewExpressionOr(
 					schema.NewExpressionBinaryComparisonOperator(
-						*schema.NewComparisonTargetColumn("job", []string{}, []schema.PathElement{}),
+						*schema.NewComparisonTargetColumn("job"),
 						"_nregex",
 						schema.NewComparisonValueScalar("foo"),
 					),
 					schema.NewExpressionBinaryComparisonOperator(
-						*schema.NewComparisonTargetColumn("value", []string{}, []schema.PathElement{}),
+						*schema.NewComparisonTargetColumn("value"),
 						"_lte",
 						schema.NewComparisonValueScalar(0),
 					),

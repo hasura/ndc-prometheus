@@ -16,7 +16,12 @@ import (
 var histogramNameRegex = regexp.MustCompile(`^(\w+)_(sum|count|bucket)$`)
 
 // Query executes a query.
-func (c *PrometheusConnector) Query(ctx context.Context, configuration *metadata.Configuration, state *metadata.State, request *schema.QueryRequest) (schema.QueryResponse, error) {
+func (c *PrometheusConnector) Query(
+	ctx context.Context,
+	_ *metadata.Configuration,
+	state *metadata.State,
+	request *schema.QueryRequest,
+) (schema.QueryResponse, error) {
 	requestVars := request.Variables
 	if len(requestVars) == 0 {
 		requestVars = []schema.QueryRequestVariablesElem{make(schema.QueryRequestVariablesElem)}
@@ -25,10 +30,16 @@ func (c *PrometheusConnector) Query(ctx context.Context, configuration *metadata
 	if len(requestVars) == 1 || c.runtime.ConcurrencyLimit <= 1 {
 		return c.execQuerySync(ctx, state, request, requestVars)
 	}
+
 	return c.execQueryAsync(ctx, state, request, requestVars)
 }
 
-func (c *PrometheusConnector) execQuerySync(ctx context.Context, state *metadata.State, request *schema.QueryRequest, requestVars []schema.QueryRequestVariablesElem) ([]schema.RowSet, error) {
+func (c *PrometheusConnector) execQuerySync(
+	ctx context.Context,
+	state *metadata.State,
+	request *schema.QueryRequest,
+	requestVars []schema.QueryRequestVariablesElem,
+) ([]schema.RowSet, error) {
 	rowSets := make([]schema.RowSet, len(requestVars))
 
 	for i, requestVar := range requestVars {
@@ -36,13 +47,19 @@ func (c *PrometheusConnector) execQuerySync(ctx context.Context, state *metadata
 		if err != nil {
 			return nil, err
 		}
+
 		rowSets[i] = *result
 	}
 
 	return rowSets, nil
 }
 
-func (c *PrometheusConnector) execQueryAsync(ctx context.Context, state *metadata.State, request *schema.QueryRequest, requestVars []schema.QueryRequestVariablesElem) ([]schema.RowSet, error) {
+func (c *PrometheusConnector) execQueryAsync(
+	ctx context.Context,
+	state *metadata.State,
+	request *schema.QueryRequest,
+	requestVars []schema.QueryRequestVariablesElem,
+) ([]schema.RowSet, error) {
 	rowSets := make([]schema.RowSet, len(requestVars))
 
 	eg, ctx := errgroup.WithContext(ctx)
@@ -55,7 +72,9 @@ func (c *PrometheusConnector) execQueryAsync(ctx context.Context, state *metadat
 				if err != nil {
 					return err
 				}
+
 				rowSets[index] = *result
+
 				return nil
 			})
 		}(i, requestVar)
@@ -64,10 +83,17 @@ func (c *PrometheusConnector) execQueryAsync(ctx context.Context, state *metadat
 	if err := eg.Wait(); err != nil {
 		return nil, err
 	}
+
 	return rowSets, nil
 }
 
-func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.State, request *schema.QueryRequest, variables map[string]any, index int) (*schema.RowSet, error) {
+func (c *PrometheusConnector) execQuery(
+	ctx context.Context,
+	state *metadata.State,
+	request *schema.QueryRequest,
+	variables map[string]any,
+	index int,
+) (*schema.RowSet, error) {
 	ctx, span := state.Tracer.Start(ctx, fmt.Sprintf("Execute Query %d", index))
 	defer span.End()
 
@@ -76,10 +102,12 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 		errorMsg := "failed to resolve argument variables"
 		span.SetStatus(codes.Error, errorMsg)
 		span.RecordError(err)
+
 		return nil, schema.UnprocessableContentError(errorMsg, map[string]any{
 			"cause": err.Error(),
 		})
 	}
+
 	span.SetAttributes(utils.JSONAttribute("arguments", arguments))
 
 	if request.Collection == metadata.FunctionPromQLQuery {
@@ -90,10 +118,12 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 			Request:   request,
 			Arguments: arguments,
 		}
+
 		result, err := executor.Execute(ctx)
 		if err != nil {
 			span.SetStatus(codes.Error, "failed to execute raw query")
 			span.RecordError(err)
+
 			return nil, err
 		}
 
@@ -105,8 +135,10 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 		if err != nil {
 			span.SetStatus(codes.Error, "failed to execute query")
 			span.RecordError(err)
+
 			return nil, err
 		}
+
 		return result, nil
 	}
 
@@ -121,17 +153,37 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 			Arguments:   arguments,
 			Variables:   variables,
 		}
+
 		result, err := executor.Execute(ctx)
 		if err != nil {
 			span.SetStatus(codes.Error, "failed to execute the native query")
 			span.RecordError(err)
+
 			return nil, err
 		}
 
 		return result, nil
 	}
 
-	// evaluate collection query
+	result, err := c.execQueryCollection(ctx, state, request, variables, arguments)
+	if err != nil {
+		span.SetStatus(codes.Error, "failed to execute the collection query")
+		span.RecordError(err)
+
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// evaluate collection query.
+func (c *PrometheusConnector) execQueryCollection(
+	ctx context.Context,
+	state *metadata.State,
+	request *schema.QueryRequest,
+	variables map[string]any,
+	arguments map[string]any,
+) (*schema.RowSet, error) {
 	histogramMatches := histogramNameRegex.FindStringSubmatch(request.Collection)
 
 	metricNames := []string{request.Collection}
@@ -147,6 +199,7 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 					Rows:       []map[string]any{},
 				}, nil
 			}
+
 			executor := &internal.QueryCollectionExecutor{
 				Tracer:    state.Tracer,
 				Client:    state.Client,
@@ -159,8 +212,6 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 
 			result, err := executor.Execute(ctx)
 			if err != nil {
-				span.SetStatus(codes.Error, "failed to execute the collection query")
-				span.RecordError(err)
 				return nil, err
 			}
 
@@ -168,11 +219,19 @@ func (c *PrometheusConnector) execQuery(ctx context.Context, state *metadata.Sta
 		}
 	}
 
-	return nil, schema.UnprocessableContentError(fmt.Sprintf("invalid query `%s`", request.Collection), nil)
+	return nil, schema.UnprocessableContentError(
+		fmt.Sprintf("invalid query `%s`", request.Collection),
+		nil,
+	)
 }
 
 // QueryExplain explains a query by creating an execution plan.
-func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.Configuration, state *metadata.State, request *schema.QueryRequest) (*schema.ExplainResponse, error) {
+func (c *PrometheusConnector) QueryExplain(
+	ctx context.Context,
+	_ *metadata.Configuration,
+	state *metadata.State,
+	request *schema.QueryRequest,
+) (*schema.ExplainResponse, error) {
 	requestVars := request.Variables
 	if len(requestVars) == 0 {
 		requestVars = []schema.QueryRequestVariablesElem{make(schema.QueryRequestVariablesElem)}
@@ -197,6 +256,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 			Arguments: arguments,
 			Runtime:   c.runtime,
 		}
+
 		_, queryString, err := executor.Explain(ctx)
 		if err != nil {
 			return nil, err
@@ -218,6 +278,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 			Arguments:   arguments,
 			Runtime:     c.runtime,
 		}
+
 		_, queryString, err := executor.Explain(ctx)
 		if err != nil {
 			return nil, err
@@ -234,6 +295,7 @@ func (c *PrometheusConnector) QueryExplain(ctx context.Context, conf *metadata.C
 	histogramMatches := histogramNameRegex.FindStringSubmatch(request.Collection)
 
 	metricNames := []string{request.Collection}
+
 	if len(histogramMatches) > 1 {
 		metricNames = []string{histogramMatches[1], request.Collection}
 	}

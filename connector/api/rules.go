@@ -18,6 +18,7 @@ func FunctionPrometheusRules(ctx context.Context, state *metadata.State) (v1.Rul
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to get Prometheus rules")
 		span.RecordError(err)
+
 		return v1.RulesResult{}, err
 	}
 

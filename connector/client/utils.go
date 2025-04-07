@@ -13,7 +13,7 @@ import (
 	"github.com/prometheus/common/model"
 )
 
-// UnixTimeUnit the unit for unix timestamp
+// UnixTimeUnit the unit for unix timestamp.
 type UnixTimeUnit string
 
 const (
@@ -23,7 +23,7 @@ const (
 	UnixTimeNano   UnixTimeUnit = "ns"
 )
 
-// Duration returns the duration of the unit
+// Duration returns the duration of the unit.
 func (ut UnixTimeUnit) Duration() time.Duration {
 	switch ut {
 	case UnixTimeMilli:
@@ -37,9 +37,10 @@ func (ut UnixTimeUnit) Duration() time.Duration {
 	}
 }
 
-// calculate the step to avoid exceeding maximum resolution of 11,000 points per time-series
+// calculate the step to avoid exceeding maximum resolution of 11,000 points per time-series.
 func evalStepFromRange(start time.Time, end time.Time) time.Duration {
 	difference := end.Sub(start)
+
 	switch {
 	case difference <= time.Minute:
 		return time.Second
@@ -50,33 +51,36 @@ func evalStepFromRange(start time.Time, end time.Time) time.Duration {
 	}
 }
 
-// RangeResolution represents the given range and resolution with format xx:xx
+// RangeResolution represents the given range and resolution with format xx:xx.
 type RangeResolution struct {
 	Range      model.Duration
 	Resolution model.Duration
 }
 
-// String implements the fmt.Stringer interface
+// String implements the fmt.Stringer interface.
 func (rr RangeResolution) String() string {
 	if rr.Resolution == 0 {
 		return rr.Range.String()
 	}
+
 	return fmt.Sprintf("%s:%s", rr.Range.String(), rr.Resolution.String())
 }
 
-// ParseDuration parses duration from an unknown value
+// ParseDuration parses duration from an unknown value.
 func ParseDuration(value any, unixTimeUnit UnixTimeUnit) (time.Duration, error) {
 	result, err := utils.DecodeNullableDuration(value, utils.WithBaseUnix(unixTimeUnit.Duration()))
 	if err != nil {
 		return 0, err
 	}
+
 	if result == nil {
 		return 0, nil
 	}
+
 	return *result, nil
 }
 
-// ParseRangeResolution parses the range resolution from a string
+// ParseRangeResolution parses the range resolution from a string.
 func ParseRangeResolution(input any, unixTimeUnit UnixTimeUnit) (*RangeResolution, error) {
 	reflectValue, ok := utils.UnwrapPointerFromReflectValue(reflect.ValueOf(input))
 	if !ok {
@@ -84,11 +88,16 @@ func ParseRangeResolution(input any, unixTimeUnit UnixTimeUnit) (*RangeResolutio
 	}
 
 	kind := reflectValue.Kind()
+
 	if kind != reflect.String {
-		rng, err := utils.DecodeDuration(reflectValue.Interface(), utils.WithBaseUnix(unixTimeUnit.Duration()))
+		rng, err := utils.DecodeDuration(
+			reflectValue.Interface(),
+			utils.WithBaseUnix(unixTimeUnit.Duration()),
+		)
 		if err != nil {
-			return nil, fmt.Errorf("invalid range resolution %v: %s", input, err)
+			return nil, fmt.Errorf("invalid range resolution %v: %w", input, err)
 		}
+
 		return &RangeResolution{Range: model.Duration(rng)}, nil
 	}
 
@@ -99,23 +108,26 @@ func ParseRangeResolution(input any, unixTimeUnit UnixTimeUnit) (*RangeResolutio
 
 	rng, err := model.ParseDuration(parts[0])
 	if err != nil {
-		return nil, fmt.Errorf("invalid duration %s: %s", parts[0], err)
+		return nil, fmt.Errorf("invalid duration %s: %w", parts[0], err)
 	}
 
 	result := &RangeResolution{
 		Range: rng,
 	}
+
 	if len(parts) > 1 {
 		resolution, err := model.ParseDuration(parts[1])
 		if err != nil {
-			return nil, fmt.Errorf("invalid resolution %s: %s", parts[1], err)
+			return nil, fmt.Errorf("invalid resolution %s: %w", parts[1], err)
 		}
+
 		result.Resolution = resolution
 	}
+
 	return result, nil
 }
 
-// ParseTimestamp parses timestamp from an unknown value
+// ParseTimestamp parses timestamp from an unknown value.
 func ParseTimestamp(s any, unixTimeUnit UnixTimeUnit) (*time.Time, error) {
 	return utils.DecodeNullableDateTime(s, utils.WithBaseUnix(unixTimeUnit.Duration()))
 }
@@ -123,7 +135,7 @@ func ParseTimestamp(s any, unixTimeUnit UnixTimeUnit) (*time.Time, error) {
 type apiResponse struct {
 	Status    string          `json:"status"`
 	Data      json.RawMessage `json:"data"`
-	ErrorType v1.ErrorType    `json:"errorType"`
+	ErrorType v1.ErrorType    `json:"errorType"` //nolint:tagliatelle
 	Error     string          `json:"error"`
 	Warnings  []string        `json:"warnings,omitempty"`
 }
@@ -140,5 +152,6 @@ func errorTypeAndMsgFor(resp *http.Response) (v1.ErrorType, string) {
 	case 5:
 		return v1.ErrServer, fmt.Sprintf("server error: %d", resp.StatusCode)
 	}
+
 	return v1.ErrBadResponse, fmt.Sprintf("bad response code %d", resp.StatusCode)
 }

@@ -105,7 +105,8 @@ func TestNativeQueryVariables(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.Input.Query, func(t *testing.T) {
-			arguments, err := findNativeQueryVariables(tc.Input)
+			uc := &updateCommand{}
+			arguments, err := uc.findNativeQueryVariables(tc.Input)
 			if tc.ErrorMsg != "" {
 				assert.ErrorContains(t, err, tc.ErrorMsg)
 				return
@@ -113,7 +114,7 @@ func TestNativeQueryVariables(t *testing.T) {
 
 			assert.NilError(t, err)
 			assert.DeepEqual(t, arguments, tc.ExpectedArguments)
-			query, err := formatNativeQueryVariables(tc.Input.Query, tc.ExpectedArguments)
+			query, err := uc.formatNativeQueryVariables(tc.Input.Query, tc.ExpectedArguments)
 			assert.NilError(t, err)
 			assert.Equal(t, query, tc.ExpectedQuery)
 		})

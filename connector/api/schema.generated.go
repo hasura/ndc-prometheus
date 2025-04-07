@@ -44,6 +44,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("String").Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"Alert": schema.ObjectType{
 				Description: toPtr("models an active alert."),
@@ -64,6 +65,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("Decimal").Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"AlertManager": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
@@ -71,6 +73,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("String").Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"AlertManagersResult": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
@@ -81,6 +84,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewArrayType(schema.NewNamedType("AlertManager")).Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"DroppedTarget": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
@@ -88,6 +92,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("JSON").Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"MetricMetadata": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
@@ -95,7 +100,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("String").Encode(),
 					},
 					"metric": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"target": schema.ObjectField{
 						Type: schema.NewNamedType("JSON").Encode(),
@@ -107,6 +112,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("String").Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"PrometheusSeriesArguments": schema.ObjectType{
 				Description: toPtr("common api arguments for the prometheus series and labels functions"),
@@ -124,6 +130,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"RuleGroup": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
@@ -140,6 +147,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewArrayType(schema.NewNamedType("JSON")).Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"RulesResult": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
@@ -147,6 +155,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewArrayType(schema.NewNamedType("RuleGroup")).Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 			"TargetsResult": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
@@ -157,6 +166,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewArrayType(schema.NewNamedType("DroppedTarget")).Encode(),
 					},
 				},
+				ForeignKeys: schema.ObjectTypeForeignKeys{},
 			},
 		},
 		Functions: []schema.FunctionInfo{

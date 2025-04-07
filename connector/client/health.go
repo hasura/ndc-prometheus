@@ -12,7 +12,7 @@ import (
 func (c *Client) Healthy(ctx context.Context) error {
 	endpoint := c.client.URL("/-/healthy", map[string]string{})
 
-	req, err := http.NewRequest("GET", endpoint.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
 	if err != nil {
 		return err
 	}
@@ -21,12 +21,16 @@ func (c *Client) Healthy(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode == 200 {
+
+	_ = resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
 		return nil
 	}
 
 	if len(bs) > 0 {
 		return errors.New(string(bs))
 	}
+
 	return errors.New(resp.Status)
 }

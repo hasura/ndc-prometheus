@@ -14,12 +14,10 @@ import (
 	"slices"
 )
 
-var connector_Decoder = utils.NewDecoder()
-
 // FromValue decodes values from map
 func (j *PrometheusLabelValuesArguments) FromValue(input map[string]any) error {
 	var err error
-	err = connector_Decoder.DecodeObject(&j.PrometheusSeriesArguments, input)
+	j.PrometheusSeriesArguments, err = utils.DecodeObject[PrometheusSeriesArguments](input)
 	if err != nil {
 		return err
 	}
@@ -110,7 +108,7 @@ var enumValues_AlertState = []AlertState{AlertStateFiring, AlertStateInactive, A
 func ParseAlertState(input string) (AlertState, error) {
 	result := AlertState(input)
 	if !slices.Contains(enumValues_AlertState, result) {
-		return AlertState(""), errors.New("failed to parse AlertState, expect one of AlertStateFiring, AlertStateInactive, AlertStatePending")
+		return AlertState(""), errors.New("failed to parse AlertState, expect one of [firing, inactive, pending]")
 	}
 
 	return result, nil
@@ -176,7 +174,7 @@ func (dch DataConnectorHandler) Query(ctx context.Context, state *metadata.State
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	result, err := dch.execQuery(ctx, state, request, queryFields, rawArgs)
+	result, err := dch.execQuery(context.WithValue(ctx, utils.CommandSelectionFieldKey, queryFields), state, request, queryFields, rawArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -204,6 +202,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			})
 		}
 		rawResult, err := FunctionPrometheusAlertmanagers(ctx, state)
+
 		if err != nil {
 			return nil, err
 		}
@@ -226,6 +225,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			})
 		}
 		rawResult, err := FunctionPrometheusAlerts(ctx, state)
+
 		if err != nil {
 			return nil, err
 		}
@@ -245,7 +245,8 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
 		}
 		var args PrometheusSeriesArguments
-		if parseErr := args.FromValue(rawArgs); parseErr != nil {
+		parseErr := args.FromValue(rawArgs)
+		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
 				"cause": parseErr.Error(),
 			})
@@ -262,7 +263,8 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
 		}
 		var args PrometheusLabelValuesArguments
-		if parseErr := args.FromValue(rawArgs); parseErr != nil {
+		parseErr := args.FromValue(rawArgs)
+		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
 				"cause": parseErr.Error(),
 			})
@@ -282,6 +284,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			})
 		}
 		rawResult, err := FunctionPrometheusRules(ctx, state)
+
 		if err != nil {
 			return nil, err
 		}
@@ -301,7 +304,8 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
 		}
 		var args PrometheusSeriesArguments
-		if parseErr := args.FromValue(rawArgs); parseErr != nil {
+		parseErr := args.FromValue(rawArgs)
+		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
 				"cause": parseErr.Error(),
 			})
@@ -321,6 +325,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			})
 		}
 		rawResult, err := FunctionPrometheusTargets(ctx, state)
+
 		if err != nil {
 			return nil, err
 		}
@@ -343,7 +348,8 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			})
 		}
 		var args PrometheusTargetsMetadataArguments
-		if parseErr := args.FromValue(rawArgs); parseErr != nil {
+		parseErr := args.FromValue(rawArgs)
+		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
 				"cause": parseErr.Error(),
 			})
@@ -353,6 +359,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 			"arguments": args,
 		})
 		rawResult, err := FunctionPrometheusTargetsMetadata(ctx, state, &args)
+
 		if err != nil {
 			return nil, err
 		}
@@ -373,8 +380,8 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *metadata.S
 
 var enumValues_FunctionName = []string{"prometheus_alertmanagers", "prometheus_alerts", "prometheus_label_names", "prometheus_label_values", "prometheus_rules", "prometheus_series", "prometheus_targets", "prometheus_targets_metadata"}
 
-func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
+func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any) {
 	logger.Debug(name, slog.Any("data", data))
 	attrs := utils.DebugJSONAttributes(data, utils.IsDebug(logger))
-	span.AddEvent(name, append(options, trace.WithAttributes(attrs...))...)
+	span.AddEvent(name, trace.WithAttributes(attrs...))
 }

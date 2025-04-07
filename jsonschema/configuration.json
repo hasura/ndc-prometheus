@@ -429,7 +429,10 @@
           "type": "string",
           "enum": [
             "rfc3339",
-            "unix"
+            "unix",
+            "unix_ms",
+            "unix_us",
+            "unix_ns"
           ],
           "default": "unix"
         },
@@ -500,7 +503,9 @@
           "type": "string",
           "enum": [
             "s",
-            "ms"
+            "ms",
+            "us",
+            "ns"
           ],
           "default": "s"
         },

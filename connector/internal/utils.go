@@ -14,8 +14,14 @@ import (
 	"github.com/prometheus/common/model"
 )
 
-func createQueryResultsFromVector(vector model.Vector, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings, flat bool) []map[string]any {
+func createQueryResultsFromVector(
+	vector model.Vector,
+	labels map[string]metadata.LabelInfo,
+	runtime *metadata.RuntimeSettings,
+	flat bool,
+) []map[string]any {
 	results := make([]map[string]any, len(vector))
+
 	for i, item := range vector {
 		ts := formatTimestamp(item.Timestamp, runtime.Format.Timestamp)
 		value := formatValue(item.Value, runtime.Format)
@@ -28,6 +34,7 @@ func createQueryResultsFromVector(vector model.Vector, labels map[string]metadat
 		for label := range labels {
 			r[label] = string(item.Metric[model.LabelName(label)])
 		}
+
 		if !flat {
 			r[metadata.ValuesKey] = []map[string]any{
 				{
@@ -43,7 +50,12 @@ func createQueryResultsFromVector(vector model.Vector, labels map[string]metadat
 	return results
 }
 
-func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings, flat bool) []map[string]any {
+func createQueryResultsFromMatrix(
+	matrix model.Matrix,
+	labels map[string]metadata.LabelInfo,
+	runtime *metadata.RuntimeSettings,
+	flat bool,
+) []map[string]any {
 	if flat {
 		return createFlatQueryResultsFromMatrix(matrix, labels, runtime)
 	}
@@ -51,8 +63,13 @@ func createQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadat
 	return createGroupQueryResultsFromMatrix(matrix, labels, runtime)
 }
 
-func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
+func createGroupQueryResultsFromMatrix(
+	matrix model.Matrix,
+	labels map[string]metadata.LabelInfo,
+	runtime *metadata.RuntimeSettings,
+) []map[string]any {
 	results := make([]map[string]any, len(matrix))
+
 	for i, item := range matrix {
 		r := map[string]any{
 			metadata.LabelsKey: item.Metric,
@@ -64,6 +81,7 @@ func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]me
 
 		valuesLen := len(item.Values)
 		values := make([]map[string]any, valuesLen)
+
 		for i, value := range item.Values {
 			ts := formatTimestamp(value.Timestamp, runtime.Format.Timestamp)
 			v := formatValue(value.Value, runtime.Format)
@@ -71,6 +89,7 @@ func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]me
 				metadata.TimestampKey: ts,
 				metadata.ValueKey:     v,
 			}
+
 			if i == valuesLen-1 {
 				r[metadata.TimestampKey] = ts
 				r[metadata.ValueKey] = v
@@ -84,7 +103,11 @@ func createGroupQueryResultsFromMatrix(matrix model.Matrix, labels map[string]me
 	return results
 }
 
-func createFlatQueryResultsFromMatrix(matrix model.Matrix, labels map[string]metadata.LabelInfo, runtime *metadata.RuntimeSettings) []map[string]any {
+func createFlatQueryResultsFromMatrix(
+	matrix model.Matrix,
+	labels map[string]metadata.LabelInfo,
+	runtime *metadata.RuntimeSettings,
+) []map[string]any {
 	results := []map[string]any{}
 
 	for _, item := range matrix {
@@ -130,9 +153,11 @@ func formatValue(value model.SampleValue, format metadata.RuntimeFormatSettings)
 		if math.IsNaN(float64(value)) {
 			return format.NaN
 		}
+
 		if value > 0 && math.IsInf(float64(value), 1) {
 			return format.Inf
 		}
+
 		if value < 0 && math.IsInf(float64(value), -1) {
 			return format.NegativeInf
 		}
@@ -147,14 +172,18 @@ func decodeStringSlice(value any) ([]string, error) {
 	if utils.IsNil(value) {
 		return nil, nil
 	}
+
 	var err error
+
 	sliceValue := []string{}
+
 	if str, ok := value.(string); ok {
 		// try to parse the slice from the json string
 		err = json.Unmarshal([]byte(str), &sliceValue)
 	} else {
 		sliceValue, err = utils.DecodeStringSlice(value)
 	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -164,6 +193,7 @@ func decodeStringSlice(value any) ([]string, error) {
 
 func intersection[T comparable](sliceA []T, sliceB []T) []T {
 	var result []T
+
 	if len(sliceA) == 0 || len(sliceB) == 0 {
 		return result
 	}
@@ -189,32 +219,45 @@ func getComparisonValue(input schema.ComparisonValue, variables map[string]any) 
 		if value, ok := variables[v.Name]; ok {
 			return value, nil
 		}
+
 		return nil, fmt.Errorf("variable %s does not exist", v.Name)
 	default:
 		return nil, fmt.Errorf("invalid comparison value: %v", input)
 	}
 }
 
-func getComparisonValueFloat64(input schema.ComparisonValue, variables map[string]any) (*float64, error) {
+func getComparisonValueFloat64(
+	input schema.ComparisonValue,
+	variables map[string]any,
+) (*float64, error) {
 	rawValue, err := getComparisonValue(input, variables)
 	if err != nil {
 		return nil, err
 	}
+
 	return utils.DecodeNullableFloat[float64](rawValue)
 }
 
-func getComparisonValueString(input schema.ComparisonValue, variables map[string]any) (*string, error) {
+func getComparisonValueString(
+	input schema.ComparisonValue,
+	variables map[string]any,
+) (*string, error) {
 	rawValue, err := getComparisonValue(input, variables)
 	if err != nil {
 		return nil, err
 	}
+
 	return utils.DecodeNullableString(rawValue)
 }
 
-func getComparisonValueStringSlice(input schema.ComparisonValue, variables map[string]any) ([]string, error) {
+func getComparisonValueStringSlice(
+	input schema.ComparisonValue,
+	variables map[string]any,
+) ([]string, error) {
 	rawValue, err := getComparisonValue(input, variables)
 	if err != nil {
 		return nil, err
 	}
+
 	return decodeStringSlice(rawValue)
 }

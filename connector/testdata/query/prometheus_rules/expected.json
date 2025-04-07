@@ -8,7 +8,7 @@
               "file": "/etc/prometheus/alert.rules",
               "interval": 15,
               "name": "services",
-              "rules": null
+              "rules": []
             }
           ]
         }

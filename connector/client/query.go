@@ -18,8 +18,12 @@ import (
 // Query evaluates an [instant query] at a single point in time
 //
 // [instant query]: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries
-func (c *Client) Query(ctx context.Context, queryString string, timestamp any, timeout any) (model.Vector, v1.Warnings, error) {
-
+func (c *Client) Query(
+	ctx context.Context,
+	queryString string,
+	timestamp any,
+	timeout any,
+) (model.Vector, v1.Warnings, error) {
 	ctx, span := clientTracer.Start(ctx, "Query")
 	defer span.End()
 
@@ -38,7 +42,8 @@ func (c *Client) Query(ctx context.Context, queryString string, timestamp any, t
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to decode time")
 		span.RecordError(err)
-		return nil, nil, fmt.Errorf("failed to decode time: %s", err)
+
+		return nil, nil, fmt.Errorf("failed to decode time: %w", err)
 	}
 
 	if ts == nil {
@@ -55,22 +60,31 @@ func (c *Client) Query(ctx context.Context, queryString string, timestamp any, t
 	if err != nil {
 		span.SetStatus(codes.Error, "error querying prometheus")
 		span.RecordError(err)
-		return nil, warnings, fmt.Errorf("error querying prometheus: %v", err)
+
+		return nil, warnings, fmt.Errorf("error querying prometheus: %w", err)
 	}
 
 	if result, ok := r.(model.Vector); ok {
 		return result, warnings, nil
 	}
 
-	err = fmt.Errorf("did not receive an instant vector result")
+	err = errors.New("did not receive an instant vector result")
 	span.SetStatus(codes.Error, err.Error())
+
 	return nil, warnings, err
 }
 
 // QueryRange evaluates a [range query] that performs query over a range of time
 //
 // [range query](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries)
-func (c *Client) QueryRange(ctx context.Context, queryString string, start any, end any, step any, timeout any) (model.Matrix, v1.Warnings, error) {
+func (c *Client) QueryRange(
+	ctx context.Context,
+	queryString string,
+	start any,
+	end any,
+	step any,
+	timeout any,
+) (model.Matrix, v1.Warnings, error) {
 	ctx, span := clientTracer.Start(ctx, "QueryRange")
 	defer span.End()
 
@@ -89,6 +103,7 @@ func (c *Client) QueryRange(ctx context.Context, queryString string, start any, 
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to parse range")
 		span.RecordError(err)
+
 		return nil, nil, err
 	}
 
@@ -105,14 +120,16 @@ func (c *Client) QueryRange(ctx context.Context, queryString string, start any, 
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to run QueryRange")
 		span.RecordError(err)
+
 		return nil, warnings, err
 	}
 
 	if result, ok := result.(model.Matrix); ok {
 		return result, warnings, err
 	} else {
-		err := fmt.Errorf("did not receive a range result")
+		err := errors.New("did not receive a range result")
 		span.SetStatus(codes.Error, err.Error())
+
 		return nil, warnings, err
 	}
 }
@@ -121,10 +138,12 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	result := v1.Range{
 		End: time.Now(),
 	}
+
 	startTime, err := ParseTimestamp(start, c.unixTimeUnit)
 	if err != nil {
 		return nil, err
 	}
+
 	if startTime != nil {
 		result.Start = *startTime
 	}
@@ -142,7 +161,7 @@ func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
 	// Set up defaults for the step value
 	result.Step, err = ParseDuration(step, c.unixTimeUnit)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse step: %s", err)
+		return nil, fmt.Errorf("unable to parse step: %w", err)
 	}
 
 	if result.Step == 0 {
@@ -167,7 +186,7 @@ func (c *Client) FormatQuery(ctx context.Context, queryString string) (string, e
 	q.Set("query", queryString)
 	endpoint.RawQuery = q.Encode()
 
-	req, err := http.NewRequest("GET", endpoint.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
 	if err != nil {
 		return "", err
 	}
@@ -176,20 +195,27 @@ func (c *Client) FormatQuery(ctx context.Context, queryString string) (string, e
 	if err != nil {
 		return "", err
 	}
+
+	_ = resp.Body.Close()
+
 	if resp.StatusCode >= 400 {
 		if len(bodyResp) > 0 {
 			return "", errors.New(string(bodyResp))
 		}
+
 		return "", errors.New(resp.Status)
 	}
 
 	var result formatQueryResult
+
 	if err := json.Unmarshal(bodyResp, &result); err != nil {
 		return "", err
 	}
+
 	if result.Status != "success" {
 		return "", fmt.Errorf("received failed response: %s", string(bodyResp))
 	}
+
 	return result.Data, nil
 }
 
@@ -199,6 +225,7 @@ func (c *Client) setQuerySpanAttributes(span trace.Span, queryString string) {
 		attribute.String("db.query.text", queryString),
 		attribute.String("server.address", c.serverAddress),
 	)
+
 	if c.serverPort > 0 {
 		span.SetAttributes(attribute.Int("server.port", c.serverPort))
 	}

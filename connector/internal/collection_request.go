@@ -11,19 +11,19 @@ import (
 	"github.com/hasura/ndc-sdk-go/utils"
 )
 
-// ColumnOrder the structured sorting columns
+// ColumnOrder the structured sorting columns.
 type ColumnOrder struct {
 	Name       string
 	Descending bool
 }
 
-// KeyValue represents a key-value pair
+// KeyValue represents a key-value pair.
 type KeyValue struct {
 	Key   string
 	Value any
 }
 
-// CollectionRequest the structured predicate result which is evaluated from the raw expression
+// CollectionRequest the structured predicate result which is evaluated from the raw expression.
 type CollectionRequest struct {
 	Timestamp        schema.ComparisonValue
 	Start            schema.ComparisonValue
@@ -34,45 +34,68 @@ type CollectionRequest struct {
 	Functions        []KeyValue
 }
 
-// EvalCollectionRequest evaluates the requested collection data of the query request
-func EvalCollectionRequest(request *schema.QueryRequest, arguments map[string]any) (*CollectionRequest, error) {
+// EvalCollectionRequest evaluates the requested collection data of the query request.
+func EvalCollectionRequest(
+	request *schema.QueryRequest,
+	arguments map[string]any,
+) (*CollectionRequest, error) {
 	result := &CollectionRequest{
 		LabelExpressions: make(map[string]*LabelExpression),
 	}
+
 	if len(request.Query.Predicate) > 0 {
 		if err := result.evalQueryPredicate(request.Query.Predicate); err != nil {
 			return nil, err
 		}
 	}
 
-	if len(arguments) > 0 {
-		if fn, ok := arguments[metadata.ArgumentKeyFunctions]; ok && !utils.IsNil(fn) {
-			fnMap := []map[string]any{}
-			if err := mapstructure.Decode(fn, &fnMap); err != nil {
-				return nil, err
-			}
-			for _, f := range fnMap {
-				i := 0
-				for k, v := range f {
-					if i > 0 {
-						return nil, errors.New("each fn item must have 1 function only")
-					}
-					i++
-					result.Functions = append(result.Functions, KeyValue{
-						Key:   k,
-						Value: v,
-					})
-				}
-			}
-		}
+	if err := result.evalArguments(arguments); err != nil {
+		return nil, err
 	}
 
 	orderBy, err := evalCollectionOrderBy(request.Query.OrderBy)
 	if err != nil {
 		return nil, err
 	}
+
 	result.OrderBy = orderBy
+
 	return result, nil
+}
+
+func (pr *CollectionRequest) evalArguments(arguments map[string]any) error {
+	if arguments == nil {
+		return nil
+	}
+
+	fn, ok := arguments[metadata.ArgumentKeyFunctions]
+	if !ok || utils.IsNil(fn) {
+		return nil
+	}
+
+	fnMap := []map[string]any{}
+	if err := mapstructure.Decode(fn, &fnMap); err != nil {
+		return err
+	}
+
+	for _, f := range fnMap {
+		i := 0
+
+		for k, v := range f {
+			if i > 0 {
+				return errors.New("each fn item must have 1 function only")
+			}
+
+			i++
+
+			pr.Functions = append(pr.Functions, KeyValue{
+				Key:   k,
+				Value: v,
+			})
+		}
+	}
+
+	return nil
 }
 
 func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) error {
@@ -84,26 +107,44 @@ func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) er
 			}
 		}
 	case *schema.ExpressionBinaryComparisonOperator:
-		if expr.Column.Type != schema.ComparisonTargetTypeColumn {
-			return fmt.Errorf("%s: unsupported comparison target `%s`", expr.Column.Name, expr.Column.Type)
-		}
-		switch expr.Column.Name {
+		return pr.evalExpressionBinaryComparisonOperator(expr)
+	default:
+		return fmt.Errorf("unsupported expression: %+v", expression)
+	}
+
+	return nil
+}
+
+func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
+	expr *schema.ExpressionBinaryComparisonOperator,
+) error {
+	targetT, err := expr.Column.InterfaceT()
+	if err != nil {
+		return err
+	}
+
+	switch target := targetT.(type) {
+	case *schema.ComparisonTargetColumn:
+		switch target.Name {
 		case metadata.TimestampKey:
 			switch expr.Operator {
 			case metadata.Equal:
 				if pr.Timestamp != nil {
 					return errors.New("unsupported multiple equality for the timestamp")
 				}
+
 				pr.Timestamp = expr.Value
 			case metadata.Least, metadata.LeastOrEqual:
 				if pr.End != nil {
 					return errors.New("unsupported multiple _lt or _lte expressions for the timestamp")
 				}
+
 				pr.End = expr.Value
 			case metadata.Greater, metadata.GreaterOrEqual:
 				if pr.Start != nil {
 					return errors.New("unsupported multiple _gt or _gt expressions for the timestamp")
 				}
+
 				pr.Start = expr.Value
 			default:
 				return fmt.Errorf("unsupported operator `%s` for the timestamp", expr.Operator)
@@ -112,19 +153,19 @@ func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) er
 			if pr.Value != nil {
 				return errors.New("unsupported multiple comparisons for the value")
 			}
+
 			pr.Value = expr
 		default:
-			if le, ok := pr.LabelExpressions[expr.Column.Name]; ok {
+			if le, ok := pr.LabelExpressions[target.Name]; ok {
 				le.Expressions = append(le.Expressions, *expr)
 			} else {
-				pr.LabelExpressions[expr.Column.Name] = &LabelExpression{
-					Name:        expr.Column.Name,
+				pr.LabelExpressions[target.Name] = &LabelExpression{
+					Name:        target.Name,
 					Expressions: []schema.ExpressionBinaryComparisonOperator{*expr},
 				}
 			}
 		}
 	default:
-		return fmt.Errorf("unsupported expression: %+v", expression)
 	}
 
 	return nil
@@ -132,9 +173,11 @@ func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) er
 
 func evalCollectionOrderBy(orderBy *schema.OrderBy) ([]ColumnOrder, error) {
 	var results []ColumnOrder
+
 	if orderBy == nil {
 		return results, nil
 	}
+
 	for _, elem := range orderBy.Elements {
 		switch target := elem.Target.Interface().(type) {
 		case *schema.OrderByColumn:
@@ -151,5 +194,6 @@ func evalCollectionOrderBy(orderBy *schema.OrderBy) ([]ColumnOrder, error) {
 			return nil, fmt.Errorf("support ordering by column only, got: %v", elem.Target)
 		}
 	}
+
 	return results, nil
 }

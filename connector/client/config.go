@@ -271,7 +271,8 @@ type OAuth2Config struct {
 	TokenURL       types.EnvironmentValue `json:"token_url"                 yaml:"token_url"`
 	Scopes         []string               `json:"scopes,omitempty"          yaml:"scopes,omitempty"`
 	EndpointParams map[string]string      `json:"endpoint_params,omitempty" yaml:"endpoint_params,omitempty"`
-	TLSConfig      config.TLSConfig       `                                 yaml:"tls_config,omitempty"`
+
+	TLSConfig config.TLSConfig `yaml:"tls_config,omitempty"`
 
 	*ProxyConfig `yaml:",inline"`
 }

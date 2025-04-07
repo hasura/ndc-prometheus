@@ -45,19 +45,45 @@ var testCases = []struct {
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
 					schema.NewExpressionAnd(
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_lt",
+							schema.NewComparisonValueScalar("2024-09-11T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_gt",
+							schema.NewComparisonValueScalar("2024-09-10T00:00:00Z"),
+						),
 					),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar("node")),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("instance"), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("value"), "_gte", schema.NewComparisonValueScalar("0")),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_eq",
+						schema.NewComparisonValueScalar("node"),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("instance"),
+						"_in",
+						schema.NewComparisonValueScalar(
+							[]string{"localhost:9090", "node-exporter:9100"},
+						),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("value"),
+						"_gte",
+						schema.NewComparisonValueScalar("0"),
+					),
 				).Encode(),
 			},
 		},
 		Predicate: CollectionRequest{
 			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
 			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
-			Value: schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("value"), "_gte", schema.NewComparisonValueScalar("0")),
+			Value: schema.NewExpressionBinaryComparisonOperator(
+				*schema.NewComparisonTargetColumn("value"),
+				"_gte",
+				schema.NewComparisonValueScalar("0"),
+			),
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -92,10 +118,28 @@ var testCases = []struct {
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
 					schema.NewExpressionAnd(
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar("node")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_lt",
+							schema.NewComparisonValueScalar("2024-09-11T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_gt",
+							schema.NewComparisonValueScalar("2024-09-10T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_eq",
+							schema.NewComparisonValueScalar("node"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_in",
+							schema.NewComparisonValueScalar(
+								[]string{"localhost:9090", "node-exporter:9100"},
+							),
+						),
 					),
 				).Encode(),
 			},
@@ -126,10 +170,26 @@ var testCases = []struct {
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
 					schema.NewExpressionAnd(
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar("node")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_lt",
+							schema.NewComparisonValueScalar("2024-09-11T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_gt",
+							schema.NewComparisonValueScalar("2024-09-10T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_eq",
+							schema.NewComparisonValueScalar("node"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_in",
+							schema.NewComparisonValueScalar([]string{"localhost:9090", "node"}),
+						),
 					),
 				).Encode(),
 			},
@@ -159,10 +219,28 @@ var testCases = []struct {
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
 					schema.NewExpressionAnd(
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar([]string{"node", "localhost:9090", "prometheus"})),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_lt",
+							schema.NewComparisonValueScalar("2024-09-11T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_gt",
+							schema.NewComparisonValueScalar("2024-09-10T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_in",
+							schema.NewComparisonValueScalar(
+								[]string{"node", "localhost:9090", "prometheus"},
+							),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_in",
+							schema.NewComparisonValueScalar([]string{"localhost:9090", "node"}),
+						),
 					),
 				).Encode(),
 			},
@@ -190,10 +268,28 @@ var testCases = []struct {
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
 					schema.NewExpressionAnd(
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_nin", schema.NewComparisonValueScalar([]string{"node", "localhost:9090", "prometheus"})),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_nin", schema.NewComparisonValueScalar([]string{"localhost:9090", "node"})),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_lt",
+							schema.NewComparisonValueScalar("2024-09-11T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_gt",
+							schema.NewComparisonValueScalar("2024-09-10T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_nin",
+							schema.NewComparisonValueScalar(
+								[]string{"node", "localhost:9090", "prometheus"},
+							),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							"_nin",
+							schema.NewComparisonValueScalar([]string{"localhost:9090", "node"}),
+						),
 					),
 				).Encode(),
 			},
@@ -221,9 +317,21 @@ var testCases = []struct {
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
 					schema.NewExpressionAnd(
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), metadata.Regex, schema.NewComparisonValueScalar("node.*")),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_lt",
+							schema.NewComparisonValueScalar("2024-09-11T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_gt",
+							schema.NewComparisonValueScalar("2024-09-10T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							metadata.Regex,
+							schema.NewComparisonValueScalar("node.*"),
+						),
 					),
 				).Encode(),
 			},
@@ -250,9 +358,21 @@ var testCases = []struct {
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
 					schema.NewExpressionAnd(
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
-						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), metadata.NotRegex, schema.NewComparisonValueScalar("node.*")),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_lt",
+							schema.NewComparisonValueScalar("2024-09-11T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("timestamp"),
+							"_gt",
+							schema.NewComparisonValueScalar("2024-09-10T00:00:00Z"),
+						),
+						schema.NewExpressionBinaryComparisonOperator(
+							*schema.NewComparisonTargetColumn("job"),
+							metadata.NotRegex,
+							schema.NewComparisonValueScalar("node.*"),
+						),
 					),
 				).Encode(),
 			},
@@ -280,7 +400,11 @@ var testCases = []struct {
 			},
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar(`["ndc-prometheus", "node", "prometheus"]`)),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_in",
+						schema.NewComparisonValueScalar(`["ndc-prometheus", "node", "prometheus"]`),
+					),
 				).Encode(),
 			},
 		},
@@ -305,8 +429,16 @@ var testCases = []struct {
 			},
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_neq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_eq",
+						schema.NewComparisonValueScalar(`ndc-prometheus`),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_neq",
+						schema.NewComparisonValueScalar(`ndc-prometheus`),
+					),
 				).Encode(),
 			},
 		},
@@ -333,9 +465,21 @@ var testCases = []struct {
 			},
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar([]string{`ndc-prometheus`, "node"})),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_neq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_eq",
+						schema.NewComparisonValueScalar(`ndc-prometheus`),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_in",
+						schema.NewComparisonValueScalar([]string{`ndc-prometheus`, "node"}),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_neq",
+						schema.NewComparisonValueScalar(`ndc-prometheus`),
+					),
 				).Encode(),
 			},
 		},
@@ -363,8 +507,16 @@ var testCases = []struct {
 			},
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar(`ndc-prometheus`)),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_regex", schema.NewComparisonValueScalar(`.+`)),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_eq",
+						schema.NewComparisonValueScalar(`ndc-prometheus`),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_regex",
+						schema.NewComparisonValueScalar(`.+`),
+					),
 				).Encode(),
 			},
 		},
@@ -390,8 +542,16 @@ var testCases = []struct {
 			},
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"})),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_regex", schema.NewComparisonValueScalar(`ndc-.+`)),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_in",
+						schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"}),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_regex",
+						schema.NewComparisonValueScalar(`ndc-.+`),
+					),
 				).Encode(),
 			},
 		},
@@ -417,9 +577,21 @@ var testCases = []struct {
 			},
 			Query: schema.Query{
 				Predicate: schema.NewExpressionAnd(
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_in", schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"})),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar("node")),
-					schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_regex", schema.NewComparisonValueScalar(`ndc-.+`)),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_in",
+						schema.NewComparisonValueScalar([]string{"ndc-prometheus", "node"}),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_eq",
+						schema.NewComparisonValueScalar("node"),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						*schema.NewComparisonTargetColumn("job"),
+						"_regex",
+						schema.NewComparisonValueScalar(`ndc-.+`),
+					),
 				).Encode(),
 			},
 		},

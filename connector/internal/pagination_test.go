@@ -127,7 +127,13 @@ func TestSortAndPaginateMatrix(t *testing.T) {
 	}})
 
 	for i := 1; i < len(results); i++ {
-		assert.Assert(t, strings.Compare(string(results[i-1].Metric["instance"]), string(results[i].Metric["instance"])) == -1)
+		assert.Assert(
+			t,
+			strings.Compare(
+				string(results[i-1].Metric["instance"]),
+				string(results[i].Metric["instance"]),
+			) == -1,
+		)
 	}
 
 	mapResults := createGroupQueryResultsFromMatrix(results, map[string]metadata.LabelInfo{

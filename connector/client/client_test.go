@@ -31,7 +31,6 @@ func createTestClient(t *testing.T) *Client {
 }
 
 func TestNewClient(t *testing.T) {
-
 	gcpCred := `{
 	"type": "service_account",
   "project_id": "some-test-account",
@@ -49,7 +48,7 @@ func TestNewClient(t *testing.T) {
 	gcpCredBase64 := base64.StdEncoding.EncodeToString([]byte(gcpCred))
 	tmpDir := t.TempDir()
 	gcpCredPath := filepath.Join(tmpDir, "service_account.json")
-	assert.NilError(t, os.WriteFile(gcpCredPath, []byte(gcpCred), 0644))
+	assert.NilError(t, os.WriteFile(gcpCredPath, []byte(gcpCred), 0o644))
 
 	testCases := []struct {
 		Name     string
@@ -179,7 +178,9 @@ func TestNewClient(t *testing.T) {
 					OAuth2: &OAuth2Config{
 						ClientID:     types.NewEnvironmentValue("client-id"),
 						ClientSecret: types.NewEnvironmentValue("client-secret"),
-						TokenURL:     types.NewEnvironmentValue("http://localhost:4444/oauth2/token"),
+						TokenURL: types.NewEnvironmentValue(
+							"http://localhost:4444/oauth2/token",
+						),
 						ProxyConfig: &ProxyConfig{
 							NoProxy: "test",
 						},
@@ -226,7 +227,12 @@ func TestNewClient(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			_, err := NewClient(context.TODO(), tc.Config, WithTimeout(utils.ToPtr(model.Duration(time.Minute))), WithUnixTimeUnit(UnixTimeSecond))
+			_, err := NewClient(
+				context.TODO(),
+				tc.Config,
+				WithTimeout(utils.ToPtr(model.Duration(time.Minute))),
+				WithUnixTimeUnit(UnixTimeSecond),
+			)
 			if tc.ErrorMsg == "" {
 				assert.NilError(t, err)
 			} else {

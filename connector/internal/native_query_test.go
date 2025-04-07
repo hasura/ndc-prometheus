@@ -192,5 +192,4 @@ func TestFilterMatrixResults(t *testing.T) {
 			assert.DeepEqual(t, results, tc.Expected)
 		})
 	}
-
 }

@@ -42,8 +42,9 @@ type ExcludeLabels struct {
 
 // UpdateArguments represent input arguments of the `update` command.
 type UpdateArguments struct {
-	Dir        string `default:"." env:"HASURA_PLUGIN_CONNECTOR_CONTEXT_PATH" help:"The directory where the configuration.yaml file is present" short:"d"`
-	Coroutines int    `default:"5"                                            help:"The maximum number of coroutines"                           short:"c"`
+	Dir string `default:"." env:"HASURA_PLUGIN_CONNECTOR_CONTEXT_PATH" help:"The directory where the configuration.yaml file is present" short:"d"`
+
+	Coroutines int `default:"5" help:"The maximum number of coroutines" short:"c"`
 }
 
 type updateCommand struct {

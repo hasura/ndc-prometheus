@@ -13,7 +13,7 @@ test:
 # https://golangci-lint.run/usage/install
 .PHONY: lint
 lint:
-	golangci-lint run --fix
+	golangci-lint run
 
 # clean the output directory
 .PHONY: clean

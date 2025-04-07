@@ -104,7 +104,8 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 	}
 
 	objectType := schema.ObjectType{
-		Fields: createQueryResultValuesObjectFields(),
+		Fields:      createQueryResultValuesObjectFields(),
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	}
 
 	labelEnums := make([]string, 0, len(labels))
@@ -135,9 +136,11 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 
 	// build promQL functions argument
 	promQLFnsObjectName := objectName + "Functions"
-	promQLFnsObject := schema.ObjectType{
-		Fields: createPromQLFunctionObjectFields(objectName, labelEnumScalarName),
-	}
+	promQLFnsObject := schema.NewObjectType(
+		createPromQLFunctionObjectFields(objectName, labelEnumScalarName),
+		schema.ObjectTypeForeignKeys{},
+		nil,
+	)
 
 	for _, fnName := range []PromQLFunctionName{Sum, Min, Max, Avg, Stddev, Stdvar, Count, Group} {
 		promQLFnsObject.Fields[string(fnName)] = schema.ObjectField{

@@ -11,6 +11,7 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
+// AlertState represents an alert state enum.
 // @enum firing, inactive, pending.
 type AlertState string
 

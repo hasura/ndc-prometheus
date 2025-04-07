@@ -8,6 +8,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/utils"
 )
 
+// Decimal represents a decimal number string.
 // @scalar Decimal string.
 type Decimal struct {
 	value *float64

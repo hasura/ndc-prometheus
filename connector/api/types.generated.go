@@ -71,7 +71,7 @@ func (j *PrometheusTargetsMetadataArguments) FromValue(input map[string]any) err
 // ToMap encodes the struct to a value map
 func (j Alert) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["activeAt"] = j.ActiveAt
+	r["active_at"] = j.ActiveAt
 	r["annotations"] = j.Annotations
 	r["labels"] = j.Labels
 	r["state"] = j.State

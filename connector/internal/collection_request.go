@@ -25,13 +25,12 @@ type KeyValue struct {
 
 // CollectionRequest the structured predicate result which is evaluated from the raw expression.
 type CollectionRequest struct {
-	Timestamp        schema.ComparisonValue
-	Start            schema.ComparisonValue
-	End              schema.ComparisonValue
-	OrderBy          []ColumnOrder
-	Value            *schema.ExpressionBinaryComparisonOperator
-	LabelExpressions map[string]*LabelExpression
-	Functions        []KeyValue
+	Timestamp   schema.ComparisonValue
+	Start       schema.ComparisonValue
+	End         schema.ComparisonValue
+	OrderBy     []ColumnOrder
+	Expressions PromQLExpression
+	Functions   []PromQLFunction
 }
 
 // EvalCollectionRequest evaluates the requested collection data of the query request.
@@ -39,9 +38,7 @@ func EvalCollectionRequest(
 	request *schema.QueryRequest,
 	arguments map[string]any,
 ) (*CollectionRequest, error) {
-	result := &CollectionRequest{
-		LabelExpressions: make(map[string]*LabelExpression),
-	}
+	result := &CollectionRequest{}
 
 	if len(request.Query.Predicate) > 0 {
 		if err := result.evalQueryPredicate(request.Query.Predicate); err != nil {
@@ -88,8 +85,13 @@ func (pr *CollectionRequest) evalArguments(arguments map[string]any) error {
 
 			i++
 
-			pr.Functions = append(pr.Functions, KeyValue{
-				Key:   k,
+			funcName, err := metadata.ParsePromQLFunctionName(k)
+			if err != nil {
+				return err
+			}
+
+			pr.Functions = append(pr.Functions, PromQLFunction{
+				Name:  funcName,
 				Value: v,
 			})
 		}
@@ -127,14 +129,14 @@ func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
 	case *schema.ComparisonTargetColumn:
 		switch target.Name {
 		case metadata.TimestampKey:
-			switch expr.Operator {
+			switch metadata.ComparisonOperator(expr.Operator) {
 			case metadata.Equal:
 				if pr.Timestamp != nil {
 					return errors.New("unsupported multiple equality for the timestamp")
 				}
 
 				pr.Timestamp = expr.Value
-			case metadata.Least, metadata.LeastOrEqual:
+			case metadata.Less, metadata.LessOrEqual:
 				if pr.End != nil {
 					return errors.New("unsupported multiple _lt or _lte expressions for the timestamp")
 				}

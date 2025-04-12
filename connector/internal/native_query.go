@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"slices"
 	"strconv"
 
@@ -394,37 +393,13 @@ func (nqe *NativeQueryExecutor) validateExpressionBinaryComparisonColumn(
 	}
 
 	labelValue := labels[model.LabelName(target.Name)]
+	operator, err := metadata.ParseLabelComparisonOperator(exprs.Operator)
+	if err != nil {
+		return false, err
+	}
 
-	switch exprs.Operator {
-	case metadata.Equal, metadata.NotEqual, metadata.Regex, metadata.NotRegex:
-		value, err := getComparisonValueString(exprs.Value, nqe.Variables)
-		if err != nil {
-			return false, err
-		}
-
-		if value == nil {
-			return true, nil
-		}
-
-		if exprs.Operator == metadata.Equal {
-			return *value == string(labelValue), nil
-		}
-
-		if exprs.Operator == metadata.NotEqual {
-			return *value != string(labelValue), nil
-		}
-
-		regex, err := regexp.Compile(*value)
-		if err != nil {
-			return false, fmt.Errorf("invalid regular expression %s: %w", *value, err)
-		}
-
-		if exprs.Operator == metadata.Regex {
-			return regex.MatchString(string(labelValue)), nil
-		}
-
-		return !regex.MatchString(string(labelValue)), nil
-	case metadata.In, metadata.NotIn:
+	compareValues := []string{}
+	if slices.Contains([]metadata.LabelComparisonOperator{metadata.LabelIn, metadata.LabelNotIn}, operator) {
 		value, err := getComparisonValueStringSlice(exprs.Value, nqe.Variables)
 		if err != nil {
 			return false, fmt.Errorf("failed to decode string array; %w", err)
@@ -434,14 +409,26 @@ func (nqe *NativeQueryExecutor) validateExpressionBinaryComparisonColumn(
 			return true, nil
 		}
 
-		if exprs.Operator == metadata.In {
-			return slices.Contains(value, string(labelValue)), nil
-		} else {
-			return !slices.Contains(value, string(labelValue)), nil
+		compareValues = value
+	} else {
+		value, err := getComparisonValueString(exprs.Value, nqe.Variables)
+		if err != nil {
+			return false, err
 		}
+
+		if value == nil {
+			return true, nil
+		}
+
+		compareValues = append(compareValues, *value)
 	}
 
-	return false, nil
+	comparator := LabelComparison{
+		Value:    compareValues,
+		Operator: operator,
+	}
+
+	return comparator.Validate(string(labelValue))
 }
 
 func (nqe *NativeQueryExecutor) validateExpressionBinaryComparisonColumnValue(
@@ -457,14 +444,14 @@ func (nqe *NativeQueryExecutor) validateExpressionBinaryComparisonColumnValue(
 		return true, nil
 	}
 
-	switch exprs.Operator {
+	switch metadata.ComparisonOperator(exprs.Operator) {
 	case metadata.Equal:
 		return value.Equal(model.SampleValue(*floatValue)), nil
 	case metadata.NotEqual:
 		return !value.Equal(model.SampleValue(*floatValue)), nil
-	case metadata.Least:
+	case metadata.Less:
 		return float64(value) < *floatValue, nil
-	case metadata.LeastOrEqual:
+	case metadata.LessOrEqual:
 		return float64(value) <= *floatValue, nil
 	case metadata.Greater:
 		return float64(value) > *floatValue, nil

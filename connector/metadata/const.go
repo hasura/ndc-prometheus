@@ -1,6 +1,9 @@
 package metadata
 
 import (
+	"fmt"
+	"slices"
+
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 )
@@ -23,18 +26,163 @@ const (
 	FunctionPromQLQuery = "promql_query"
 )
 
+// LabelComparisonOperator represents a label comparison operator enum.
+type LabelComparisonOperator string
+
 const (
-	Equal          = "_eq"
-	NotEqual       = "_neq"
-	In             = "_in"
-	NotIn          = "_nin"
-	Regex          = "_regex"
-	NotRegex       = "_nregex"
-	Least          = "_lt"
-	LeastOrEqual   = "_lte"
-	Greater        = "_gt"
-	GreaterOrEqual = "_gte"
+	LabelEqual                    LabelComparisonOperator = "_eq"
+	LabelNotEqual                 LabelComparisonOperator = "_neq"
+	LabelIn                       LabelComparisonOperator = "_in"
+	LabelNotIn                    LabelComparisonOperator = "_nin"
+	LabelRegex                    LabelComparisonOperator = "_regex"
+	LabelNotRegex                 LabelComparisonOperator = "_nregex"
+	LabelContains                 LabelComparisonOperator = "_contains"
+	LabelNotContains              LabelComparisonOperator = "_ncontains"
+	LabelContainsInsensitive      LabelComparisonOperator = "_icontains"
+	LabelNotContainsInsensitive   LabelComparisonOperator = "_nicontains"
+	LabelStartsWith               LabelComparisonOperator = "_starts_with"
+	LabelNotStartsWith            LabelComparisonOperator = "_nstarts_with"
+	LabelStartsWithInsensitive    LabelComparisonOperator = "_istarts_with"
+	LabelNotStartsWithInsensitive LabelComparisonOperator = "_nistarts_with"
+	LabelEndsWith                 LabelComparisonOperator = "_ends_with"
+	LabelNotEndsWith              LabelComparisonOperator = "_nends_with"
+	LabelEndsWithInsensitive      LabelComparisonOperator = "_iends_with"
+	LabelNotEndsWithInsensitive   LabelComparisonOperator = "_niends_with"
 )
+
+var enumValuesNegativeLabelComparisonOperator = []LabelComparisonOperator{
+	LabelNotEqual,
+	LabelNotIn,
+	LabelNotRegex,
+	LabelNotContains,
+	LabelNotContainsInsensitive,
+	LabelNotStartsWith,
+	LabelNotStartsWithInsensitive,
+	LabelNotEndsWith,
+	LabelNotEndsWithInsensitive,
+}
+
+var enumValuesPositiveLabelComparisonOperator = []LabelComparisonOperator{
+	LabelEqual,
+	LabelIn,
+	LabelRegex,
+	LabelContains,
+	LabelContainsInsensitive,
+	LabelStartsWith,
+	LabelStartsWithInsensitive,
+	LabelEndsWith,
+	LabelEndsWithInsensitive,
+}
+
+var enumValuesLabelComparisonOperator = append(enumValuesPositiveLabelComparisonOperator, enumValuesNegativeLabelComparisonOperator...)
+
+// ParseLabelComparisonOperator parses the label comparison operator from string.
+func ParseLabelComparisonOperator(input string) (LabelComparisonOperator, error) {
+	result := LabelComparisonOperator(input)
+
+	if !slices.Contains(enumValuesLabelComparisonOperator, result) {
+		return "", fmt.Errorf("invalid label comparison operator; expected one of %v, got %s", enumValuesLabelComparisonOperator, input)
+	}
+
+	return result, nil
+}
+
+// IsNegative checks if the current operator is negative.
+func (lco LabelComparisonOperator) IsNegative() bool {
+	return slices.Contains(enumValuesPositiveLabelComparisonOperator, lco)
+}
+
+// Negation returns the negative operator of the current one.
+func (lco LabelComparisonOperator) Negation() LabelComparisonOperator {
+	switch lco {
+	case LabelEqual:
+		return LabelNotEqual
+	case LabelNotEqual:
+		return LabelEqual
+	case LabelIn:
+		return LabelNotIn
+	case LabelNotIn:
+		return LabelIn
+	case LabelRegex:
+		return LabelNotRegex
+	case LabelNotRegex:
+		return LabelRegex
+	case LabelContains:
+		return LabelNotContains
+	case LabelNotContains:
+		return LabelContains
+	case LabelStartsWith:
+		return LabelNotStartsWith
+	case LabelNotStartsWith:
+		return LabelStartsWith
+	case LabelStartsWithInsensitive:
+		return LabelNotStartsWithInsensitive
+	case LabelNotStartsWithInsensitive:
+		return LabelStartsWithInsensitive
+	case LabelEndsWith:
+		return LabelNotEndsWith
+	case LabelNotEndsWith:
+		return LabelEndsWith
+	case LabelEndsWithInsensitive:
+		return LabelNotEndsWithInsensitive
+	case LabelNotEndsWithInsensitive:
+		return LabelEndsWithInsensitive
+	default:
+		return ""
+	}
+}
+
+// ComparisonOperator represents a value comparison operator enum.
+type ComparisonOperator string
+
+const (
+	Equal          ComparisonOperator = "_eq"
+	NotEqual       ComparisonOperator = "_neq"
+	Less           ComparisonOperator = "_lt"
+	LessOrEqual    ComparisonOperator = "_lte"
+	Greater        ComparisonOperator = "_gt"
+	GreaterOrEqual ComparisonOperator = "_gte"
+)
+
+var enumValuesComparisonOperator = []ComparisonOperator{
+	Equal,
+	NotEqual,
+	Less,
+	LessOrEqual,
+	Greater,
+	GreaterOrEqual,
+}
+
+// ParseComparisonOperator parses the comparison operator from string.
+func ParseComparisonOperator(input string) (ComparisonOperator, error) {
+	result := ComparisonOperator(input)
+
+	if !slices.Contains(enumValuesComparisonOperator, result) {
+		return "", fmt.Errorf("invalid comparison operator; expected one of %v, got %s", enumValuesComparisonOperator, input)
+	}
+
+	return result, nil
+}
+
+// Negation returns the negative operator of the current one.
+func (lco ComparisonOperator) Negation() ComparisonOperator {
+	switch lco {
+	case Equal:
+		return NotEqual
+	case NotEqual:
+		return Equal
+	case Greater:
+		return Less
+	case GreaterOrEqual:
+		return LessOrEqual
+	case Less:
+		return Greater
+	case LessOrEqual:
+		return GreaterOrEqual
+	default:
+		return ""
+	}
+}
 
 var defaultScalars = map[string]schema.ScalarType{
 	string(ScalarBoolean): {
@@ -45,33 +193,38 @@ var defaultScalars = map[string]schema.ScalarType{
 	string(ScalarString): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-			Equal: schema.NewComparisonOperatorEqual().Encode(),
-			In: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarJSON))).
+			string(LabelEqual): schema.NewComparisonOperatorEqual().Encode(),
+			string(LabelIn): schema.NewComparisonOperatorIn().
 				Encode(),
-			NotEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
+			string(LabelNotEqual): schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
 				Encode(),
-			Regex: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
+			string(LabelRegex): schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
 				Encode(),
-			NotRegex: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
+			string(LabelNotRegex): schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarString))).
 				Encode(),
-			NotIn: schema.NewComparisonOperatorCustom(schema.NewArrayType(schema.NewNamedType(string(ScalarString)))).
+			string(LabelNotIn): schema.NewComparisonOperatorCustom(schema.NewArrayType(schema.NewNamedType(string(ScalarString)))).
 				Encode(),
+			string(LabelContains):              schema.NewComparisonOperatorContains().Encode(),
+			string(LabelContainsInsensitive):   schema.NewComparisonOperatorContainsInsensitive().Encode(),
+			string(LabelStartsWith):            schema.NewComparisonOperatorStartsWith().Encode(),
+			string(LabelStartsWithInsensitive): schema.NewComparisonOperatorStartsWithInsensitive().Encode(),
+			string(LabelEndsWith):              schema.NewComparisonOperatorEndsWith().Encode(),
+			string(LabelEndsWithInsensitive):   schema.NewComparisonOperatorEndsWithInsensitive().Encode(),
 		},
 		Representation: schema.NewTypeRepresentationString().Encode(),
 	},
 	string(ScalarDecimal): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-			Equal: schema.NewComparisonOperatorEqual().Encode(),
-			NotEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+			string(Equal): schema.NewComparisonOperatorEqual().Encode(),
+			string(NotEqual): schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
 				Encode(),
-			Least: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+			string(Less): schema.NewComparisonOperatorLessThan().
 				Encode(),
-			LeastOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+			string(LessOrEqual): schema.NewComparisonOperatorLessThanOrEqual().Encode(),
+			string(Greater): schema.NewComparisonOperatorGreaterThan().
 				Encode(),
-			Greater: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
-				Encode(),
-			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+			string(GreaterOrEqual): schema.NewComparisonOperatorGreaterThanOrEqual().
 				Encode(),
 		},
 		Representation: schema.NewTypeRepresentationBigDecimal().Encode(),
@@ -84,14 +237,15 @@ var defaultScalars = map[string]schema.ScalarType{
 	string(ScalarTimestamp): {
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-			Equal: schema.NewComparisonOperatorEqual().Encode(),
-			Least: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			string(Equal): schema.NewComparisonOperatorEqual().Encode(),
+			string(NotEqual): schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
 				Encode(),
-			LeastOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			string(Less): schema.NewComparisonOperatorLessThan().
 				Encode(),
-			Greater: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			string(LessOrEqual): schema.NewComparisonOperatorLessThanOrEqual().Encode(),
+			string(Greater): schema.NewComparisonOperatorGreaterThan().
 				Encode(),
-			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			string(GreaterOrEqual): schema.NewComparisonOperatorGreaterThanOrEqual().
 				Encode(),
 		},
 		Representation: schema.NewTypeRepresentationTimestamp().Encode(),
@@ -202,6 +356,108 @@ const (
 	Deg               PromQLFunctionName = "deg"
 	Rad               PromQLFunctionName = "rad"
 )
+
+var enumValuesPromQLFunctionName = []PromQLFunctionName{
+	Sum,
+	Min,
+	Max,
+	Avg,
+	Count,
+	CountValues,
+	Stddev,
+	Stdvar,
+	TopK,
+	BottomK,
+	Quantile,
+	LimitK,
+	LimitRatio,
+	Group,
+	Absolute,
+	Absent,
+	AbsentOverTime,
+	Ceil,
+	Changes,
+	Clamp,
+	ClampMax,
+	ClampMin,
+	DayOfMonth,
+	DayOfWeek,
+	DayOfYear,
+	DaysInMonth,
+	Delta,
+	Derivative,
+	Exponential,
+	Floor,
+	HistogramAvg,
+	HistogramCount,
+	HistogramSum,
+	HistogramFraction,
+	HistogramQuantile,
+	HistogramStddev,
+	HistogramStdvar,
+	HoltWinters,
+	Hour,
+	IDelta,
+	Increase,
+	IRate,
+	LabelJoin,
+	LabelReplace,
+	Ln,
+	Log2,
+	Log10,
+	Minute,
+	Month,
+	PredictLinear,
+	Rate,
+	Resets,
+	Round,
+	Scalar,
+	Sgn,
+	Sort,
+	SortDesc,
+	SortByLabel,
+	SortByLabelDesc,
+	Sqrt,
+	Time,
+	Timestamp,
+	Year,
+	AvgOverTime,
+	MinOverTime,
+	MaxOverTime,
+	SumOverTime,
+	CountOverTime,
+	QuantileOverTime,
+	StddevOverTime,
+	StdvarOverTime,
+	LastOverTime,
+	PresentOverTime,
+	MadOverTime,
+	Acos,
+	Acosh,
+	Asin,
+	Asinh,
+	Atan,
+	Atanh,
+	Cos,
+	Cosh,
+	Sin,
+	Sinh,
+	Tan,
+	Tanh,
+	Deg,
+	Rad,
+}
+
+// ParsePromQLFunctionName parses the promQL function name.
+func ParsePromQLFunctionName(input string) (PromQLFunctionName, error) {
+	result := PromQLFunctionName(input)
+
+	if !slices.Contains(enumValuesPromQLFunctionName, result) {
+		return "", fmt.Errorf("invalid PromQLFunctionName; expected one of %v; got %s", enumValuesPromQLFunctionName, input)
+	}
+
+	return result, nil
+}
 
 const (
 	objectName_QueryResultValue           = "QueryResultValue"

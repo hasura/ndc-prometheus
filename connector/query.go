@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/hasura/ndc-prometheus/connector/internal"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
@@ -184,146 +185,97 @@ func (c *PrometheusConnector) execQueryCollection(
 	variables map[string]any,
 	arguments map[string]any,
 ) (*schema.RowSet, error) {
-	histogramMatches := histogramNameRegex.FindStringSubmatch(request.Collection)
-
-	metricNames := []string{request.Collection}
-	if len(histogramMatches) > 1 {
-		metricNames = []string{histogramMatches[1], request.Collection}
-	}
-
-	for _, metricName := range metricNames {
-		if collection, ok := c.metadata.Metrics[metricName]; ok {
-			if request.Query.Limit != nil && *request.Query.Limit <= 0 {
-				return &schema.RowSet{
-					Aggregates: schema.RowSetAggregates{},
-					Rows:       []map[string]any{},
-				}, nil
-			}
-
-			executor := &internal.QueryCollectionExecutor{
-				Tracer:    state.Tracer,
-				Client:    state.Client,
-				Runtime:   c.runtime,
-				Request:   request,
-				Metric:    collection,
-				Arguments: arguments,
-				Variables: variables,
-			}
-
-			result, err := executor.Execute(ctx)
-			if err != nil {
-				return nil, err
-			}
-
-			return result, nil
-		}
-	}
-
-	return nil, schema.UnprocessableContentError(
-		fmt.Sprintf("invalid query `%s`", request.Collection),
-		nil,
-	)
-}
-
-// QueryExplain explains a query by creating an execution plan.
-func (c *PrometheusConnector) QueryExplain(
-	ctx context.Context,
-	_ *metadata.Configuration,
-	state *metadata.State,
-	request *schema.QueryRequest,
-) (*schema.ExplainResponse, error) {
-	requestVars := request.Variables
-	if len(requestVars) == 0 {
-		requestVars = []schema.QueryRequestVariablesElem{make(schema.QueryRequestVariablesElem)}
-	}
-
-	if c.apiHandler.QueryExists(request.Collection) {
-		return &schema.ExplainResponse{
-			Details: schema.ExplainResponseDetails{},
-		}, nil
-	}
-
-	arguments, err := utils.ResolveArgumentVariables(request.Arguments, requestVars[0])
+	executor, validatedRequest, err := c.evalQueryCollection(state, request, variables, arguments)
 	if err != nil {
 		return nil, err
 	}
 
-	if request.Collection == metadata.FunctionPromQLQuery {
-		executor := &internal.RawQueryExecutor{
-			Tracer:    state.Tracer,
-			Client:    state.Client,
-			Request:   request,
-			Arguments: arguments,
-			Runtime:   c.runtime,
-		}
-
-		_, queryString, err := executor.Explain(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		return &schema.ExplainResponse{
-			Details: schema.ExplainResponseDetails{
-				"query": queryString,
-			},
+	if request.Query.Limit != nil && *request.Query.Limit <= 0 {
+		return &schema.RowSet{
+			Aggregates: schema.RowSetAggregates{},
+			Rows:       []map[string]any{},
 		}, nil
 	}
 
-	if nativeQuery, ok := c.metadata.NativeOperations.Queries[request.Collection]; ok {
-		executor := &internal.NativeQueryExecutor{
-			Tracer:      state.Tracer,
-			Client:      state.Client,
-			Request:     request,
-			NativeQuery: &nativeQuery,
-			Arguments:   arguments,
-			Runtime:     c.runtime,
-		}
+	return executor.Execute(ctx, validatedRequest)
+}
 
-		_, queryString, err := executor.Explain(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		return &schema.ExplainResponse{
-			Details: schema.ExplainResponseDetails{
-				"query": queryString,
-			},
-		}, nil
-	}
-
-	// evaluate collection query
+// evaluate collection query.
+func (c *PrometheusConnector) evalQueryCollection(
+	state *metadata.State,
+	request *schema.QueryRequest,
+	variables map[string]any,
+	arguments map[string]any,
+) (*internal.QueryCollectionExecutor, *internal.CollectionRequest, error) {
 	histogramMatches := histogramNameRegex.FindStringSubmatch(request.Collection)
 
 	metricNames := []string{request.Collection}
-
 	if len(histogramMatches) > 1 {
 		metricNames = []string{histogramMatches[1], request.Collection}
 	}
 
+	executor := &internal.QueryCollectionExecutor{
+		Tracer:    state.Tracer,
+		Client:    state.Client,
+		Runtime:   c.runtime,
+		Request:   request,
+		Arguments: arguments,
+		Variables: variables,
+	}
+
 	for _, metricName := range metricNames {
 		if collection, ok := c.metadata.Metrics[metricName]; ok {
-			executor := &internal.QueryCollectionExecutor{
-				Tracer:    state.Tracer,
-				Client:    state.Client,
-				Request:   request,
-				Metric:    collection,
-				Variables: requestVars[0],
-				Arguments: arguments,
-				Runtime:   c.runtime,
-			}
+			executor.MetricName = request.Collection
+			executor.Metric = collection
 
-			_, queryString, _, err := executor.Explain(ctx)
+			validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
 			if err != nil {
-				return nil, err
+				return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+					"collection": request.Collection,
+				})
 			}
 
-			return &schema.ExplainResponse{
-				Details: schema.ExplainResponseDetails{
-					"query": queryString,
-				},
-			}, nil
+			return executor, validatedRequest, nil
 		}
 	}
 
-	return nil, fmt.Errorf("%s: unsupported query to explain", request.Collection)
+	// execute counter vector functions if matching.
+	for _, rangeFn := range metadata.CounterRangeVectorFunctions {
+		term := "_" + string(rangeFn)
+
+		if !strings.HasSuffix(request.Collection, term) {
+			continue
+		}
+
+		metricName := strings.TrimSuffix(request.Collection, term)
+
+		collection, ok := c.metadata.Metrics[metricName]
+		if !ok {
+			break
+		}
+
+		executor.Metric = collection
+		executor.MetricName = metricName
+
+		validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
+		if err != nil {
+			return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+				"collection": request.Collection,
+			})
+		}
+
+		executor.Functions = []internal.KeyValue{
+			{
+				Key:   string(rangeFn),
+				Value: validatedRequest.GetStep(),
+			},
+		}
+
+		return executor, validatedRequest, nil
+	}
+
+	return nil, nil, schema.UnprocessableContentError(
+		fmt.Sprintf("invalid query `%s`", request.Collection),
+		nil,
+	)
 }

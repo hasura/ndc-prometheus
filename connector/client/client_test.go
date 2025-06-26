@@ -226,7 +226,7 @@ func TestNewClient(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			_, err := NewClient(context.TODO(), tc.Config, WithTimeout(utils.ToPtr(model.Duration(time.Minute))), WithUnixTimeUnit(UnixTimeSecond))
+			_, err := NewClient(context.TODO(), tc.Config, WithTimeout(utils.ToPtr(model.Duration(time.Minute))))
 			if tc.ErrorMsg == "" {
 				assert.NilError(t, err)
 			} else {

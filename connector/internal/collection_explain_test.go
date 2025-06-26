@@ -3,20 +3,25 @@ package internal
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"gotest.tools/v3/assert"
 )
 
 var testCases = []struct {
 	Name        string
+	MetricName  string
 	Request     schema.QueryRequest
 	Predicate   CollectionRequest
 	QueryString string
 	ErrorMsg    string
 	IsEmpty     bool
+	Groups      *QueryCollectionGroupingExplainResult
+	Functions   []KeyValue
 }{
 	{
 		Name: "nested_expressions",
@@ -55,8 +60,13 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
-			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
-			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
+					Step:  24 * time.Minute,
+				},
+			},
 			Value: schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("value"), "_gte", schema.NewComparisonValueScalar("0")),
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
@@ -101,8 +111,13 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
-			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
-			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
+					Step:  24 * time.Minute,
+				},
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -135,8 +150,13 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
-			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
-			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
+					Step:  5 * time.Minute,
+				},
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -168,8 +188,14 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
-			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
-			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
+					Step:  24 * time.Minute,
+				},
+				Timeout: 5 * time.Minute,
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -199,8 +225,13 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
-			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
-			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
+					Step:  24 * time.Minute,
+				},
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -229,8 +260,13 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
-			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
-			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
+					Step:  24 * time.Minute,
+				},
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -258,8 +294,13 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
-			Start: schema.NewComparisonValueScalar("2024-09-10T00:00:00Z").Encode(),
-			End:   schema.NewComparisonValueScalar("2024-09-11T00:00:00Z").Encode(),
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
+					Step:  24 * time.Minute,
+				},
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -285,6 +326,9 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Timeout: 5 * time.Minute,
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -311,6 +355,9 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Timeout: 5 * time.Minute,
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -340,6 +387,9 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Timeout: 5 * time.Minute,
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -369,6 +419,9 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Timeout: 5 * time.Minute,
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -396,6 +449,9 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Timeout: 5 * time.Minute,
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -424,6 +480,9 @@ var testCases = []struct {
 			},
 		},
 		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Timeout: 5 * time.Minute,
+			},
 			LabelExpressions: map[string]*LabelExpression{
 				"job": {
 					Name: "job",
@@ -695,6 +754,164 @@ var testCases = []struct {
 		QueryString: ``,
 		ErrorMsg:    "failed to evaluate the query",
 	},
+	{
+		Name: "group_star_count",
+		Request: schema.QueryRequest{
+			Collection: "ndc_prometheus_query_total",
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(
+						schema.NewComparisonTargetColumn("timestamp"),
+						"_gte",
+						schema.NewComparisonValueScalar("2025-06-19"),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						schema.NewComparisonTargetColumn("timestamp"),
+						"_lte",
+						schema.NewComparisonValueScalar("2025-06-25"),
+					),
+				).Encode(),
+				Groups: &schema.Grouping{
+					Aggregates: schema.GroupingAggregates{
+						"count": schema.NewAggregateStarCount().Encode(),
+					},
+					Dimensions: []schema.Dimension{
+						schema.NewDimensionColumn("job", nil).Encode(),
+						schema.NewDimensionColumn("instance", nil).Encode(),
+					},
+				},
+			},
+			Arguments:               schema.QueryRequestArguments{},
+			CollectionRelationships: schema.QueryRequestCollectionRelationships{},
+		},
+		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2025, 06, 19, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2025, 06, 25, 0, 0, 0, 0, time.UTC),
+					Step:  2*time.Hour + 24*time.Minute,
+				},
+			},
+			LabelExpressions: map[string]*LabelExpression{},
+			Groups: &Grouping{
+				Dimensions: []string{"job", "instance"},
+				Aggregates: schema.GroupingAggregates{
+					"count": schema.NewAggregateStarCount().Encode(),
+				},
+			},
+		},
+		Groups: &QueryCollectionGroupingExplainResult{
+			Dimensions: []string{"job", "instance"},
+			AggregateQueries: map[string]string{
+				"count": "count by (job, instance) (ndc_prometheus_query_total)",
+			},
+		},
+	},
+	{
+		Name:       "counter_increase",
+		MetricName: "ndc_prometheus_query_total",
+		Functions: []KeyValue{
+			{
+				Key:   string(metadata.Increase),
+				Value: "5m",
+			},
+		},
+		Request: schema.QueryRequest{
+			Collection: "ndc_prometheus_query_total_increase",
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(
+						schema.NewComparisonTargetColumn("timestamp"),
+						"_gte",
+						schema.NewComparisonValueScalar("2025-06-19"),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						schema.NewComparisonTargetColumn("timestamp"),
+						"_lte",
+						schema.NewComparisonValueScalar("2025-06-25"),
+					),
+				).Encode(),
+			},
+			Arguments: schema.QueryRequestArguments{
+				"step": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			CollectionRelationships: schema.QueryRequestCollectionRelationships{},
+		},
+		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2025, 06, 19, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2025, 06, 25, 0, 0, 0, 0, time.UTC),
+					Step:  5 * time.Minute,
+				},
+			},
+			LabelExpressions: map[string]*LabelExpression{},
+			Groups:           &Grouping{},
+		},
+		QueryString: "increase(ndc_prometheus_query_total[5m])",
+	},
+	{
+		Name:       "counter_sum_increase",
+		MetricName: "ndc_prometheus_query_total",
+		Functions: []KeyValue{
+			{
+				Key:   string(metadata.Increase),
+				Value: "5m",
+			},
+		},
+		Request: schema.QueryRequest{
+			Collection: "ndc_prometheus_query_total_increase",
+			Query: schema.Query{
+				Predicate: schema.NewExpressionAnd(
+					schema.NewExpressionBinaryComparisonOperator(
+						schema.NewComparisonTargetColumn("timestamp"),
+						"_gte",
+						schema.NewComparisonValueScalar("2025-06-19"),
+					),
+					schema.NewExpressionBinaryComparisonOperator(
+						schema.NewComparisonTargetColumn("timestamp"),
+						"_lte",
+						schema.NewComparisonValueScalar("2025-06-25"),
+					),
+				).Encode(),
+				Groups: &schema.Grouping{
+					Aggregates: schema.GroupingAggregates{
+						"sum": schema.NewAggregateSingleColumn("sum", "sum").Encode(),
+					},
+					Dimensions: []schema.Dimension{
+						schema.NewDimensionColumn("job", nil).Encode(),
+						schema.NewDimensionColumn("instance", nil).Encode(),
+					},
+				},
+			},
+			Arguments: schema.QueryRequestArguments{
+				"step": schema.NewArgumentLiteral("5m").Encode(),
+			},
+			CollectionRelationships: schema.QueryRequestCollectionRelationships{},
+		},
+		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{
+				Range: &v1.Range{
+					Start: time.Date(2025, 06, 19, 0, 0, 0, 0, time.UTC),
+					End:   time.Date(2025, 06, 25, 0, 0, 0, 0, time.UTC),
+					Step:  5 * time.Minute,
+				},
+			},
+			LabelExpressions: map[string]*LabelExpression{},
+			Groups: &Grouping{
+				Dimensions: []string{"job", "instance"},
+				Aggregates: schema.GroupingAggregates{
+					"sum": schema.NewAggregateSingleColumn("sum", "sum").Encode(),
+				},
+			},
+		},
+		Groups: &QueryCollectionGroupingExplainResult{
+			Dimensions: []string{"job", "instance"},
+			AggregateQueries: map[string]string{
+				"sum": "sum by (job, instance) (increase(ndc_prometheus_query_total[5m]))",
+			},
+		},
+	},
 }
 
 func TestCollectionQueryExplain(t *testing.T) {
@@ -703,21 +920,40 @@ func TestCollectionQueryExplain(t *testing.T) {
 			arguments, err := utils.ResolveArgumentVariables(tc.Request.Arguments, map[string]any{})
 			assert.NilError(t, err)
 
-			executor := &QueryCollectionExecutor{
-				Request:   &tc.Request,
-				Variables: map[string]any{},
-				Arguments: arguments,
-				Runtime:   &metadata.RuntimeSettings{},
+			metricName := tc.MetricName
+			if metricName == "" {
+				metricName = tc.Request.Collection
 			}
 
-			request, queryString, ok, err := executor.Explain(context.TODO())
+			executor := &QueryCollectionExecutor{
+				Request:    &tc.Request,
+				MetricName: metricName,
+				Variables:  map[string]any{},
+				Arguments:  arguments,
+				Runtime:    &metadata.RuntimeSettings{},
+				Functions:  tc.Functions,
+			}
+
+			validatedRequest, err := EvalCollectionRequest(&tc.Request, arguments, executor.Variables, executor.Runtime)
+			assert.NilError(t, err)
+
+			result, err := executor.Explain(context.TODO(), validatedRequest)
 			if tc.ErrorMsg != "" {
 				assert.ErrorContains(t, err, tc.ErrorMsg)
-			} else {
-				assert.NilError(t, err)
-				assert.DeepEqual(t, tc.Predicate, *request)
-				assert.Equal(t, tc.QueryString, queryString)
-				assert.Equal(t, !tc.IsEmpty, ok)
+
+				return
+			}
+
+			assert.NilError(t, err)
+			assert.DeepEqual(t, tc.Predicate.Value, result.Request.Value)
+			assert.DeepEqual(t, tc.Predicate.Range, result.Request.Range)
+			assert.DeepEqual(t, tc.Predicate.Timestamp, result.Request.Timestamp)
+			assert.DeepEqual(t, tc.Predicate.Timeout, result.Request.Timeout)
+			assert.Equal(t, tc.QueryString, result.QueryString)
+			assert.Equal(t, !tc.IsEmpty, result.OK)
+
+			if tc.Groups != nil {
+				assert.DeepEqual(t, tc.Groups, result.Groups)
 			}
 		})
 	}

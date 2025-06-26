@@ -5,6 +5,4 @@ definition:
   generator:
     rootPath: .
   includePaths:
-    - auth-config.hml
-    - compatibility-config.hml
-    - graphql-config.hml
+    - metadata

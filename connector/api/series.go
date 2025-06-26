@@ -56,7 +56,7 @@ func (psa PrometheusSeriesArguments) Validate(
 		return nil, nil, schema.UnprocessableContentError(errorMsg, nil)
 	}
 
-	opts, err := state.Client.ApplyOptions(span, nil)
+	opts, err := state.Client.ApplyOptions(span, 0)
 	if err != nil {
 		return nil, nil, err
 	}

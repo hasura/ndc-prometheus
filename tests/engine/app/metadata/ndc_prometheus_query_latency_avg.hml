@@ -7,13 +7,13 @@ definition:
     - name: collection
       type: String!
     - name: labels
-      type: LabelSet!
+      type: json!
       description: Labels of the metric
     - name: timestamp
-      type: Timestamp!
+      type: timestamp!
       description: An instant timestamp or the last timestamp of a range query result
     - name: value
-      type: Decimal!
+      type: bigdecimal!
       description: Value of the instant query or the last value of a range query
     - name: values
       type: "[QueryResultValue!]!"
@@ -66,8 +66,51 @@ definition:
     typeName: NdcPrometheusQueryLatencyAvg_bool_exp
 
 ---
-kind: Model
+kind: AggregateExpression
 version: v1
+definition:
+  name: NdcPrometheusQueryLatencyAvg_agg_exp
+  operand:
+    object:
+      aggregatedType: NdcPrometheusQueryLatencyAvg
+      aggregatableFields:
+        - fieldName: collection
+          aggregateExpression: String_agg_exp
+        - fieldName: labels
+          aggregateExpression: LabelSet_agg_exp
+        - fieldName: timestamp
+          aggregateExpression: Timestamp_agg_exp
+        - fieldName: value
+          aggregateExpression: Decimal_agg_exp
+  count:
+    enable: true
+  graphql:
+    selectTypeName: NdcPrometheusQueryLatencyAvg_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NdcPrometheusQueryLatencyAvg_order_by_exp
+  operand:
+    object:
+      orderedType: NdcPrometheusQueryLatencyAvg
+      orderableFields:
+        - fieldName: collection
+          orderByExpression: String_order_by_exp
+        - fieldName: labels
+          orderByExpression: json_order_by_exp
+        - fieldName: timestamp
+          orderByExpression: timestamp_order_by_exp
+        - fieldName: value
+          orderByExpression: bigdecimal_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: NdcPrometheusQueryLatencyAvg_order_by_exp
+
+---
+kind: Model
+version: v2
 definition:
   name: ndc_prometheus_query_latency_avg
   objectType: NdcPrometheusQueryLatencyAvg
@@ -76,42 +119,37 @@ definition:
       type: Boolean
       description: Flatten grouped values out the root array
     - name: interval
-      type: Duration!
+      type: json!
     - name: job
       type: String!
     - name: offset
-      type: Duration
+      type: json
       description: The offset modifier allows changing the time offset for individual
         instant and range vectors in a query
     - name: step
-      type: Duration
+      type: json
       description: Query resolution step width in duration format or float number of seconds
     - name: timeout
-      type: Duration
+      type: json
       description: Evaluation timeout
   source:
     dataConnectorName: prometheus
     collection: ndc_prometheus_query_latency_avg
   filterExpressionType: NdcPrometheusQueryLatencyAvg_bool_exp
-  orderableFields:
-    - fieldName: collection
-      orderByDirections:
-        enableAll: true
-    - fieldName: labels
-      orderByDirections:
-        enableAll: true
-    - fieldName: timestamp
-      orderByDirections:
-        enableAll: true
-    - fieldName: value
-      orderByDirections:
-        enableAll: true
+  aggregateExpression: NdcPrometheusQueryLatencyAvg_agg_exp
+  orderByExpression: NdcPrometheusQueryLatencyAvg_order_by_exp
   graphql:
     selectMany:
       queryRootField: ndc_prometheus_query_latency_avg
+      subscription:
+        rootField: ndc_prometheus_query_latency_avg
     selectUniques: []
     argumentsInputType: ndc_prometheus_query_latency_avg_arguments
-    orderByExpressionType: ndc_prometheus_query_latency_avg_order_by
+    filterInputTypeName: ndc_prometheus_query_latency_avg_filter_input
+    aggregate:
+      queryRootField: ndc_prometheus_query_latency_avg_aggregate
+      subscription:
+        rootField: ndc_prometheus_query_latency_avg_aggregate
 
 ---
 kind: ModelPermissions
@@ -122,4 +160,5 @@ definition:
     - role: admin
       select:
         filter: null
+        allowSubscriptions: true
 

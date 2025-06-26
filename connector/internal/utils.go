@@ -261,3 +261,24 @@ func getComparisonValueStringSlice(
 
 	return decodeStringSlice(rawValue)
 }
+
+func equalSlice(as, bs []any) bool {
+	lenA := len(as)
+	lenB := len(bs)
+
+	if lenA != lenB {
+		return false
+	}
+
+	if lenA == 0 {
+		return true
+	}
+
+	for i, a := range as {
+		if a != bs[i] {
+			return false
+		}
+	}
+
+	return true
+}

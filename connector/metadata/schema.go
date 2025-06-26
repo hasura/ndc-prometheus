@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 
 	"github.com/hasura/ndc-sdk-go/schema"
@@ -11,19 +12,19 @@ import (
 )
 
 type connectorSchemaBuilder struct {
-	Metadata    *Metadata
-	ScalarTypes schema.SchemaResponseScalarTypes
-	ObjectTypes schema.SchemaResponseObjectTypes
-	Collections map[string]schema.CollectionInfo
-	Functions   map[string]schema.FunctionInfo
+	Configuration *Configuration
+	ScalarTypes   schema.SchemaResponseScalarTypes
+	ObjectTypes   schema.SchemaResponseObjectTypes
+	Collections   map[string]schema.CollectionInfo
+	Functions     map[string]schema.FunctionInfo
 }
 
 // BuildConnectorSchema builds the schema for the data connector from metadata.
-func BuildConnectorSchema(metadata *Metadata) (*schema.SchemaResponse, error) {
+func BuildConnectorSchema(config *Configuration) (*schema.SchemaResponse, error) {
 	builder := &connectorSchemaBuilder{
-		Metadata:    metadata,
-		ScalarTypes: defaultScalars,
-		ObjectTypes: defaultObjectTypes,
+		Configuration: config,
+		ScalarTypes:   defaultScalars,
+		ObjectTypes:   defaultObjectTypes,
 		Functions: map[string]schema.FunctionInfo{
 			FunctionPromQLQuery: {
 				Name:        FunctionPromQLQuery,
@@ -34,6 +35,21 @@ func BuildConnectorSchema(metadata *Metadata) (*schema.SchemaResponse, error) {
 			},
 		},
 		Collections: map[string]schema.CollectionInfo{},
+	}
+
+	// modify PromptQL-compatible schema.
+	if config.Runtime.PromptQL {
+		durationScalar := schema.NewScalarType()
+		durationScalar.Representation = schema.NewTypeRepresentationString().Encode()
+		builder.ScalarTypes[string(ScalarDuration)] = *durationScalar
+
+		decimalScalar := schema.NewScalarType()
+		decimalScalar.Representation = schema.NewTypeRepresentationFloat64().Encode()
+		builder.ScalarTypes[string(ScalarDecimal)] = *decimalScalar
+
+		builder.ScalarTypes[string(ScalarString)].ComparisonOperators[In] = schema.NewComparisonOperatorIn().Encode()
+	} else {
+		maps.Copy(builder.ObjectTypes, defaultFunctionObjectTypes)
 	}
 
 	if err := builder.buildMetrics(); err != nil {
@@ -69,7 +85,7 @@ func (scb *connectorSchemaBuilder) buildSchemaResponse() *schema.SchemaResponse 
 }
 
 func (scb *connectorSchemaBuilder) buildMetrics() error {
-	for name, info := range scb.Metadata.Metrics {
+	for name, info := range scb.Configuration.Metadata.Metrics {
 		switch info.Type {
 		case model.MetricTypeHistogram, model.MetricTypeGaugeHistogram:
 			for _, suffix := range []string{"sum", "count", "bucket"} {
@@ -103,11 +119,7 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 		return err
 	}
 
-	objectType := schema.ObjectType{
-		Fields:      createQueryResultValuesObjectFields(),
-		ForeignKeys: schema.ObjectTypeForeignKeys{},
-	}
-
+	objectType := createMetricObjectType(scb.Configuration.Runtime.PromptQL)
 	labelEnums := make([]string, 0, len(labels))
 
 	for key, label := range labels {
@@ -120,46 +132,47 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 
 	objectName := strcase.ToCamel(name)
 	scb.ObjectTypes[objectName] = objectType
+	arguments := createCollectionArguments(scb.Configuration.Runtime.PromptQL)
 
-	slices.Sort(labelEnums)
+	if !scb.Configuration.Runtime.PromptQL {
+		slices.Sort(labelEnums)
+		labelEnumScalarName := objectName + "Label"
+		scalarType := schema.NewScalarType()
+		scalarType.Representation = schema.NewTypeRepresentationEnum(labelEnums).Encode()
+		scb.ScalarTypes[labelEnumScalarName] = *scalarType
+		scb.ObjectTypes[buildLabelJoinObjectTypeName(objectName)] = createLabelJoinObjectType(
+			labelEnumScalarName,
+		)
+		scb.ObjectTypes[buildLabelReplaceObjectTypeName(objectName)] = createLabelReplaceObjectType(
+			labelEnumScalarName,
+		)
 
-	labelEnumScalarName := objectName + "Label"
-	scalarType := schema.NewScalarType()
-	scalarType.Representation = schema.NewTypeRepresentationEnum(labelEnums).Encode()
-	scb.ScalarTypes[labelEnumScalarName] = *scalarType
-	scb.ObjectTypes[buildLabelJoinObjectTypeName(objectName)] = createLabelJoinObjectType(
-		labelEnumScalarName,
-	)
-	scb.ObjectTypes[buildLabelReplaceObjectTypeName(objectName)] = createLabelReplaceObjectType(
-		labelEnumScalarName,
-	)
+		// build promQL functions argument
+		promQLFnsObjectName := objectName + "Functions"
+		promQLFnsObject := schema.NewObjectType(
+			createPromQLFunctionObjectFields(objectName, labelEnumScalarName),
+			schema.ObjectTypeForeignKeys{},
+			nil,
+		)
 
-	// build promQL functions argument
-	promQLFnsObjectName := objectName + "Functions"
-	promQLFnsObject := schema.NewObjectType(
-		createPromQLFunctionObjectFields(objectName, labelEnumScalarName),
-		schema.ObjectTypeForeignKeys{},
-		nil,
-	)
+		for _, fnName := range []PromQLFunctionName{Sum, Min, Max, Avg, Stddev, Stdvar, Count, Group} {
+			promQLFnsObject.Fields[string(fnName)] = schema.ObjectField{
+				Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(labelEnumScalarName))).
+					Encode(),
+			}
+		}
 
-	for _, fnName := range []PromQLFunctionName{Sum, Min, Max, Avg, Stddev, Stdvar, Count, Group} {
-		promQLFnsObject.Fields[string(fnName)] = schema.ObjectField{
-			Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(labelEnumScalarName))).
+		promQLFnsObject.Fields[string(CountValues)] = schema.ObjectField{
+			Type: schema.NewNullableType(schema.NewNamedType(labelEnumScalarName)).Encode(),
+		}
+
+		scb.ObjectTypes[promQLFnsObjectName] = promQLFnsObject
+
+		arguments[ArgumentKeyFunctions] = schema.ArgumentInfo{
+			Description: utils.ToPtr("PromQL aggregation operators and functions for " + name),
+			Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(promQLFnsObjectName))).
 				Encode(),
 		}
-	}
-
-	promQLFnsObject.Fields[string(CountValues)] = schema.ObjectField{
-		Type: schema.NewNullableType(schema.NewNamedType(labelEnumScalarName)).Encode(),
-	}
-
-	scb.ObjectTypes[promQLFnsObjectName] = promQLFnsObject
-
-	arguments := createCollectionArguments()
-	arguments[ArgumentKeyFunctions] = schema.ArgumentInfo{
-		Description: utils.ToPtr("PromQL aggregation operators and functions for " + name),
-		Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType(promQLFnsObjectName))).
-			Encode(),
 	}
 
 	collection := schema.CollectionInfo{
@@ -171,6 +184,18 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 	}
 
 	scb.Collections[name] = collection
+
+	// add range vector collections.
+	for _, functionName := range CounterRangeVectorFunctions {
+		collectionName := name + "_" + string(functionName)
+		scb.Collections[collectionName] = schema.CollectionInfo{
+			Name:                  collectionName,
+			Type:                  objectName,
+			Arguments:             createCollectionArguments(scb.Configuration.Runtime.PromptQL),
+			Description:           info.Description,
+			UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
+		}
+	}
 
 	return nil
 }

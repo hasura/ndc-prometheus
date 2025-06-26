@@ -24,16 +24,22 @@ const (
 )
 
 const (
-	Equal          = "_eq"
-	NotEqual       = "_neq"
-	In             = "_in"
-	NotIn          = "_nin"
-	Regex          = "_regex"
-	NotRegex       = "_nregex"
-	Least          = "_lt"
-	LeastOrEqual   = "_lte"
-	Greater        = "_gt"
-	GreaterOrEqual = "_gte"
+	Equal                 = "_eq"
+	NotEqual              = "_neq"
+	In                    = "_in"
+	NotIn                 = "_nin"
+	Regex                 = "_regex"
+	NotRegex              = "_nregex"
+	Least                 = "_lt"
+	LeastOrEqual          = "_lte"
+	Greater               = "_gt"
+	GreaterOrEqual        = "_gte"
+	StartsWith            = "_starts_with"
+	StartsWithInsensitive = "_istarts_with"
+	EndsWith              = "_ends_with"
+	EndsWithInsensitive   = "_iends_with"
+	Contains              = "_contains"
+	ContainsInsensitive   = "_icontains"
 )
 
 var defaultScalars = map[string]schema.ScalarType{
@@ -56,25 +62,39 @@ var defaultScalars = map[string]schema.ScalarType{
 				Encode(),
 			NotIn: schema.NewComparisonOperatorCustom(schema.NewArrayType(schema.NewNamedType(string(ScalarString)))).
 				Encode(),
+			StartsWith:            schema.NewComparisonOperatorStartsWith().Encode(),
+			StartsWithInsensitive: schema.NewComparisonOperatorStartsWithInsensitive().Encode(),
+			EndsWith:              schema.NewComparisonOperatorEndsWith().Encode(),
+			EndsWithInsensitive:   schema.NewComparisonOperatorEndsWithInsensitive().Encode(),
+			Contains:              schema.NewComparisonOperatorContains().Encode(),
+			ContainsInsensitive:   schema.NewComparisonOperatorContainsInsensitive().Encode(),
 		},
 		Representation: schema.NewTypeRepresentationString().Encode(),
 	},
 	string(ScalarDecimal): {
-		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
+		AggregateFunctions: schema.ScalarTypeAggregateFunctions{
+			string(Sum): schema.NewAggregateFunctionDefinitionSum(string(ScalarDecimal)).
+				Encode(),
+			string(Min): schema.NewAggregateFunctionDefinitionMin().
+				Encode(),
+			string(Max): schema.NewAggregateFunctionDefinitionMax().
+				Encode(),
+			string(Avg): schema.NewAggregateFunctionDefinitionAverage(string(ScalarDecimal)).
+				Encode(),
+		},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
 			Equal: schema.NewComparisonOperatorEqual().Encode(),
 			NotEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
 				Encode(),
-			Least: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+			Least: schema.NewComparisonOperatorLessThan().
 				Encode(),
-			LeastOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+			LeastOrEqual: schema.NewComparisonOperatorLessThanOrEqual().Encode(),
+			Greater: schema.NewComparisonOperatorGreaterThan().
 				Encode(),
-			Greater: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
-				Encode(),
-			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarDecimal))).
+			GreaterOrEqual: schema.NewComparisonOperatorGreaterThanOrEqual().
 				Encode(),
 		},
-		Representation: schema.NewTypeRepresentationBigDecimal().Encode(),
+		Representation: schema.NewTypeRepresentationFloat64().Encode(),
 	},
 	string(ScalarDuration): {
 		AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
@@ -85,13 +105,13 @@ var defaultScalars = map[string]schema.ScalarType{
 		AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
 			Equal: schema.NewComparisonOperatorEqual().Encode(),
-			Least: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			Least: schema.NewComparisonOperatorLessThan().
 				Encode(),
-			LeastOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			LeastOrEqual: schema.NewComparisonOperatorLessThanOrEqual().
 				Encode(),
-			Greater: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			Greater: schema.NewComparisonOperatorGreaterThan().
 				Encode(),
-			GreaterOrEqual: schema.NewComparisonOperatorCustom(schema.NewNamedType(string(ScalarTimestamp))).
+			GreaterOrEqual: schema.NewComparisonOperatorGreaterThanOrEqual().
 				Encode(),
 		},
 		Representation: schema.NewTypeRepresentationTimestamp().Encode(),
@@ -224,6 +244,9 @@ var defaultObjectTypes = map[string]schema.ObjectType{
 		Fields:      createQueryResultValuesObjectFields(),
 		ForeignKeys: schema.ObjectTypeForeignKeys{},
 	},
+}
+
+var defaultFunctionObjectTypes = map[string]schema.ObjectType{
 	objectName_ValueBoundaryInput: {
 		Description: utils.ToPtr("Boundary input arguments"),
 		Fields: schema.ObjectTypeFields{
@@ -310,7 +333,7 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 		Type: schema.NewNullableNamedType(string(ScalarTimestamp)).Encode(),
 	},
 	ArgumentKeyTimeout: {
-		Description: utils.ToPtr("Evaluation timeout"),
+		Description: utils.ToPtr("The optional evaluation timeout"),
 		Type:        schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
 	ArgumentKeyStart: {
@@ -327,13 +350,13 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 	},
 	ArgumentKeyStep: {
 		Description: utils.ToPtr(
-			"Query resolution step width in duration format or float number of seconds",
+			"Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range",
 		),
 		Type: schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
 	ArgumentKeyOffset: {
 		Description: utils.ToPtr(
-			"The offset modifier allows changing the time offset for individual instant and range vectors in a query",
+			"Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it",
 		),
 		Type: schema.NewNullableNamedType(string(ScalarDuration)).Encode(),
 	},
@@ -341,4 +364,20 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 		Description: utils.ToPtr("Flatten grouped values out the root array"),
 		Type:        schema.NewNullableNamedType(string(ScalarBoolean)).Encode(),
 	},
+}
+
+var CounterRangeVectorFunctions = []PromQLFunctionName{Increase, Rate, IRate}
+
+func createMetricObjectType(promptql bool) schema.ObjectType {
+	objectType := schema.ObjectType{
+		ForeignKeys: schema.ObjectTypeForeignKeys{},
+	}
+
+	if promptql {
+		objectType.Fields = createQueryResultValueObjectFields()
+	} else {
+		objectType.Fields = createQueryResultValuesObjectFields()
+	}
+
+	return objectType
 }

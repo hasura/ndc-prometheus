@@ -7,9 +7,9 @@ definition:
     - name: help
       type: String!
     - name: metric
-      type: String!
+      type: String
     - name: target
-      type: JSON!
+      type: json!
     - name: type
       type: String!
     - name: unit
@@ -44,7 +44,7 @@ definition:
   outputType: "[MetricMetadata!]!"
   arguments:
     - name: limit
-      type: Int64
+      type: int64
     - name: match_target
       type: String
     - name: metric
@@ -56,7 +56,7 @@ definition:
   graphql:
     rootFieldName: prometheus_targets_metadata
     rootFieldKind: Query
-  description: returns metadata about metrics currently scraped from targets
+  description: returns metadata about metrics currently scraped from targets.
 
 ---
 kind: CommandPermissions

@@ -406,7 +406,8 @@ func (uc *updateCommand) validateQuery(ctx context.Context, query string) error 
 		return err
 	}
 
-	_, _, err := uc.Client.Query(ctx, query, "now", "30s")
+	now := time.Now()
+	_, _, err := uc.Client.Query(ctx, query, &now, 30*time.Second)
 
 	return err
 }
@@ -545,9 +546,11 @@ var defaultConfiguration = metadata.Configuration{
 		NativeOperations: metadata.NativeOperations{},
 	},
 	Runtime: metadata.RuntimeSettings{
-		Flat:             false,
-		UnixTimeUnit:     client.UnixTimeSecond,
-		ConcurrencyLimit: 5,
+		PromptQL:             false,
+		Flat:                 false,
+		DisablePrometheusAPI: false,
+		UnixTimeUnit:         metadata.UnixTimeSecond,
+		ConcurrencyLimit:     5,
 		Format: metadata.RuntimeFormatSettings{
 			Timestamp:   metadata.TimestampUnix,
 			Value:       metadata.ValueFloat64,

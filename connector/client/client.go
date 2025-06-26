@@ -18,7 +18,6 @@ import (
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -98,23 +97,15 @@ func NewClient(ctx context.Context, cfg ClientSettings, options ...Option) (*Cli
 }
 
 // ApplyOptions apply options to the Prometheus request.
-func (c *Client) ApplyOptions(span trace.Span, timeout any) ([]v1.Option, error) {
-	timeoutDuration, err := ParseDuration(timeout, c.unixTimeUnit)
-	if err != nil {
-		span.SetStatus(codes.Error, "failed to parse timeout")
-		span.RecordError(err)
-
-		return nil, fmt.Errorf("failed to decode the timeout parameter: %w", err)
-	}
-
+func (c *Client) ApplyOptions(span trace.Span, timeout time.Duration) ([]v1.Option, error) {
 	var options []v1.Option
 
-	if timeoutDuration == 0 && c.timeout != nil {
-		timeoutDuration = time.Duration(*c.timeout)
+	if timeout == 0 && c.timeout != nil {
+		timeout = time.Duration(*c.timeout)
 	}
 
-	if timeoutDuration > 0 {
-		options = append(options, v1.WithTimeout(timeoutDuration))
+	if timeout > 0 {
+		options = append(options, v1.WithTimeout(timeout))
 	}
 
 	return options, nil
@@ -172,13 +163,10 @@ func (c *Client) do(
 }
 
 type clientOptions struct {
-	timeout      *model.Duration
-	unixTimeUnit UnixTimeUnit
+	timeout *model.Duration
 }
 
-var defaultClientOptions = clientOptions{
-	unixTimeUnit: UnixTimeSecond,
-}
+var defaultClientOptions = clientOptions{}
 
 // Option the wrapper function to set optional client options.
 type Option func(opts *clientOptions)
@@ -187,13 +175,6 @@ type Option func(opts *clientOptions)
 func WithTimeout(t *model.Duration) Option {
 	return func(opts *clientOptions) {
 		opts.timeout = t
-	}
-}
-
-// WithTimeout sets the default timeout option to the client.
-func WithUnixTimeUnit(u UnixTimeUnit) Option {
-	return func(opts *clientOptions) {
-		opts.unixTimeUnit = u
 	}
 }
 

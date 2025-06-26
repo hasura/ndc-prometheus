@@ -496,6 +496,12 @@
     },
     "RuntimeSettings": {
       "properties": {
+        "promptql": {
+          "type": "boolean"
+        },
+        "disable_prometheus_api": {
+          "type": "boolean"
+        },
         "flat": {
           "type": "boolean"
         },
@@ -519,6 +525,7 @@
       "additionalProperties": false,
       "type": "object",
       "required": [
+        "promptql",
         "flat",
         "unix_time_unit",
         "format"

@@ -40,17 +40,17 @@ type NativeQuery struct {
 	// The PromQL query string to use for the Native Query.
 	// We can interpolate values using `${<varname>}` syntax,
 	// such as http_requests_total{job=~"${<varname>}"}
-	Query string `json:"query"                 yaml:"query"`
+	Query string `json:"query" yaml:"query"`
 	// Description of the query
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Labels returned by the native query
-	Labels map[string]LabelInfo `json:"labels"                yaml:"labels"`
+	Labels map[string]LabelInfo `json:"labels" yaml:"labels"`
 	// Information of input arguments
-	Arguments map[string]NativeQueryArgumentInfo `json:"arguments"             yaml:"arguments"`
+	Arguments map[string]NativeQueryArgumentInfo `json:"arguments" yaml:"arguments"`
 }
 
 func (scb *connectorSchemaBuilder) buildNativeQueries() error {
-	for name, nq := range scb.Metadata.NativeOperations.Queries {
+	for name, nq := range scb.Configuration.Metadata.NativeOperations.Queries {
 		if err := scb.checkDuplicatedOperation(name); err != nil {
 			return err
 		}
@@ -64,7 +64,8 @@ func (scb *connectorSchemaBuilder) buildNativeQueries() error {
 }
 
 func (scb *connectorSchemaBuilder) buildNativeQuery(name string, query *NativeQuery) error {
-	arguments := createCollectionArguments()
+	arguments := createCollectionArguments(scb.Configuration.Runtime.PromptQL)
+
 	for key, arg := range query.Arguments {
 		if _, ok := arguments[key]; ok {
 			return fmt.Errorf("argument `%s` is already used by the function", key)
@@ -91,11 +92,7 @@ func (scb *connectorSchemaBuilder) buildNativeQuery(name string, query *NativeQu
 		}
 	}
 
-	resultType := schema.NewObjectType(
-		createQueryResultValuesObjectFields(),
-		schema.ObjectTypeForeignKeys{},
-		nil,
-	)
+	resultType := createMetricObjectType(scb.Configuration.Runtime.PromptQL)
 
 	for key, label := range query.Labels {
 		resultType.Fields[key] = schema.ObjectField{

@@ -44,8 +44,7 @@ func (c *PrometheusConnector) ParseConfiguration(
 				NestedFields: schema.NestedFieldCapabilities{},
 				Explain:      &schema.LeafCapability{},
 				Aggregates: &schema.AggregateCapabilities{
-					FilterBy: &schema.LeafCapability{},
-					GroupBy:  &schema.GroupByCapabilities{},
+					GroupBy: &schema.GroupByCapabilities{},
 				},
 			},
 			Mutation: schema.MutationCapabilities{},
@@ -89,14 +88,19 @@ func (c *PrometheusConnector) TryInitState(
 	ctx, span := metrics.Tracer.StartInternal(ctx, "Initialize")
 	defer span.End()
 
-	promSchema, err := metadata.BuildConnectorSchema(&conf.Metadata)
+	promSchema, err := metadata.BuildConnectorSchema(conf)
 	if err != nil {
 		return nil, err
 	}
 
-	ndcSchema, errs := utils.MergeSchemas(api.GetConnectorSchema(), promSchema)
-	for _, e := range errs {
-		slog.Debug(e.Error())
+	ndcSchema := promSchema
+
+	if !conf.Runtime.DisablePrometheusAPI {
+		var errs []error
+		ndcSchema, errs = utils.MergeSchemas(api.GetConnectorSchema(), promSchema)
+		for _, e := range errs {
+			slog.Debug(e.Error())
+		}
 	}
 
 	rawSchema, err := json.Marshal(ndcSchema)
@@ -110,7 +114,6 @@ func (c *PrometheusConnector) TryInitState(
 		ctx,
 		conf.ConnectionSettings,
 		client.WithTimeout(conf.ConnectionSettings.Timeout),
-		client.WithUnixTimeUnit(conf.Runtime.UnixTimeUnit),
 	)
 	if err != nil {
 		return nil, err

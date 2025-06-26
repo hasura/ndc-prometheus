@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasura/ndc-prometheus/connector/client"
+	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/utils"
 )
 
@@ -55,11 +55,11 @@ func (lri LabelReplaceInput) String() string {
 type HoltWintersInput struct {
 	Sf    float64
 	Tf    float64
-	Range client.RangeResolution
+	Range metadata.RangeResolution
 }
 
 // FromValue decodes data from any value.
-func (hwi *HoltWintersInput) FromValue(value any, unixTimeUnit client.UnixTimeUnit) error {
+func (hwi *HoltWintersInput) FromValue(value any, unixTimeUnit metadata.UnixTimeUnit) error {
 	m, ok := value.(map[string]any)
 	if !ok {
 		return fmt.Errorf("invalid HoltWintersInput value, expected map, got: %v", value)
@@ -89,7 +89,7 @@ func (hwi *HoltWintersInput) FromValue(value any, unixTimeUnit client.UnixTimeUn
 		)
 	}
 
-	rng, err := client.ParseRangeResolution(m["range"], unixTimeUnit)
+	rng, err := metadata.ParseRangeResolution(m["range"], unixTimeUnit)
 	if err != nil {
 		return fmt.Errorf("invalid HoltWintersInput range: %w", err)
 	}
@@ -108,11 +108,11 @@ func (hwi *HoltWintersInput) FromValue(value any, unixTimeUnit client.UnixTimeUn
 // PredictLinearInput represents input arguments of the predict_linear function.
 type PredictLinearInput struct {
 	T     float64
-	Range client.RangeResolution
+	Range metadata.RangeResolution
 }
 
 // FromValue decodes data from any value.
-func (pli *PredictLinearInput) FromValue(value any, unixTimeUnit client.UnixTimeUnit) error {
+func (pli *PredictLinearInput) FromValue(value any, unixTimeUnit metadata.UnixTimeUnit) error {
 	m, ok := value.(map[string]any)
 	if !ok {
 		return fmt.Errorf("invalid PredictLinearInput value, expected map, got: %v", value)
@@ -123,7 +123,7 @@ func (pli *PredictLinearInput) FromValue(value any, unixTimeUnit client.UnixTime
 		return fmt.Errorf("invalid PredictLinearInput t: %w", err)
 	}
 
-	rng, err := client.ParseRangeResolution(m["range"], unixTimeUnit)
+	rng, err := metadata.ParseRangeResolution(m["range"], unixTimeUnit)
 	if err != nil {
 		return fmt.Errorf("invalid PredictLinearInput range: %w", err)
 	}
@@ -141,11 +141,11 @@ func (pli *PredictLinearInput) FromValue(value any, unixTimeUnit client.UnixTime
 // QuantileOverTimeInput represents input arguments of the quantile_over_time function.
 type QuantileOverTimeInput struct {
 	Quantile float64
-	Range    client.RangeResolution
+	Range    metadata.RangeResolution
 }
 
 // FromValue decodes data from any value.
-func (qoti *QuantileOverTimeInput) FromValue(value any, unixTimeUnit client.UnixTimeUnit) error {
+func (qoti *QuantileOverTimeInput) FromValue(value any, unixTimeUnit metadata.UnixTimeUnit) error {
 	m, ok := value.(map[string]any)
 	if !ok {
 		return fmt.Errorf("invalid PredictLinearInput value, expected map, got: %v", value)
@@ -160,7 +160,7 @@ func (qoti *QuantileOverTimeInput) FromValue(value any, unixTimeUnit client.Unix
 		return fmt.Errorf("quantile value should be between 0 and 1, got %f", quantile)
 	}
 
-	rng, err := client.ParseRangeResolution(m["range"], unixTimeUnit)
+	rng, err := metadata.ParseRangeResolution(m["range"], unixTimeUnit)
 	if err != nil {
 		return fmt.Errorf("invalid PredictLinearInput range: %w", err)
 	}

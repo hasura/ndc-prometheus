@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 )
 
 // ColumnOrder the structured sorting columns.
@@ -23,24 +25,67 @@ type KeyValue struct {
 	Value any
 }
 
+type Grouping struct {
+	Dimensions []string
+	Aggregates schema.GroupingAggregates
+}
+
+// CollectionValidatedArguments hold the common validated arguments.
+type CollectionValidatedArguments struct {
+	Timestamp *time.Time
+	Range     *v1.Range
+	OrderBy   []ColumnOrder
+	Timeout   time.Duration
+
+	start     *time.Time
+	end       *time.Time
+	variables map[string]any
+	runtime   *metadata.RuntimeSettings
+}
+
+// GetStep gets the step duration.
+func (cva CollectionValidatedArguments) GetStep() time.Duration {
+	if cva.Range == nil {
+		return time.Minute
+	}
+
+	return cva.Range.Step
+}
+
+func (cva CollectionValidatedArguments) getComparisonTimestamp(cmpValue schema.ComparisonValue) (*time.Time, error) {
+	rawValue, err := getComparisonValue(cmpValue, cva.variables)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+			"field": metadata.TimestampKey,
+		})
+	}
+
+	return cva.runtime.ParseTimestamp(rawValue)
+}
+
 // CollectionRequest the structured predicate result which is evaluated from the raw expression.
 type CollectionRequest struct {
-	Timestamp        schema.ComparisonValue
-	Start            schema.ComparisonValue
-	End              schema.ComparisonValue
-	OrderBy          []ColumnOrder
+	CollectionValidatedArguments
+
 	Value            *schema.ExpressionBinaryComparisonOperator
 	LabelExpressions map[string]*LabelExpression
 	Functions        []KeyValue
+	Groups           *Grouping
 }
 
 // EvalCollectionRequest evaluates the requested collection data of the query request.
 func EvalCollectionRequest(
 	request *schema.QueryRequest,
 	arguments map[string]any,
+	variables map[string]any,
+	runtime *metadata.RuntimeSettings,
 ) (*CollectionRequest, error) {
 	result := &CollectionRequest{
 		LabelExpressions: make(map[string]*LabelExpression),
+		CollectionValidatedArguments: CollectionValidatedArguments{
+			variables: variables,
+			runtime:   runtime,
+		},
 	}
 
 	if len(request.Query.Predicate) > 0 {
@@ -49,7 +94,19 @@ func EvalCollectionRequest(
 		}
 	}
 
-	if err := result.evalArguments(arguments); err != nil {
+	step, err := result.evalArguments(arguments)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.start != nil || result.end != nil {
+		result.Range, err = metadata.NewRange(result.start, result.end, step)
+		if err != nil {
+			return nil, schema.UnprocessableContentError(err.Error(), nil)
+		}
+	}
+
+	if err := result.evalGroups(request.Query.Groups); err != nil {
 		return nil, err
 	}
 
@@ -63,19 +120,39 @@ func EvalCollectionRequest(
 	return result, nil
 }
 
-func (pr *CollectionRequest) evalArguments(arguments map[string]any) error {
+func (pr *CollectionRequest) evalArguments(arguments map[string]any) (time.Duration, error) {
 	if arguments == nil {
-		return nil
+		return 0, nil
+	}
+
+	if rawTimeout, ok := arguments[metadata.ArgumentKeyTimeout]; ok {
+		dur, err := pr.runtime.ParseDuration(rawTimeout)
+		if err != nil {
+			return 0, fmt.Errorf("failed to parse duration: %w", err)
+		}
+
+		pr.Timeout = dur
+	}
+
+	var step time.Duration
+
+	if rawStep, ok := arguments[metadata.ArgumentKeyStep]; ok {
+		st, err := pr.runtime.ParseDuration(rawStep)
+		if err != nil {
+			return 0, fmt.Errorf("failed to parse step: %w", err)
+		}
+
+		step = st
 	}
 
 	fn, ok := arguments[metadata.ArgumentKeyFunctions]
 	if !ok || utils.IsNil(fn) {
-		return nil
+		return step, nil
 	}
 
 	fnMap := []map[string]any{}
 	if err := mapstructure.Decode(fn, &fnMap); err != nil {
-		return err
+		return 0, err
 	}
 
 	for _, f := range fnMap {
@@ -83,7 +160,7 @@ func (pr *CollectionRequest) evalArguments(arguments map[string]any) error {
 
 		for k, v := range f {
 			if i > 0 {
-				return errors.New("each fn item must have 1 function only")
+				return 0, errors.New("each fn item must have 1 function only")
 			}
 
 			i++
@@ -95,7 +172,7 @@ func (pr *CollectionRequest) evalArguments(arguments map[string]any) error {
 		}
 	}
 
-	return nil
+	return step, nil
 }
 
 func (pr *CollectionRequest) evalQueryPredicate(expression schema.Expression) error {
@@ -133,19 +210,34 @@ func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
 					return errors.New("unsupported multiple equality for the timestamp")
 				}
 
-				pr.Timestamp = expr.Value
+				pr.Timestamp, err = pr.getComparisonTimestamp(expr.Value)
+				if err != nil {
+					return schema.UnprocessableContentError(err.Error(), map[string]any{
+						"field": metadata.TimestampKey,
+					})
+				}
 			case metadata.Least, metadata.LeastOrEqual:
-				if pr.End != nil {
+				if pr.end != nil {
 					return errors.New("unsupported multiple _lt or _lte expressions for the timestamp")
 				}
 
-				pr.End = expr.Value
+				pr.end, err = pr.getComparisonTimestamp(expr.Value)
+				if err != nil {
+					return schema.UnprocessableContentError(err.Error(), map[string]any{
+						"field": metadata.TimestampKey,
+					})
+				}
 			case metadata.Greater, metadata.GreaterOrEqual:
-				if pr.Start != nil {
+				if pr.start != nil {
 					return errors.New("unsupported multiple _gt or _gt expressions for the timestamp")
 				}
 
-				pr.Start = expr.Value
+				pr.start, err = pr.getComparisonTimestamp(expr.Value)
+				if err != nil {
+					return schema.UnprocessableContentError(err.Error(), map[string]any{
+						"field": metadata.TimestampKey,
+					})
+				}
 			default:
 				return fmt.Errorf("unsupported operator `%s` for the timestamp", expr.Operator)
 			}
@@ -167,6 +259,30 @@ func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
 		}
 	default:
 	}
+
+	return nil
+}
+
+func (pr *CollectionRequest) evalGroups(grouping *schema.Grouping) error {
+	if grouping == nil {
+		return nil
+	}
+
+	group := Grouping{
+		Dimensions: make([]string, len(grouping.Dimensions)),
+		Aggregates: grouping.Aggregates,
+	}
+
+	for i, dim := range grouping.Dimensions {
+		column, err := dim.AsColumn()
+		if err != nil {
+			return fmt.Errorf("invalid grouping dimension %d: %w", i, err)
+		}
+
+		group.Dimensions[i] = column.ColumnName
+	}
+
+	pr.Groups = &group
 
 	return nil
 }

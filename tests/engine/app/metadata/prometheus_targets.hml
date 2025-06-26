@@ -5,19 +5,19 @@ definition:
   name: ActiveTarget
   fields:
     - name: discoveredLabels
-      type: JSON!
+      type: json!
     - name: globalUrl
       type: String!
     - name: health
       type: String!
     - name: labels
-      type: JSON!
+      type: json!
     - name: lastError
       type: String!
     - name: lastScrape
-      type: TimestampTZ!
+      type: timestamptz!
     - name: lastScrapeDuration
-      type: Float64!
+      type: float64!
     - name: scrapePool
       type: String!
     - name: scrapeUrl
@@ -55,7 +55,7 @@ definition:
   name: DroppedTarget
   fields:
     - name: discoveredLabels
-      type: JSON!
+      type: json!
   graphql:
     typeName: DroppedTarget
     inputTypeName: DroppedTarget_input
@@ -116,7 +116,7 @@ definition:
   graphql:
     rootFieldName: prometheus_targets
     rootFieldKind: Query
-  description: returns an overview of the current state of the Prometheus target discovery
+  description: returns an overview of the current state of the Prometheus target discovery.
 
 ---
 kind: CommandPermissions

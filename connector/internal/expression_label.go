@@ -117,7 +117,7 @@ func (le *LabelExpressionBuilder) excludeField(inc LabelExpressionField) bool {
 
 func (le *LabelExpressionBuilder) evalLabelComparison(operator string, value any) (bool, error) {
 	switch operator {
-	case metadata.Equal, metadata.Regex:
+	case metadata.Equal, metadata.Regex, metadata.Contains, metadata.ContainsInsensitive, metadata.StartsWith, metadata.StartsWithInsensitive, metadata.EndsWith, metadata.EndsWithInsensitive:
 		return le.evalLabelComparisonRegex(operator, value)
 	case metadata.In:
 		return le.evalLabelComparisonIn(value)
@@ -134,21 +134,35 @@ func (le *LabelExpressionBuilder) evalLabelComparisonRegex(
 	operator string,
 	value any,
 ) (bool, error) {
-	strValue, err := utils.DecodeNullableString(value)
+	strValuePtr, err := utils.DecodeNullableString(value)
 	if err != nil {
 		return false, err
 	}
 
-	if strValue == nil {
+	if strValuePtr == nil {
 		return true, nil
 	}
 
-	isRegex := operator == metadata.Regex
+	strValue := *strValuePtr
+	isRegex := operator != metadata.Equal
+
+	switch operator {
+	case metadata.ContainsInsensitive:
+		strValue = "((?i)" + strValue + ")"
+	case metadata.StartsWith:
+		strValue = "(^" + strValue + ")"
+	case metadata.StartsWithInsensitive:
+		strValue = "((?i)^" + strValue + ")"
+	case metadata.EndsWith:
+		strValue = "(" + strValue + "$)"
+	case metadata.EndsWithInsensitive:
+		strValue = "((?i)" + strValue + "$)"
+	}
 
 	if len(le.includes) == 0 {
 		le.includes = []LabelExpressionField{
 			{
-				Value:   *strValue,
+				Value:   strValue,
 				IsRegex: isRegex,
 			},
 		}
@@ -159,7 +173,7 @@ func (le *LabelExpressionBuilder) evalLabelComparisonRegex(
 	var includes []LabelExpressionField
 
 	for _, inc := range le.includes {
-		if inc.Value == *strValue {
+		if inc.Value == strValue {
 			includes = append(includes, LabelExpressionField{
 				Value:   inc.Value,
 				IsRegex: inc.IsRegex && isRegex,
@@ -169,9 +183,9 @@ func (le *LabelExpressionBuilder) evalLabelComparisonRegex(
 		}
 
 		if isRegex {
-			rg, err := regexp.Compile(*strValue)
+			rg, err := regexp.Compile(strValue)
 			if err != nil {
-				return false, fmt.Errorf("invalid regular expression `%s`: %w", *strValue, err)
+				return false, fmt.Errorf("invalid regular expression `%s`: %w", strValue, err)
 			}
 
 			if rg.MatchString(inc.Value) {

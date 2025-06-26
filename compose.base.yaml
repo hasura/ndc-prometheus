@@ -17,7 +17,7 @@ services:
       HASURA_LOG_LEVEL: debug
 
   prometheus:
-    image: prom/prometheus:v2.54.1
+    image: prom/prometheus:v3.4.1
     volumes:
       - ./tests/prometheus/:/etc/prometheus/
     command:
@@ -35,7 +35,7 @@ services:
     restart: always
 
   node-exporter:
-    image: prom/node-exporter:v1.8.1
+    image: prom/node-exporter:v1.9.1
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro

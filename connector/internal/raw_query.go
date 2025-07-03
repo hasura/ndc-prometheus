@@ -35,8 +35,11 @@ func (nqe *RawQueryExecutor) Explain(ctx context.Context) (*rawQueryParameters, 
 	params := &rawQueryParameters{}
 
 	var err error
+
 	var queryString string
+
 	var start, end *time.Time
+
 	var step time.Duration
 
 	for key, arg := range nqe.Arguments {
@@ -127,6 +130,7 @@ func (nqe *RawQueryExecutor) execute(
 	}
 
 	flat := nqe.Runtime.IsFlat(nullableFlat)
+
 	var rawResults []map[string]any
 
 	if params.Range != nil {

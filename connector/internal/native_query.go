@@ -54,8 +54,22 @@ func (nqe *NativeQueryExecutor) Explain(ctx context.Context) (*NativeQueryReques
 	return params, queryString, nil
 }
 
+// Execute executes the query request.
+func (nqe *NativeQueryExecutor) Execute(ctx context.Context) (*schema.RowSet, error) {
+	ctx, span := nqe.Tracer.Start(ctx, "Execute Native Query")
+	defer span.End()
+
+	params, queryString, err := nqe.Explain(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return nqe.execute(ctx, params, queryString)
+}
+
 func (nqe *NativeQueryExecutor) evalArguments(params *NativeQueryRequest) (string, error) {
 	var step time.Duration
+
 	var err error
 
 	queryString := nqe.NativeQuery.Query
@@ -73,53 +87,10 @@ func (nqe *NativeQueryExecutor) evalArguments(params *NativeQueryRequest) (strin
 				return "", schema.UnprocessableContentError(err.Error(), nil)
 			}
 		default:
-			argInfo, ok := nqe.NativeQuery.Arguments[key]
-			if !ok {
-				break
+			queryString, err = nqe.evalUnknownArguments(queryString, key, arg)
+			if err != nil {
+				return "", err
 			}
-
-			var argString string
-
-			switch metadata.ScalarName(argInfo.Type) {
-			case metadata.ScalarInt64:
-				argInt, err := utils.DecodeInt[int64](arg)
-				if err != nil {
-					return "", schema.UnprocessableContentError(err.Error(), nil)
-				}
-
-				argString = strconv.FormatInt(argInt, 10)
-			case metadata.ScalarFloat64:
-				argFloat, err := utils.DecodeFloat[float64](arg)
-				if err != nil {
-					return "", schema.UnprocessableContentError(err.Error(), nil)
-				}
-
-				argString = fmt.Sprint(argFloat)
-			case metadata.ScalarDuration:
-				duration, err := nqe.Runtime.ParseRangeResolution(arg)
-				if err != nil {
-					return "", schema.UnprocessableContentError(err.Error(), nil)
-				}
-
-				if duration == nil {
-					return "", schema.UnprocessableContentError(
-						fmt.Sprintf("argument `%s` is required", key),
-						nil,
-					)
-				}
-
-				argString = duration.String()
-			default:
-				argString, err = utils.DecodeString(arg)
-				if err != nil {
-					return "", schema.UnprocessableContentError(
-						fmt.Sprintf("%s: %s", key, err.Error()),
-						nil,
-					)
-				}
-			}
-
-			queryString = metadata.ReplaceNativeQueryVariable(queryString, key, argString)
 		}
 	}
 
@@ -133,17 +104,60 @@ func (nqe *NativeQueryExecutor) evalArguments(params *NativeQueryRequest) (strin
 	return queryString, nil
 }
 
-// Execute executes the query request.
-func (nqe *NativeQueryExecutor) Execute(ctx context.Context) (*schema.RowSet, error) {
-	ctx, span := nqe.Tracer.Start(ctx, "Execute Native Query")
-	defer span.End()
-
-	params, queryString, err := nqe.Explain(ctx)
-	if err != nil {
-		return nil, err
+func (nqe *NativeQueryExecutor) evalUnknownArguments(
+	queryString string,
+	key string,
+	arg any,
+) (string, error) {
+	argInfo, ok := nqe.NativeQuery.Arguments[key]
+	if !ok {
+		return queryString, nil
 	}
 
-	return nqe.execute(ctx, params, queryString)
+	var argString string
+
+	var err error
+
+	switch metadata.ScalarName(argInfo.Type) {
+	case metadata.ScalarInt64:
+		argInt, err := utils.DecodeInt[int64](arg)
+		if err != nil {
+			return "", schema.UnprocessableContentError(err.Error(), nil)
+		}
+
+		argString = strconv.FormatInt(argInt, 10)
+	case metadata.ScalarFloat64:
+		argFloat, err := utils.DecodeFloat[float64](arg)
+		if err != nil {
+			return "", schema.UnprocessableContentError(err.Error(), nil)
+		}
+
+		argString = fmt.Sprint(argFloat)
+	case metadata.ScalarDuration:
+		duration, err := nqe.Runtime.ParseRangeResolution(arg)
+		if err != nil {
+			return "", schema.UnprocessableContentError(err.Error(), nil)
+		}
+
+		if duration == nil {
+			return "", schema.UnprocessableContentError(
+				fmt.Sprintf("argument `%s` is required", key),
+				nil,
+			)
+		}
+
+		argString = duration.String()
+	default:
+		argString, err = utils.DecodeString(arg)
+		if err != nil {
+			return "", schema.UnprocessableContentError(
+				fmt.Sprintf("%s: %s", key, err.Error()),
+				nil,
+			)
+		}
+	}
+
+	return metadata.ReplaceNativeQueryVariable(queryString, key, argString), nil
 }
 
 func (nqe *NativeQueryExecutor) execute(
@@ -162,6 +176,7 @@ func (nqe *NativeQueryExecutor) execute(
 	}
 
 	var rawResults []map[string]any
+
 	flat := nqe.Runtime.IsFlat(nullableFlat)
 
 	if !utils.IsNil(params.Timestamp) {

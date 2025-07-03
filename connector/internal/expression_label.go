@@ -117,7 +117,14 @@ func (le *LabelExpressionBuilder) excludeField(inc LabelExpressionField) bool {
 
 func (le *LabelExpressionBuilder) evalLabelComparison(operator string, value any) (bool, error) {
 	switch operator {
-	case metadata.Equal, metadata.Regex, metadata.Contains, metadata.ContainsInsensitive, metadata.StartsWith, metadata.StartsWithInsensitive, metadata.EndsWith, metadata.EndsWithInsensitive:
+	case metadata.Equal,
+		metadata.Regex,
+		metadata.Contains,
+		metadata.ContainsInsensitive,
+		metadata.StartsWith,
+		metadata.StartsWithInsensitive,
+		metadata.EndsWith,
+		metadata.EndsWithInsensitive:
 		return le.evalLabelComparisonRegex(operator, value)
 	case metadata.In:
 		return le.evalLabelComparisonIn(value)

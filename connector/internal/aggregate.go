@@ -8,7 +8,12 @@ import (
 	"github.com/prometheus/common/model"
 )
 
-func (qce *QueryCollectionExecutor) mergeMatrixToAggregateGroups(source []schema.Group, rawMatrix model.Matrix, key string, dimensions []string) []schema.Group {
+func (qce *QueryCollectionExecutor) mergeMatrixToAggregateGroups(
+	source []schema.Group,
+	rawMatrix model.Matrix,
+	key string,
+	dimensions []string,
+) []schema.Group {
 	for _, sample := range rawMatrix {
 		source = qce.mergeSampleToAggregateGroup(source, sample, key, dimensions)
 	}
@@ -16,7 +21,12 @@ func (qce *QueryCollectionExecutor) mergeMatrixToAggregateGroups(source []schema
 	return source
 }
 
-func (qce *QueryCollectionExecutor) mergeSampleToAggregateGroup(source []schema.Group, samples *model.SampleStream, key string, dimensions []string) []schema.Group {
+func (qce *QueryCollectionExecutor) mergeSampleToAggregateGroup(
+	source []schema.Group,
+	samples *model.SampleStream,
+	key string,
+	dimensions []string,
+) []schema.Group {
 L:
 	for _, item := range samples.Values {
 		group := schema.Group{
@@ -65,7 +75,12 @@ func (qce *QueryCollectionExecutor) queryGroupAggregates(
 			return nil, err
 		}
 
-		results = qce.mergeMatrixToAggregateGroups(results, rawMatrix, key, explainResult.Groups.Dimensions)
+		results = qce.mergeMatrixToAggregateGroups(
+			results,
+			rawMatrix,
+			key,
+			explainResult.Groups.Dimensions,
+		)
 	}
 
 	return results, nil

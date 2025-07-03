@@ -57,14 +57,6 @@ func (qce *QueryCollectionExecutor) Explain(
 		Request: expressions,
 	}
 
-	if len(qce.Functions) > 0 {
-		if expressions == nil {
-			expressions = &CollectionRequest{}
-		}
-
-		expressions.Functions = append(qce.Functions, expressions.Functions...)
-	}
-
 	if expressions != nil {
 		query, ok, err := qce.buildCollectionPredicateQuery(expressions)
 		if err != nil {
@@ -175,7 +167,11 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 		// histogram_quantile(
 		//     $scalar,
 		//     rate(hasura_graphql_execution_time_seconds_bucket{...}[$step])))
-		result.QueryString, err = qce.buildQueryStringByFunction(expressions, collectionQuery, histogramQuantileFunc)
+		result.QueryString, err = qce.buildQueryStringByFunction(
+			expressions,
+			collectionQuery,
+			histogramQuantileFunc,
+		)
 		if err != nil {
 			return nil, schema.UnprocessableContentError(
 				"failed to evaluate histogram quantile",
@@ -189,6 +185,21 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 		return result, nil
 	}
 
+	return qce.explainHistogramQuantileGrouping(
+		expressions,
+		result,
+		collectionQuery,
+		histogramQuantileFunc,
+	)
+}
+
+func (qce *QueryCollectionExecutor) explainHistogramQuantileGrouping(
+	expressions *CollectionRequest,
+	result *QueryCollectionExplainResult,
+	collectionQuery string,
+	histogramQuantileFunc KeyValue,
+) (*QueryCollectionExplainResult, error) {
+	var err error
 	// generate aggregate queries to groups,
 	// add the le bucket to grouping
 	expressions.Groups.Dimensions = append(expressions.Groups.Dimensions, "le")
@@ -206,7 +217,11 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 
 	// Finally wrap aggregate queries with histogram_quantile
 	for groupKey, groupQuery := range result.Groups.AggregateQueries {
-		aggQuery, err := qce.buildQueryStringByFunction(expressions, groupQuery, histogramQuantileFunc)
+		aggQuery, err := qce.buildQueryStringByFunction(
+			expressions,
+			groupQuery,
+			histogramQuantileFunc,
+		)
 		if err != nil {
 			return nil, schema.UnprocessableContentError(
 				"failed to evaluate grouping",
@@ -620,7 +635,10 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(
 	return fmt.Sprintf(" %s %f", op, *v), nil
 }
 
-func (qce *QueryCollectionExecutor) explainGrouping(groups *Grouping, query string) (*QueryCollectionGroupingExplainResult, error) {
+func (qce *QueryCollectionExecutor) explainGrouping(
+	groups *Grouping,
+	query string,
+) (*QueryCollectionGroupingExplainResult, error) {
 	if groups == nil {
 		return nil, nil
 	}
@@ -642,7 +660,11 @@ func (qce *QueryCollectionExecutor) explainGrouping(groups *Grouping, query stri
 	return result, nil
 }
 
-func (qce *QueryCollectionExecutor) explainGroupingAggregateQuery(query string, dimensions []string, aggregate schema.Aggregate) (string, error) {
+func (qce *QueryCollectionExecutor) explainGroupingAggregateQuery(
+	query string,
+	dimensions []string,
+	aggregate schema.Aggregate,
+) (string, error) {
 	aggregateT, err := aggregate.InterfaceT()
 	if err != nil {
 		return "", err

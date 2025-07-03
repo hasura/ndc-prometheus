@@ -54,7 +54,9 @@ func (cva CollectionValidatedArguments) GetStep() time.Duration {
 	return cva.Range.Step
 }
 
-func (cva CollectionValidatedArguments) getComparisonTimestamp(cmpValue schema.ComparisonValue) (*time.Time, error) {
+func (cva CollectionValidatedArguments) getComparisonTimestamp(
+	cmpValue schema.ComparisonValue,
+) (*time.Time, error) {
 	rawValue, err := getComparisonValue(cmpValue, cva.variables)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), map[string]any{
@@ -227,46 +229,14 @@ func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
 	case *schema.ComparisonTargetColumn:
 		switch target.Name {
 		case metadata.TimestampKey:
-			switch expr.Operator {
-			case metadata.Equal:
-				if pr.Timestamp != nil {
-					return errors.New("unsupported multiple equality for the timestamp")
-				}
-
-				pr.Timestamp, err = pr.getComparisonTimestamp(expr.Value)
-				if err != nil {
-					return schema.UnprocessableContentError(err.Error(), map[string]any{
-						"field": metadata.TimestampKey,
-					})
-				}
-			case metadata.Least, metadata.LeastOrEqual:
-				if pr.end != nil {
-					return errors.New("unsupported multiple _lt or _lte expressions for the timestamp")
-				}
-
-				pr.end, err = pr.getComparisonTimestamp(expr.Value)
-				if err != nil {
-					return schema.UnprocessableContentError(err.Error(), map[string]any{
-						"field": metadata.TimestampKey,
-					})
-				}
-			case metadata.Greater, metadata.GreaterOrEqual:
-				if pr.start != nil {
-					return errors.New("unsupported multiple _gt or _gt expressions for the timestamp")
-				}
-
-				pr.start, err = pr.getComparisonTimestamp(expr.Value)
-				if err != nil {
-					return schema.UnprocessableContentError(err.Error(), map[string]any{
-						"field": metadata.TimestampKey,
-					})
-				}
-			default:
-				return fmt.Errorf("unsupported operator `%s` for the timestamp", expr.Operator)
+			if err := pr.evalComparisonTargetColumnTimestamp(expr); err != nil {
+				return schema.UnprocessableContentError(err.Error(), map[string]any{
+					"field": metadata.TimestampKey,
+				})
 			}
 		case metadata.ValueKey:
 			if pr.Value != nil {
-				return errors.New("unsupported multiple comparisons for the value")
+				return schema.UnprocessableContentError("unsupported multiple comparisons for the value", nil)
 			}
 
 			pr.Value = expr
@@ -284,6 +254,37 @@ func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
 	}
 
 	return nil
+}
+
+func (pr *CollectionRequest) evalComparisonTargetColumnTimestamp(
+	expr *schema.ExpressionBinaryComparisonOperator,
+) error {
+	var err error
+
+	switch expr.Operator {
+	case metadata.Equal:
+		if pr.Timestamp != nil {
+			return errors.New("unsupported multiple equality for the timestamp")
+		}
+
+		pr.Timestamp, err = pr.getComparisonTimestamp(expr.Value)
+	case metadata.Least, metadata.LeastOrEqual:
+		if pr.end != nil {
+			return errors.New("unsupported multiple _lt or _lte expressions for the timestamp")
+		}
+
+		pr.end, err = pr.getComparisonTimestamp(expr.Value)
+	case metadata.Greater, metadata.GreaterOrEqual:
+		if pr.start != nil {
+			return errors.New("unsupported multiple _gt or _gt expressions for the timestamp")
+		}
+
+		pr.start, err = pr.getComparisonTimestamp(expr.Value)
+	default:
+		return fmt.Errorf("unsupported operator `%s` for the timestamp", expr.Operator)
+	}
+
+	return err
 }
 
 func (pr *CollectionRequest) evalGroups(grouping *schema.Grouping) error {

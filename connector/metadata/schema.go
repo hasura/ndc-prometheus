@@ -47,7 +47,8 @@ func BuildConnectorSchema(config *Configuration) (*schema.SchemaResponse, error)
 		decimalScalar.Representation = schema.NewTypeRepresentationFloat64().Encode()
 		builder.ScalarTypes[string(ScalarDecimal)] = *decimalScalar
 
-		builder.ScalarTypes[string(ScalarString)].ComparisonOperators[In] = schema.NewComparisonOperatorIn().Encode()
+		builder.ScalarTypes[string(ScalarString)].ComparisonOperators[In] = schema.NewComparisonOperatorIn().
+			Encode()
 	} else {
 		maps.Copy(builder.ObjectTypes, defaultFunctionObjectTypes)
 	}
@@ -189,6 +190,7 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 
 	if !scb.Configuration.Runtime.PromptQL {
 		slices.Sort(labelEnums)
+
 		labelEnumScalarName := objectName + "Label"
 		scalarType := schema.NewScalarType()
 		scalarType.Representation = schema.NewTypeRepresentationEnum(labelEnums).Encode()

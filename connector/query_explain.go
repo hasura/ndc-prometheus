@@ -113,7 +113,12 @@ func (c *PrometheusConnector) explainQueryCollection(
 			executor.MetricName = request.Collection
 			executor.Metric = collection
 
-			validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
+			validatedRequest, err := internal.EvalCollectionRequest(
+				request,
+				arguments,
+				variables,
+				c.runtime,
+			)
 			if err != nil {
 				return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
 					"collection": request.Collection,
@@ -147,26 +152,13 @@ func (c *PrometheusConnector) explainQueryCollection(
 		executor.Metric = collection
 		executor.MetricName = metricName
 
-		validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
-		if err != nil {
-			return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
-				"collection": request.Collection,
-			})
-		}
-
-		executor.Functions = []internal.KeyValue{
-			{
-				Key:   string(rangeFn),
-				Value: validatedRequest.GetStep(),
-			},
-		}
-
-		explainResult, err := executor.Explain(validatedRequest)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return executor, explainResult, nil
+		return c.explainQueryCollectionCounterRange(
+			request,
+			arguments,
+			variables,
+			executor,
+			rangeFn,
+		)
 	}
 
 	// try to evaluate the quantile metric
@@ -180,20 +172,12 @@ func (c *PrometheusConnector) explainQueryCollection(
 			executor.Metric = collection
 			executor.MetricName = bucketMetricName
 
-			validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
-			if err != nil {
-				return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
-					"collection": request.Collection,
-				})
-			}
-
-			// explain the histogram quantile query string with grouping.
-			explainResult, err := executor.ExplainHistogramQuantile(validatedRequest)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			return executor, explainResult, nil
+			return c.explainQueryCollectionHistogramQuantile(
+				request,
+				arguments,
+				variables,
+				executor,
+			)
 		}
 	}
 
@@ -201,4 +185,65 @@ func (c *PrometheusConnector) explainQueryCollection(
 		fmt.Sprintf("invalid query `%s`", request.Collection),
 		nil,
 	)
+}
+
+func (c *PrometheusConnector) explainQueryCollectionCounterRange(
+	request *schema.QueryRequest,
+	arguments map[string]any,
+	variables map[string]any,
+	executor *internal.QueryCollectionExecutor,
+	rangeFn metadata.PromQLFunctionName,
+) (*internal.QueryCollectionExecutor, *internal.QueryCollectionExplainResult, error) {
+	validatedRequest, err := internal.EvalCollectionRequest(
+		request,
+		arguments,
+		variables,
+		c.runtime,
+	)
+	if err != nil {
+		return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+			"collection": request.Collection,
+		})
+	}
+
+	validatedRequest.Functions = append([]internal.KeyValue{
+		{
+			Key:   string(rangeFn),
+			Value: validatedRequest.GetStep(),
+		},
+	}, validatedRequest.Functions...)
+
+	explainResult, err := executor.Explain(validatedRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return executor, explainResult, nil
+}
+
+func (c *PrometheusConnector) explainQueryCollectionHistogramQuantile(
+	request *schema.QueryRequest,
+	arguments map[string]any,
+	variables map[string]any,
+	executor *internal.QueryCollectionExecutor,
+) (*internal.QueryCollectionExecutor, *internal.QueryCollectionExplainResult, error) {
+	validatedRequest, err := internal.EvalCollectionRequest(
+		request,
+		arguments,
+		variables,
+		c.runtime,
+	)
+	if err != nil {
+		return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+			"collection": request.Collection,
+		})
+	}
+
+	// explain the histogram quantile query string with grouping.
+	explainResult, err := executor.ExplainHistogramQuantile(validatedRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return executor, explainResult, nil
 }

@@ -97,6 +97,7 @@ func (c *PrometheusConnector) TryInitState(
 
 	if !conf.Runtime.DisablePrometheusAPI {
 		var errs []error
+
 		ndcSchema, errs = utils.MergeSchemas(api.GetConnectorSchema(), promSchema)
 		for _, e := range errs {
 			slog.Debug(e.Error())

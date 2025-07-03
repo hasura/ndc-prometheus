@@ -40,13 +40,13 @@ type NativeQuery struct {
 	// The PromQL query string to use for the Native Query.
 	// We can interpolate values using `${<varname>}` syntax,
 	// such as http_requests_total{job=~"${<varname>}"}
-	Query string `json:"query" yaml:"query"`
+	Query string `json:"query"                 yaml:"query"`
 	// Description of the query
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Labels returned by the native query
-	Labels map[string]LabelInfo `json:"labels" yaml:"labels"`
+	Labels map[string]LabelInfo `json:"labels"                yaml:"labels"`
 	// Information of input arguments
-	Arguments map[string]NativeQueryArgumentInfo `json:"arguments" yaml:"arguments"`
+	Arguments map[string]NativeQueryArgumentInfo `json:"arguments"             yaml:"arguments"`
 }
 
 func (scb *connectorSchemaBuilder) buildNativeQueries() error {

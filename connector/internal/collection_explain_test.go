@@ -930,11 +930,12 @@ func TestCollectionQueryExplain(t *testing.T) {
 				Variables:  map[string]any{},
 				Arguments:  arguments,
 				Runtime:    &metadata.RuntimeSettings{},
-				Functions:  tc.Functions,
 			}
 
 			validatedRequest, err := EvalCollectionRequest(&tc.Request, arguments, executor.Variables, executor.Runtime)
 			assert.NilError(t, err)
+
+			validatedRequest.Functions = append(tc.Functions, validatedRequest.Functions...)
 
 			result, err := executor.Explain(validatedRequest)
 			if tc.ErrorMsg != "" {
@@ -1020,7 +1021,7 @@ func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
 			Groups: &QueryCollectionGroupingExplainResult{
 				Dimensions: []string{"job", "instance", "le"},
 				AggregateQueries: map[string]string{
-					"sum": `histogram_quantile(0.950000, sum by (job, instance, le) (rate(hasura_graphql_execution_time_seconds_bucket{instance=~"localhost:9090|node-exporter:9100",job="node"}[5m]) >= 0.000000))`,
+					"sum": `histogram_quantile(0.950000, sum by (job, instance, le) (rate(hasura_graphql_execution_time_seconds_bucket{instance=~"localhost:9090|node-exporter:9100",job="node"}[5m] offset 5m0s) >= 0.000000))`,
 				},
 			},
 		},

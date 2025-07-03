@@ -30,11 +30,13 @@ type QueryCollectionExecutor struct {
 	Metric     metadata.MetricInfo
 	Variables  map[string]any
 	Arguments  map[string]any
-	Functions  []KeyValue
 }
 
 // Execute executes the query request.
-func (qce *QueryCollectionExecutor) Execute(ctx context.Context, explainResult *QueryCollectionExplainResult) (*schema.RowSet, error) {
+func (qce *QueryCollectionExecutor) Execute(
+	ctx context.Context,
+	explainResult *QueryCollectionExplainResult,
+) (*schema.RowSet, error) {
 	ctx, span := qce.Tracer.Start(ctx, "Execute Collection")
 	defer span.End()
 

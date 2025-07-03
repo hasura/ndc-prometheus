@@ -29,11 +29,10 @@ var (
 
 // Client extends the Prometheus API client with advanced methods for the Prometheus connector.
 type Client struct {
-	client api.Client
-
 	v1.API
 	clientOptions
 
+	client api.Client
 	// common OpenTelemetry attributes
 	serverAddress string
 	serverPort    int

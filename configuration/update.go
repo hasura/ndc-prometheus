@@ -64,6 +64,7 @@ type updateCommand struct {
 func (uc *updateCommand) SetMetadataMetric(key string, info metadata.MetricInfo) {
 	uc.lock.Lock()
 	defer uc.lock.Unlock()
+
 	uc.Config.Metadata.Metrics[key] = info
 	uc.existedMetrics[key] = true
 }
@@ -72,6 +73,7 @@ func (uc *updateCommand) SetMetadataMetric(key string, info metadata.MetricInfo)
 func (uc *updateCommand) MetricExists(key string) bool {
 	uc.lock.Lock()
 	defer uc.lock.Unlock()
+
 	_, ok := uc.existedMetrics[key]
 
 	return ok
@@ -81,6 +83,7 @@ func (uc *updateCommand) MetricExists(key string) bool {
 func (uc *updateCommand) SetMetricExists(key string) {
 	uc.lock.Lock()
 	defer uc.lock.Unlock()
+
 	uc.existedMetrics[key] = true
 }
 
@@ -389,8 +392,8 @@ func (uc *updateCommand) validateNativeQueries(ctx context.Context) error {
 
 func (uc *updateCommand) checkAPIFormatQueryExist(ctx context.Context) {
 	_, err := uc.Client.FormatQuery(ctx, "up")
-	uc.apiFormatExists = err == nil
 
+	uc.apiFormatExists = err == nil
 	if err != nil {
 		slog.Debug(
 			"failed to request /api/v1/format_query endpoint",
@@ -414,6 +417,7 @@ func (uc *updateCommand) validateQuery(ctx context.Context, query string) error 
 
 func (uc *updateCommand) writeConfigFile() error {
 	var buf bytes.Buffer
+
 	writer := bufio.NewWriter(&buf)
 
 	_, _ = writer.WriteString(

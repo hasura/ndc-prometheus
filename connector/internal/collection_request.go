@@ -229,7 +229,7 @@ func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
 	case *schema.ComparisonTargetColumn:
 		switch target.Name {
 		case metadata.TimestampKey:
-			if err := pr.evalComparisonTargetColumnTimestamp(expr); err != nil {
+			if err = pr.evalComparisonTargetColumnTimestamp(expr); err != nil {
 				return schema.UnprocessableContentError(err.Error(), map[string]any{
 					"field": metadata.TimestampKey,
 				})

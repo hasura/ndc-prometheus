@@ -586,6 +586,7 @@ func (qce *QueryCollectionExecutor) buildQueryStringByFunction( //nolint:gocogni
 
 		if rng != nil {
 			var sb strings.Builder
+
 			_, _ = sb.WriteString(fn.Key)
 			_, _ = sb.WriteRune('(')
 			_, _ = sb.WriteString(query)

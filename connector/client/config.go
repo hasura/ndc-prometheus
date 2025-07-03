@@ -17,6 +17,9 @@ import (
 
 // ClientSettings contain information for the Prometheus server that the client connects to.
 type ClientSettings struct {
+	// Proxy configuration.
+	*ProxyConfig `yaml:",inline"`
+
 	// The endpoint of the Prometheus server.
 	URL utils.EnvString `json:"url"                        yaml:"url"`
 	// The authentication configuration
@@ -36,8 +39,6 @@ type ClientSettings struct {
 	// HTTPHeaders specify headers to inject in the requests. Those headers
 	// could be marshalled back to the users.
 	HTTPHeaders http.Header `json:"http_headers,omitempty"     yaml:"http_headers,omitempty"`
-	// Proxy configuration.
-	*ProxyConfig ` yaml:",inline"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -266,14 +267,14 @@ func (hac AuthorizationConfig) toClientConfig() (*config.Authorization, error) {
 
 // OAuth2Config the OAuth2 client credentials used to fetch a token for the targets.
 type OAuth2Config struct {
+	*ProxyConfig `yaml:",inline"`
+
 	ClientID       utils.EnvString   `json:"client_id"                 yaml:"client_id"`
 	ClientSecret   utils.EnvString   `json:"client_secret"             yaml:"client_secret"`
 	TokenURL       utils.EnvString   `json:"token_url"                 yaml:"token_url"`
 	Scopes         []string          `json:"scopes,omitempty"          yaml:"scopes,omitempty"`
 	EndpointParams map[string]string `json:"endpoint_params,omitempty" yaml:"endpoint_params,omitempty"`
 	TLSConfig      config.TLSConfig  `                                 yaml:"tls_config,omitempty"`
-
-	*ProxyConfig `yaml:",inline"`
 }
 
 func (oc OAuth2Config) toClientConfig() (*config.OAuth2, error) {

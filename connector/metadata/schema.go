@@ -88,23 +88,76 @@ func (scb *connectorSchemaBuilder) buildMetrics() error {
 	for name, info := range scb.Configuration.Metadata.Metrics {
 		switch info.Type {
 		case model.MetricTypeHistogram, model.MetricTypeGaugeHistogram:
-			for _, suffix := range []string{"sum", "count", "bucket"} {
-				metricName := fmt.Sprintf("%s_%s", name, suffix)
-				labels := info.Labels
-
-				if suffix == "bucket" {
-					labels["le"] = LabelInfo{}
-				}
-
-				if err := scb.buildMetricsItem(metricName, info, labels); err != nil {
-					return err
-				}
+			if err := scb.buildHistogramMetrics(name, info); err != nil {
+				return err
 			}
 		default:
-			if err := scb.buildMetricsItem(name, info, info.Labels); err != nil {
+			if err := scb.buildCounterMetrics(name, info, info.Labels); err != nil {
 				return err
 			}
 		}
+	}
+
+	return nil
+}
+
+func (scb *connectorSchemaBuilder) buildCounterMetrics(
+	name string,
+	info MetricInfo,
+	labels map[string]LabelInfo,
+) error {
+	collection, err := scb.buildMetricsItem(name, info, labels)
+	if err != nil {
+		return err
+	}
+
+	// add range vector collections.
+	for _, functionName := range CounterRangeVectorFunctions {
+		collectionName := name + "_" + string(functionName)
+		scb.Collections[collectionName] = schema.CollectionInfo{
+			Name:                  collectionName,
+			Type:                  collection.Type,
+			Arguments:             createCollectionArguments(scb.Configuration.Runtime.PromptQL),
+			Description:           info.Description,
+			UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
+		}
+	}
+
+	return nil
+}
+
+func (scb *connectorSchemaBuilder) buildHistogramMetrics(
+	name string,
+	info MetricInfo,
+) error {
+	var sumCollection *schema.CollectionInfo
+
+	for _, suffix := range []string{"sum", "count", "bucket"} {
+		metricName := fmt.Sprintf("%s_%s", name, suffix)
+		labels := info.Labels
+
+		if suffix == "bucket" {
+			labels["le"] = LabelInfo{}
+		}
+
+		coll, err := scb.buildMetricsItem(metricName, info, labels)
+		if err != nil {
+			return err
+		}
+
+		if suffix == "sum" {
+			sumCollection = coll
+		}
+	}
+
+	// add quantile collection.
+	quantileCollectionName := name + "_" + string(Quantile)
+	scb.Collections[quantileCollectionName] = schema.CollectionInfo{
+		Name:                  quantileCollectionName,
+		Type:                  sumCollection.Type,
+		Arguments:             createCollectionArguments(scb.Configuration.Runtime.PromptQL),
+		Description:           info.Description,
+		UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
 	}
 
 	return nil
@@ -114,9 +167,9 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 	name string,
 	info MetricInfo,
 	labels map[string]LabelInfo,
-) error {
+) (*schema.CollectionInfo, error) {
 	if err := scb.checkDuplicatedOperation(name); err != nil {
-		return err
+		return nil, err
 	}
 
 	objectType := createMetricObjectType(scb.Configuration.Runtime.PromptQL)
@@ -182,22 +235,9 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 		Description:           info.Description,
 		UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
 	}
-
 	scb.Collections[name] = collection
 
-	// add range vector collections.
-	for _, functionName := range CounterRangeVectorFunctions {
-		collectionName := name + "_" + string(functionName)
-		scb.Collections[collectionName] = schema.CollectionInfo{
-			Name:                  collectionName,
-			Type:                  objectName,
-			Arguments:             createCollectionArguments(scb.Configuration.Runtime.PromptQL),
-			Description:           info.Description,
-			UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
-		}
-	}
-
-	return nil
+	return &collection, nil
 }
 
 func (scb *connectorSchemaBuilder) checkDuplicatedOperation(name string) error {

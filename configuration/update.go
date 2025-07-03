@@ -17,7 +17,7 @@ import (
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-prometheus/connector/types"
+	"github.com/hasura/ndc-sdk-go/utils"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"golang.org/x/sync/errgroup"
@@ -529,7 +529,7 @@ func (uc *updateCommand) formatNativeQueryVariables(
 
 var defaultConfiguration = metadata.Configuration{
 	ConnectionSettings: client.ClientSettings{
-		URL: types.NewEnvironmentVariable("CONNECTION_URL"),
+		URL: utils.NewEnvStringValue("CONNECTION_URL"),
 	},
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{

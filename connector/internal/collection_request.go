@@ -32,10 +32,12 @@ type Grouping struct {
 
 // CollectionValidatedArguments hold the common validated arguments.
 type CollectionValidatedArguments struct {
-	Timestamp *time.Time
-	Range     *v1.Range
-	OrderBy   []ColumnOrder
-	Timeout   time.Duration
+	Timestamp  *time.Time
+	Range      *v1.Range
+	OrderBy    []ColumnOrder
+	Timeout    time.Duration
+	Offset     time.Duration
+	OffsetUsed bool
 
 	start     *time.Time
 	end       *time.Time
@@ -71,6 +73,17 @@ type CollectionRequest struct {
 	LabelExpressions map[string]*LabelExpression
 	Functions        []KeyValue
 	Groups           *Grouping
+}
+
+// HasRangeVectorFunction checks if a range vector function exists in the request.
+func (cr CollectionRequest) HasRangeVectorFunction() bool {
+	for _, fn := range cr.Functions {
+		if slices.Contains(metadata.RangeVectorFunctions, metadata.PromQLFunctionName(fn.Key)) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // EvalCollectionRequest evaluates the requested collection data of the query request.
@@ -132,6 +145,16 @@ func (pr *CollectionRequest) evalArguments(arguments map[string]any) (time.Durat
 		}
 
 		pr.Timeout = dur
+	}
+
+	rawOffset, ok := arguments[metadata.ArgumentKeyOffset]
+	if ok {
+		offset, err := metadata.ParseDuration(rawOffset, pr.runtime.UnixTimeUnit)
+		if err != nil {
+			return 0, fmt.Errorf("invalid offset argument `%v`", rawOffset)
+		}
+
+		pr.Offset = offset
 	}
 
 	var step time.Duration

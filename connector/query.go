@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/hasura/ndc-prometheus/connector/internal"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
@@ -185,11 +184,6 @@ func (c *PrometheusConnector) execQueryCollection(
 	variables map[string]any,
 	arguments map[string]any,
 ) (*schema.RowSet, error) {
-	executor, validatedRequest, err := c.evalQueryCollection(state, request, variables, arguments)
-	if err != nil {
-		return nil, err
-	}
-
 	if request.Query.Limit != nil && *request.Query.Limit <= 0 {
 		return &schema.RowSet{
 			Aggregates: schema.RowSetAggregates{},
@@ -197,85 +191,10 @@ func (c *PrometheusConnector) execQueryCollection(
 		}, nil
 	}
 
-	return executor.Execute(ctx, validatedRequest)
-}
-
-// evaluate collection query.
-func (c *PrometheusConnector) evalQueryCollection(
-	state *metadata.State,
-	request *schema.QueryRequest,
-	variables map[string]any,
-	arguments map[string]any,
-) (*internal.QueryCollectionExecutor, *internal.CollectionRequest, error) {
-	histogramMatches := histogramNameRegex.FindStringSubmatch(request.Collection)
-
-	metricNames := []string{request.Collection}
-	if len(histogramMatches) > 1 {
-		metricNames = []string{histogramMatches[1], request.Collection}
+	executor, explainResult, err := c.explainQueryCollection(state, request, variables, arguments)
+	if err != nil {
+		return nil, err
 	}
 
-	executor := &internal.QueryCollectionExecutor{
-		Tracer:    state.Tracer,
-		Client:    state.Client,
-		Runtime:   c.runtime,
-		Request:   request,
-		Arguments: arguments,
-		Variables: variables,
-	}
-
-	for _, metricName := range metricNames {
-		if collection, ok := c.metadata.Metrics[metricName]; ok {
-			executor.MetricName = request.Collection
-			executor.Metric = collection
-
-			validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
-			if err != nil {
-				return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
-					"collection": request.Collection,
-				})
-			}
-
-			return executor, validatedRequest, nil
-		}
-	}
-
-	// execute counter vector functions if matching.
-	for _, rangeFn := range metadata.CounterRangeVectorFunctions {
-		term := "_" + string(rangeFn)
-
-		if !strings.HasSuffix(request.Collection, term) {
-			continue
-		}
-
-		metricName := strings.TrimSuffix(request.Collection, term)
-
-		collection, ok := c.metadata.Metrics[metricName]
-		if !ok {
-			break
-		}
-
-		executor.Metric = collection
-		executor.MetricName = metricName
-
-		validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
-		if err != nil {
-			return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
-				"collection": request.Collection,
-			})
-		}
-
-		executor.Functions = []internal.KeyValue{
-			{
-				Key:   string(rangeFn),
-				Value: validatedRequest.GetStep(),
-			},
-		}
-
-		return executor, validatedRequest, nil
-	}
-
-	return nil, nil, schema.UnprocessableContentError(
-		fmt.Sprintf("invalid query `%s`", request.Collection),
-		nil,
-	)
+	return executor.Execute(ctx, explainResult)
 }

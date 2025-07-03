@@ -147,16 +147,18 @@ func (le *LabelExpressionBuilder) evalLabelComparisonRegex(
 	isRegex := operator != metadata.Equal
 
 	switch operator {
+	case metadata.Contains:
+		strValue = "(.*" + strValue + ".*)"
 	case metadata.ContainsInsensitive:
-		strValue = "((?i)" + strValue + ")"
+		strValue = "((?i).*" + strValue + ".*)"
 	case metadata.StartsWith:
-		strValue = "(^" + strValue + ")"
+		strValue = "(^" + strValue + ".*)"
 	case metadata.StartsWithInsensitive:
-		strValue = "((?i)^" + strValue + ")"
+		strValue = "((?i)^" + strValue + ".*)"
 	case metadata.EndsWith:
-		strValue = "(" + strValue + "$)"
+		strValue = "(.*" + strValue + "$)"
 	case metadata.EndsWithInsensitive:
-		strValue = "((?i)" + strValue + "$)"
+		strValue = "((?i).*" + strValue + "$)"
 	}
 
 	if len(le.includes) == 0 {

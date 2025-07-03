@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -50,7 +49,6 @@ func (qcer QueryCollectionExplainResult) ToExplainResponse() (*schema.ExplainRes
 
 // Explain explains the query request.
 func (qce *QueryCollectionExecutor) Explain(
-	ctx context.Context,
 	expressions *CollectionRequest,
 ) (*QueryCollectionExplainResult, error) {
 	collectionQuery := qce.MetricName
@@ -68,10 +66,10 @@ func (qce *QueryCollectionExecutor) Explain(
 	}
 
 	if expressions != nil {
-		query, ok, err := qce.buildCollectionQuery(expressions)
+		query, ok, err := qce.buildCollectionPredicateQuery(expressions)
 		if err != nil {
 			return nil, schema.UnprocessableContentError(
-				"failed to evaluate the query",
+				"failed to evaluate the predicate query",
 				map[string]any{
 					"collection": qce.Request.Collection,
 					"error":      err.Error(),
@@ -117,7 +115,115 @@ func (qce *QueryCollectionExecutor) Explain(
 	return result, nil
 }
 
-func (qce *QueryCollectionExecutor) buildCollectionQuery(
+// Explain explains the histogram quantile query request with grouping.
+func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
+	expressions *CollectionRequest,
+) (*QueryCollectionExplainResult, error) {
+	result := &QueryCollectionExplainResult{
+		OK:      false,
+		Request: expressions,
+	}
+
+	if expressions == nil {
+		expressions = &CollectionRequest{}
+	}
+
+	expressions.Functions = []KeyValue{
+		{
+			Key:   string(metadata.Rate),
+			Value: expressions.GetStep(),
+		},
+	}
+
+	collectionQuery, ok, err := qce.buildCollectionPredicateQuery(expressions)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(
+			"failed to evaluate the predicate query",
+			map[string]any{
+				"collection": qce.Request.Collection,
+				"error":      err.Error(),
+			},
+		)
+	}
+
+	if !ok {
+		return result, nil
+	}
+
+	result.OK = true
+
+	// build the query string to:
+	// rate(hasura_graphql_execution_time_seconds_bucket{...}[$step])
+	collectionQuery, err = qce.buildQueryString(expressions, collectionQuery)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(
+			"failed to evaluate the query",
+			map[string]any{
+				"collection": qce.Request.Collection,
+				"error":      err.Error(),
+			},
+		)
+	}
+
+	histogramQuantileFunc := KeyValue{
+		Key:   string(metadata.HistogramQuantile),
+		Value: float64(0.95),
+	}
+
+	if expressions.Groups == nil {
+		// generate the histogram quantile query string without grouping.
+		// histogram_quantile(
+		//     $scalar,
+		//     rate(hasura_graphql_execution_time_seconds_bucket{...}[$step])))
+		result.QueryString, err = qce.buildQueryStringByFunction(expressions, collectionQuery, histogramQuantileFunc)
+		if err != nil {
+			return nil, schema.UnprocessableContentError(
+				"failed to evaluate histogram quantile",
+				map[string]any{
+					"collection": qce.Request.Collection,
+					"error":      err.Error(),
+				},
+			)
+		}
+
+		return result, nil
+	}
+
+	// generate aggregate queries to groups,
+	// add the le bucket to grouping
+	expressions.Groups.Dimensions = append(expressions.Groups.Dimensions, "le")
+
+	result.Groups, err = qce.explainGrouping(expressions.Groups, collectionQuery)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(
+			"failed to evaluate grouping",
+			map[string]any{
+				"collection": qce.Request.Collection,
+				"error":      err.Error(),
+			},
+		)
+	}
+
+	// Finally wrap aggregate queries with histogram_quantile
+	for groupKey, groupQuery := range result.Groups.AggregateQueries {
+		aggQuery, err := qce.buildQueryStringByFunction(expressions, groupQuery, histogramQuantileFunc)
+		if err != nil {
+			return nil, schema.UnprocessableContentError(
+				"failed to evaluate grouping",
+				map[string]any{
+					"collection": qce.Request.Collection,
+					"error":      err.Error(),
+				},
+			)
+		}
+
+		result.Groups.AggregateQueries[groupKey] = aggQuery
+	}
+
+	return result, nil
+}
+
+func (qce *QueryCollectionExecutor) buildCollectionPredicateQuery(
 	predicate *CollectionRequest,
 ) (string, bool, error) {
 	conditions := []string{}
@@ -145,16 +251,8 @@ func (qce *QueryCollectionExecutor) buildCollectionQuery(
 		query = fmt.Sprintf("%s{%s}", qce.MetricName, strings.Join(conditions, ","))
 	}
 
-	rawOffset, ok := qce.Arguments[metadata.ArgumentKeyOffset]
-	if ok {
-		offset, err := metadata.ParseDuration(rawOffset, qce.Runtime.UnixTimeUnit)
-		if err != nil {
-			return "", false, fmt.Errorf("invalid offset argument `%v`", rawOffset)
-		}
-
-		if offset > 0 {
-			query = fmt.Sprintf("%s offset %s", query, offset.String())
-		}
+	if predicate.Offset > 0 && !predicate.HasRangeVectorFunction() {
+		query = fmt.Sprintf("%s offset %s", query, predicate.Offset.String())
 	}
 
 	return query, true, nil
@@ -170,7 +268,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(
 	}
 
 	for _, fn := range predicate.Functions {
-		query, err = qce.buildQueryStringByFunction(query, fn)
+		query, err = qce.buildQueryStringByFunction(predicate, query, fn)
 		if err != nil {
 			return "", err
 		}
@@ -182,6 +280,7 @@ func (qce *QueryCollectionExecutor) buildQueryString(
 }
 
 func (qce *QueryCollectionExecutor) buildQueryStringByFunction( //nolint:gocognit,gocyclo,cyclop,funlen,maintidx
+	predicate *CollectionRequest,
 	query string,
 	fn KeyValue,
 ) (string, error) {
@@ -471,7 +570,24 @@ func (qce *QueryCollectionExecutor) buildQueryStringByFunction( //nolint:gocogni
 		}
 
 		if rng != nil {
-			return fmt.Sprintf(`%s(%s[%s])`, fn.Key, query, rng.String()), nil
+			var sb strings.Builder
+			_, _ = sb.WriteString(fn.Key)
+			_, _ = sb.WriteRune('(')
+			_, _ = sb.WriteString(query)
+			_, _ = sb.WriteRune('[')
+			_, _ = sb.WriteString(rng.String())
+			_, _ = sb.WriteRune(']')
+
+			if predicate.Offset > 0 && !predicate.OffsetUsed {
+				predicate.OffsetUsed = true
+
+				_, _ = sb.WriteString(" offset ")
+				_, _ = sb.WriteString(predicate.Offset.String())
+			}
+
+			_, _ = sb.WriteRune(')')
+
+			return sb.String(), nil
 		}
 
 		return query, nil

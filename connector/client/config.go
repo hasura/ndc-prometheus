@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/hasura/ndc-prometheus/connector/types"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"
 	"google.golang.org/api/option"
@@ -18,7 +18,7 @@ import (
 // ClientSettings contain information for the Prometheus server that the client connects to.
 type ClientSettings struct {
 	// The endpoint of the Prometheus server.
-	URL types.EnvironmentValue `json:"url"                        yaml:"url"`
+	URL utils.EnvString `json:"url"                        yaml:"url"`
 	// The authentication configuration
 	Authentication *AuthConfig `json:"authentication,omitempty"   yaml:"authentication,omitempty"`
 	// The default timeout in seconds for Prometheus requests. The default is no timeout.
@@ -220,8 +220,8 @@ type AuthConfig struct {
 
 // BasicAuth the HTTP basic authentication credentials for the targets.
 type BasicAuthConfig struct {
-	Username types.EnvironmentValue `json:"username" yaml:"username"`
-	Password types.EnvironmentValue `json:"password" yaml:"password"`
+	Username utils.EnvString `json:"username" yaml:"username"`
+	Password utils.EnvString `json:"password" yaml:"password"`
 }
 
 func (bac BasicAuthConfig) toClientConfig() (*config.BasicAuth, error) {
@@ -243,8 +243,8 @@ func (bac BasicAuthConfig) toClientConfig() (*config.BasicAuth, error) {
 
 // AuthorizationConfig the HTTP authorization credentials for the targets.
 type AuthorizationConfig struct {
-	Type        types.EnvironmentValue `json:"type"        yaml:"type"`
-	Credentials types.EnvironmentValue `json:"credentials" yaml:"credentials"`
+	Type        utils.EnvString `json:"type"        yaml:"type"`
+	Credentials utils.EnvString `json:"credentials" yaml:"credentials"`
 }
 
 func (hac AuthorizationConfig) toClientConfig() (*config.Authorization, error) {
@@ -266,12 +266,12 @@ func (hac AuthorizationConfig) toClientConfig() (*config.Authorization, error) {
 
 // OAuth2Config the OAuth2 client credentials used to fetch a token for the targets.
 type OAuth2Config struct {
-	ClientID       types.EnvironmentValue `json:"client_id"                 yaml:"client_id"`
-	ClientSecret   types.EnvironmentValue `json:"client_secret"             yaml:"client_secret"`
-	TokenURL       types.EnvironmentValue `json:"token_url"                 yaml:"token_url"`
-	Scopes         []string               `json:"scopes,omitempty"          yaml:"scopes,omitempty"`
-	EndpointParams map[string]string      `json:"endpoint_params,omitempty" yaml:"endpoint_params,omitempty"`
-	TLSConfig      config.TLSConfig       `                                 yaml:"tls_config,omitempty"`
+	ClientID       utils.EnvString   `json:"client_id"                 yaml:"client_id"`
+	ClientSecret   utils.EnvString   `json:"client_secret"             yaml:"client_secret"`
+	TokenURL       utils.EnvString   `json:"token_url"                 yaml:"token_url"`
+	Scopes         []string          `json:"scopes,omitempty"          yaml:"scopes,omitempty"`
+	EndpointParams map[string]string `json:"endpoint_params,omitempty" yaml:"endpoint_params,omitempty"`
+	TLSConfig      config.TLSConfig  `                                 yaml:"tls_config,omitempty"`
 
 	*ProxyConfig `yaml:",inline"`
 }
@@ -325,9 +325,9 @@ const (
 type GoogleAuthConfig struct {
 	Encoding *CredentialsEncoding `json:"encoding,omitempty"         jsonschema:"enum=plaintext,enum=base64,default=plaintext" yaml:"encoding,omitempty"`
 	// Text of the Google credential JSON
-	Credentials *types.EnvironmentValue `json:"credentials,omitempty"                                                                yaml:"credentials,omitempty"`
+	Credentials *utils.EnvString `json:"credentials,omitempty"                                                                yaml:"credentials,omitempty"`
 	// Path of the Google credential file
-	CredentialsFile *types.EnvironmentValue `json:"credentials_file,omitempty"                                                           yaml:"credentials_file,omitempty"`
+	CredentialsFile *utils.EnvString `json:"credentials_file,omitempty"                                                           yaml:"credentials_file,omitempty"`
 }
 
 // ProxyConfig the proxy configuration.

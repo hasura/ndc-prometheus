@@ -2,6 +2,8 @@ package connector
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/hasura/ndc-prometheus/connector/internal"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
@@ -75,15 +77,128 @@ func (c *PrometheusConnector) QueryExplain(
 		}, nil
 	}
 
-	executor, validatedRequest, err := c.evalQueryCollection(state, request, requestVars[0], arguments)
+	_, explainResult, err := c.explainQueryCollection(state, request, requestVars[0], arguments)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := executor.Explain(ctx, validatedRequest)
-	if err != nil {
-		return nil, err
+	return explainResult.ToExplainResponse()
+}
+
+// evaluate collection query.
+func (c *PrometheusConnector) explainQueryCollection(
+	state *metadata.State,
+	request *schema.QueryRequest,
+	variables map[string]any,
+	arguments map[string]any,
+) (*internal.QueryCollectionExecutor, *internal.QueryCollectionExplainResult, error) {
+	metricNames := []string{request.Collection}
+
+	histogramMatches := histogramNameRegex.FindStringSubmatch(request.Collection)
+	if len(histogramMatches) > 1 {
+		metricNames = []string{histogramMatches[1], request.Collection}
 	}
 
-	return result.ToExplainResponse()
+	executor := &internal.QueryCollectionExecutor{
+		Tracer:    state.Tracer,
+		Client:    state.Client,
+		Runtime:   c.runtime,
+		Request:   request,
+		Arguments: arguments,
+		Variables: variables,
+	}
+
+	for _, metricName := range metricNames {
+		if collection, ok := c.metadata.Metrics[metricName]; ok {
+			executor.MetricName = request.Collection
+			executor.Metric = collection
+
+			validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
+			if err != nil {
+				return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+					"collection": request.Collection,
+				})
+			}
+
+			explainResult, err := executor.Explain(validatedRequest)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			return executor, explainResult, nil
+		}
+	}
+
+	// execute counter vector functions if matching.
+	for _, rangeFn := range metadata.CounterRangeVectorFunctions {
+		term := "_" + string(rangeFn)
+
+		if !strings.HasSuffix(request.Collection, term) {
+			continue
+		}
+
+		metricName := strings.TrimSuffix(request.Collection, term)
+
+		collection, ok := c.metadata.Metrics[metricName]
+		if !ok {
+			break
+		}
+
+		executor.Metric = collection
+		executor.MetricName = metricName
+
+		validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
+		if err != nil {
+			return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+				"collection": request.Collection,
+			})
+		}
+
+		executor.Functions = []internal.KeyValue{
+			{
+				Key:   string(rangeFn),
+				Value: validatedRequest.GetStep(),
+			},
+		}
+
+		explainResult, err := executor.Explain(validatedRequest)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return executor, explainResult, nil
+	}
+
+	// try to evaluate the quantile metric
+	quantileSuffix := "_" + string(metadata.Quantile)
+	if strings.HasSuffix(request.Collection, quantileSuffix) {
+		metricName := strings.TrimSuffix(request.Collection, quantileSuffix)
+		bucketMetricName := metricName + "_bucket"
+
+		collection, ok := c.metadata.Metrics[metricName]
+		if ok {
+			executor.Metric = collection
+			executor.MetricName = bucketMetricName
+
+			validatedRequest, err := internal.EvalCollectionRequest(request, arguments, variables, c.runtime)
+			if err != nil {
+				return nil, nil, schema.UnprocessableContentError(err.Error(), map[string]any{
+					"collection": request.Collection,
+				})
+			}
+
+			// explain the histogram quantile query string with grouping.
+			explainResult, err := executor.ExplainHistogramQuantile(validatedRequest)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			return executor, explainResult, nil
+		}
+	}
+
+	return nil, nil, schema.UnprocessableContentError(
+		fmt.Sprintf("invalid query `%s`", request.Collection),
+		nil,
+	)
 }

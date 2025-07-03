@@ -367,6 +367,24 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 }
 
 var CounterRangeVectorFunctions = []PromQLFunctionName{Increase, Rate, IRate}
+var RangeVectorFunctions = append(CounterRangeVectorFunctions,
+	AbsentOverTime,
+	Changes,
+	Derivative,
+	Delta,
+	IDelta,
+	Resets,
+	AvgOverTime,
+	MinOverTime,
+	MaxOverTime,
+	MadOverTime,
+	SumOverTime,
+	CountOverTime,
+	StddevOverTime,
+	StdvarOverTime,
+	LastOverTime,
+	PresentOverTime,
+)
 
 func createMetricObjectType(promptql bool) schema.ObjectType {
 	objectType := schema.ObjectType{

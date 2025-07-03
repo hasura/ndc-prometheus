@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -64,7 +63,7 @@ var testCases = []struct {
 				Range: &v1.Range{
 					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
 					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
-					Step:  24 * time.Minute,
+					Step:  5 * time.Minute,
 				},
 			},
 			Value: schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("value"), "_gte", schema.NewComparisonValueScalar("0")),
@@ -115,7 +114,7 @@ var testCases = []struct {
 				Range: &v1.Range{
 					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
 					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
-					Step:  24 * time.Minute,
+					Step:  5 * time.Minute,
 				},
 			},
 			LabelExpressions: map[string]*LabelExpression{
@@ -192,7 +191,7 @@ var testCases = []struct {
 				Range: &v1.Range{
 					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
 					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
-					Step:  24 * time.Minute,
+					Step:  5 * time.Minute,
 				},
 				Timeout: 5 * time.Minute,
 			},
@@ -229,7 +228,7 @@ var testCases = []struct {
 				Range: &v1.Range{
 					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
 					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
-					Step:  24 * time.Minute,
+					Step:  5 * time.Minute,
 				},
 			},
 			LabelExpressions: map[string]*LabelExpression{
@@ -264,7 +263,7 @@ var testCases = []struct {
 				Range: &v1.Range{
 					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
 					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
-					Step:  24 * time.Minute,
+					Step:  5 * time.Minute,
 				},
 			},
 			LabelExpressions: map[string]*LabelExpression{
@@ -298,7 +297,7 @@ var testCases = []struct {
 				Range: &v1.Range{
 					Start: time.Date(2024, 9, 10, 0, 0, 0, 0, time.UTC),
 					End:   time.Date(2024, 9, 11, 0, 0, 0, 0, time.UTC),
-					Step:  24 * time.Minute,
+					Step:  5 * time.Minute,
 				},
 			},
 			LabelExpressions: map[string]*LabelExpression{
@@ -789,7 +788,7 @@ var testCases = []struct {
 				Range: &v1.Range{
 					Start: time.Date(2025, 06, 19, 0, 0, 0, 0, time.UTC),
 					End:   time.Date(2025, 06, 25, 0, 0, 0, 0, time.UTC),
-					Step:  2*time.Hour + 24*time.Minute,
+					Step:  30 * time.Minute,
 				},
 			},
 			LabelExpressions: map[string]*LabelExpression{},
@@ -937,7 +936,7 @@ func TestCollectionQueryExplain(t *testing.T) {
 			validatedRequest, err := EvalCollectionRequest(&tc.Request, arguments, executor.Variables, executor.Runtime)
 			assert.NilError(t, err)
 
-			result, err := executor.Explain(context.TODO(), validatedRequest)
+			result, err := executor.Explain(validatedRequest)
 			if tc.ErrorMsg != "" {
 				assert.ErrorContains(t, err, tc.ErrorMsg)
 
@@ -949,6 +948,113 @@ func TestCollectionQueryExplain(t *testing.T) {
 			assert.DeepEqual(t, tc.Predicate.Range, result.Request.Range)
 			assert.DeepEqual(t, tc.Predicate.Timestamp, result.Request.Timestamp)
 			assert.DeepEqual(t, tc.Predicate.Timeout, result.Request.Timeout)
+			assert.Equal(t, tc.QueryString, result.QueryString)
+			assert.Equal(t, !tc.IsEmpty, result.OK)
+
+			if tc.Groups != nil {
+				assert.DeepEqual(t, tc.Groups, result.Groups)
+			}
+		})
+	}
+}
+
+func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
+	var hqTestCases = []struct {
+		Name        string
+		MetricName  string
+		Request     schema.QueryRequest
+		QueryString string
+		ErrorMsg    string
+		IsEmpty     bool
+		Groups      *QueryCollectionGroupingExplainResult
+	}{
+		{
+			Name: "histogram_quantile",
+			Request: schema.QueryRequest{
+				Collection: "hasura_graphql_execution_time_seconds_bucket",
+				Arguments: schema.QueryRequestArguments{
+					"offset": schema.NewArgumentLiteral("5m").Encode(),
+				},
+				Query: schema.Query{
+					Predicate: schema.NewExpressionAnd(
+						schema.NewExpressionAnd(
+							schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+							schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar("node")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("instance"), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("value"), "_gte", schema.NewComparisonValueScalar("0")),
+					).Encode(),
+				},
+			},
+			QueryString: `histogram_quantile(0.950000, rate(hasura_graphql_execution_time_seconds_bucket{instance=~"localhost:9090|node-exporter:9100",job="node"}[5m] offset 5m0s) >= 0.000000)`,
+		},
+		{
+			Name: "histogram_quantile_sum",
+			Request: schema.QueryRequest{
+				Collection: "hasura_graphql_execution_time_seconds_bucket",
+				Arguments: schema.QueryRequestArguments{
+					"offset": schema.NewArgumentLiteral("5m").Encode(),
+				},
+				Query: schema.Query{
+					Predicate: schema.NewExpressionAnd(
+						schema.NewExpressionAnd(
+							schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_lt", schema.NewComparisonValueScalar("2024-09-11T00:00:00Z")),
+							schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("timestamp"), "_gt", schema.NewComparisonValueScalar("2024-09-10T00:00:00Z")),
+						),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("job"), "_eq", schema.NewComparisonValueScalar("node")),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("instance"), "_in", schema.NewComparisonValueScalar([]string{"localhost:9090", "node-exporter:9100"})),
+						schema.NewExpressionBinaryComparisonOperator(*schema.NewComparisonTargetColumn("value"), "_gte", schema.NewComparisonValueScalar("0")),
+					).Encode(),
+					Groups: &schema.Grouping{
+						Aggregates: schema.GroupingAggregates{
+							"sum": schema.NewAggregateSingleColumn("sum", "sum").Encode(),
+						},
+						Dimensions: []schema.Dimension{
+							schema.NewDimensionColumn("job", nil).Encode(),
+							schema.NewDimensionColumn("instance", nil).Encode(),
+						},
+					},
+				},
+			},
+			Groups: &QueryCollectionGroupingExplainResult{
+				Dimensions: []string{"job", "instance", "le"},
+				AggregateQueries: map[string]string{
+					"sum": `histogram_quantile(0.950000, sum by (job, instance, le) (rate(hasura_graphql_execution_time_seconds_bucket{instance=~"localhost:9090|node-exporter:9100",job="node"}[5m]) >= 0.000000))`,
+				},
+			},
+		},
+	}
+
+	for _, tc := range hqTestCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			arguments, err := utils.ResolveArgumentVariables(tc.Request.Arguments, map[string]any{})
+			assert.NilError(t, err)
+
+			metricName := tc.MetricName
+			if metricName == "" {
+				metricName = tc.Request.Collection
+			}
+
+			executor := &QueryCollectionExecutor{
+				Request:    &tc.Request,
+				MetricName: metricName,
+				Variables:  map[string]any{},
+				Arguments:  arguments,
+				Runtime:    &metadata.RuntimeSettings{},
+			}
+
+			validatedRequest, err := EvalCollectionRequest(&tc.Request, arguments, executor.Variables, executor.Runtime)
+			assert.NilError(t, err)
+
+			result, err := executor.ExplainHistogramQuantile(validatedRequest)
+			if tc.ErrorMsg != "" {
+				assert.ErrorContains(t, err, tc.ErrorMsg)
+
+				return
+			}
+
+			assert.NilError(t, err)
 			assert.Equal(t, tc.QueryString, result.QueryString)
 			assert.Equal(t, !tc.IsEmpty, result.OK)
 

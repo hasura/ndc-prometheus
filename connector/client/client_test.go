@@ -58,7 +58,7 @@ func TestNewClient(t *testing.T) {
 		{
 			Name:     "empty_url",
 			Config:   ClientSettings{},
-			ErrorMsg: "invalid Prometheus URL: require either value or valueFromEnv",
+			ErrorMsg: "invalid Prometheus URL: require either value or env",
 		},
 		{
 			Name: "empty_url_2",
@@ -88,7 +88,7 @@ func TestNewClient(t *testing.T) {
 					BasicAuth: &BasicAuthConfig{},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: basic auth username: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: basic auth username: require either value or env",
 		},
 		{
 			Name: "basic_auth_empty_password",
@@ -100,7 +100,7 @@ func TestNewClient(t *testing.T) {
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: basic auth password: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: basic auth password: require either value or env",
 		},
 		{
 			Name: "http_auth",
@@ -133,7 +133,7 @@ func TestNewClient(t *testing.T) {
 					Authorization: &AuthorizationConfig{},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: authorization type: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: authorization type: require either value or env",
 		},
 		{
 			Name: "http_auth_empty_credentials",
@@ -145,7 +145,7 @@ func TestNewClient(t *testing.T) {
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: authorization credentials: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: authorization credentials: require either value or env",
 		},
 		{
 			Name: "gcp_auth",
@@ -194,7 +194,7 @@ func TestNewClient(t *testing.T) {
 					OAuth2: &OAuth2Config{},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_id: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_id: require either value or env",
 		},
 		{
 			Name: "oauth_client_secret_empty",
@@ -206,7 +206,7 @@ func TestNewClient(t *testing.T) {
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_secret: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_secret: require either value or env",
 		},
 		{
 			Name: "oauth_token_url_empty",
@@ -219,7 +219,7 @@ func TestNewClient(t *testing.T) {
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: oauth2 token_url: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: oauth2 token_url: require either value or env",
 		},
 	}
 

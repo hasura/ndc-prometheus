@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -22,6 +23,7 @@ type QueryCollectionExplainResult struct {
 	OK          bool
 	Request     *CollectionRequest
 	QueryString string
+	Aggregates  map[string]string
 	Groups      *QueryCollectionGroupingExplainResult
 }
 
@@ -33,6 +35,15 @@ func (qcer QueryCollectionExplainResult) ToExplainResponse() (*schema.ExplainRes
 
 	if qcer.QueryString != "" {
 		result.Details["query"] = qcer.QueryString
+	}
+
+	if len(qcer.Aggregates) > 0 {
+		aggregateBytes, err := json.Marshal(qcer.Aggregates)
+		if err != nil {
+			return nil, err
+		}
+
+		result.Details["aggregates"] = string(aggregateBytes)
 	}
 
 	if qcer.Groups != nil {
@@ -89,6 +100,17 @@ func (qce *QueryCollectionExecutor) Explain(
 		)
 	}
 
+	result.Aggregates, err = qce.explainAggregates(expressions.Aggregates, collectionQuery)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(
+			"failed to evaluate aggregates",
+			map[string]any{
+				"collection": qce.Request.Collection,
+				"error":      err.Error(),
+			},
+		)
+	}
+
 	result.Groups, err = qce.explainGrouping(expressions.Groups, collectionQuery)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
@@ -100,7 +122,7 @@ func (qce *QueryCollectionExecutor) Explain(
 		)
 	}
 
-	if result.Groups == nil {
+	if result.Groups == nil && len(result.Aggregates) == 0 {
 		result.QueryString = collectionQuery
 	}
 
@@ -157,9 +179,15 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 		)
 	}
 
+	quantile := 0.95
+
+	if qce.Runtime.DefaultQuantile != nil {
+		quantile = *qce.Runtime.DefaultQuantile
+	}
+
 	histogramQuantileFunc := KeyValue{
 		Key:   string(metadata.HistogramQuantile),
-		Value: float64(0.95),
+		Value: quantile,
 	}
 
 	if expressions.Groups == nil {
@@ -636,6 +664,28 @@ func (qce *QueryCollectionExecutor) evalValueComparisonCondition(
 	return fmt.Sprintf(" %s %f", op, *v), nil
 }
 
+func (qce *QueryCollectionExecutor) explainAggregates(
+	aggregates schema.QueryAggregates,
+	query string,
+) (map[string]string, error) {
+	if len(aggregates) == 0 {
+		return map[string]string{}, nil
+	}
+
+	result := map[string]string{}
+
+	for key, aggregate := range aggregates {
+		aggQuery, err := qce.explainGroupingAggregateQuery(query, []string{}, aggregate)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", key, err)
+		}
+
+		result[key] = aggQuery
+	}
+
+	return result, nil
+}
+
 func (qce *QueryCollectionExecutor) explainGrouping(
 	groups *Grouping,
 	query string,
@@ -673,13 +723,49 @@ func (qce *QueryCollectionExecutor) explainGroupingAggregateQuery(
 
 	switch agg := aggregateT.(type) {
 	case *schema.AggregateStarCount:
-		return fmt.Sprintf("count by (%s) (%s)", strings.Join(dimensions, ", "), query), nil
+		var sb strings.Builder
+
+		sb.WriteString("count")
+
+		if len(dimensions) > 0 {
+			sb.WriteString(" by (")
+			sb.WriteString(strings.Join(dimensions, ", "))
+			sb.WriteString(") ")
+		}
+
+		sb.WriteRune('(')
+		sb.WriteString(query)
+		sb.WriteRune(')')
+
+		return sb.String(), nil
 	case *schema.AggregateColumnCount:
+		if agg.Column == metadata.ValueKey {
+			return fmt.Sprintf("count(%s)", query), nil
+		}
+
 		return fmt.Sprintf("count by (%s) (%s)", agg.Column, query), nil
 	case *schema.AggregateSingleColumn:
 		switch agg.Function {
 		case string(metadata.Sum), string(metadata.Min), string(metadata.Max), string(metadata.Avg):
-			return fmt.Sprintf("%s by (%s) (%s)", agg.Function, strings.Join(dimensions, ", "), query), nil
+			if agg.Column != metadata.ValueKey {
+				return "", errors.New("support aggregation for the `value` column only")
+			}
+
+			var sb strings.Builder
+
+			sb.WriteString(agg.Function)
+
+			if len(dimensions) > 0 {
+				sb.WriteString(" by (")
+				sb.WriteString(strings.Join(dimensions, ", "))
+				sb.WriteString(") ")
+			}
+
+			sb.WriteRune('(')
+			sb.WriteString(query)
+			sb.WriteRune(')')
+
+			return sb.String(), nil
 		default:
 			return "", fmt.Errorf("unsupported aggregate function: %s", agg.Function)
 		}

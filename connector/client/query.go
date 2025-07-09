@@ -24,7 +24,7 @@ func (c *Client) Query(
 	ts *time.Time,
 	timeout time.Duration,
 ) (model.Vector, v1.Warnings, error) {
-	ctx, span := clientTracer.Start(ctx, "Query")
+	ctx, span := clientTracer.Start(ctx, "PrometheusQuery")
 	defer span.End()
 
 	if ts == nil {
@@ -80,7 +80,7 @@ func (c *Client) QueryRange(
 	timeRange v1.Range,
 	timeout time.Duration,
 ) (model.Matrix, v1.Warnings, error) {
-	ctx, span := clientTracer.Start(ctx, "QueryRange")
+	ctx, span := clientTracer.Start(ctx, "PrometheusQueryRange")
 	defer span.End()
 
 	c.setQuerySpanAttributes(span, queryString)

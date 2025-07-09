@@ -24,15 +24,11 @@ func TestQueryExplain(t *testing.T) {
 	httpServer := server.BuildTestServer()
 	defer httpServer.Close()
 
-	type ExpectedResponse struct {
-		Query  string
-		Groups *internal.QueryCollectionGroupingExplainResult
-	}
-
 	testCases := []struct {
-		RequestFile    string
-		ExpectedQuery  string
-		ExpectedGroups *internal.QueryCollectionGroupingExplainResult
+		RequestFile        string
+		ExpectedQuery      string
+		ExpectedAggregates map[string]string
+		ExpectedGroups     *internal.QueryCollectionGroupingExplainResult
 	}{
 		{
 			RequestFile: "testdata/query/process_cpu_seconds_total_sum_rate/request.json",
@@ -41,6 +37,28 @@ func TestQueryExplain(t *testing.T) {
 				AggregateQueries: map[string]string{
 					"sum(app.process_cpu_seconds_total_rate.value)": "sum by (timestamp, job, instance) (rate(process_cpu_seconds_total[15s]))",
 				},
+			},
+		},
+		{
+			RequestFile: "testdata/query/process_cpu_seconds_total_aggregate_count/request.json",
+			ExpectedAggregates: map[string]string{
+				"value__count":          "count(process_cpu_seconds_total)",
+				"value__count_distinct": "count(process_cpu_seconds_total)",
+				"value_avg":             "avg(process_cpu_seconds_total)",
+				"value_max":             "max(process_cpu_seconds_total)",
+				"value_min":             "min(process_cpu_seconds_total)",
+				"value_sum":             "sum(process_cpu_seconds_total)",
+			},
+		},
+		{
+			RequestFile: "testdata/query/process_cpu_seconds_total_rate_aggregate/request.json",
+			ExpectedAggregates: map[string]string{
+				"value__count":          "count(rate(process_cpu_seconds_total[1m]))",
+				"value__count_distinct": "count(rate(process_cpu_seconds_total[1m]))",
+				"value_avg":             "avg(rate(process_cpu_seconds_total[1m]))",
+				"value_max":             "max(rate(process_cpu_seconds_total[1m]))",
+				"value_min":             "min(rate(process_cpu_seconds_total[1m]))",
+				"value_sum":             "sum(rate(process_cpu_seconds_total[1m]))",
 			},
 		},
 	}
@@ -62,6 +80,12 @@ func TestQueryExplain(t *testing.T) {
 				var groups internal.QueryCollectionGroupingExplainResult
 				assert.NilError(t, json.Unmarshal([]byte(strGroups), &groups))
 				assert.DeepEqual(t, *tc.ExpectedGroups, groups)
+			}
+
+			if strAggregates, ok := result.Details["aggregates"]; ok {
+				var aggregates map[string]string
+				assert.NilError(t, json.Unmarshal([]byte(strAggregates), &aggregates))
+				assert.DeepEqual(t, tc.ExpectedAggregates, aggregates)
 			}
 		})
 	}

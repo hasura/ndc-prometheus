@@ -502,6 +502,10 @@
         "disable_prometheus_api": {
           "type": "boolean"
         },
+        "default_quantile": {
+          "type": "number",
+          "default": 0.95
+        },
         "flat": {
           "type": "boolean"
         },

@@ -75,6 +75,7 @@ type CollectionRequest struct {
 	LabelExpressions map[string]*LabelExpression
 	Functions        []KeyValue
 	Groups           *Grouping
+	Aggregates       schema.QueryAggregates
 }
 
 // HasRangeVectorFunction checks if a range vector function exists in the request.
@@ -130,6 +131,7 @@ func EvalCollectionRequest(
 		return nil, err
 	}
 
+	result.Aggregates = request.Query.Aggregates
 	result.OrderBy = orderBy
 
 	return result, nil

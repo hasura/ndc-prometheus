@@ -43,10 +43,6 @@ func BuildConnectorSchema(config *Configuration) (*schema.SchemaResponse, error)
 		durationScalar.Representation = schema.NewTypeRepresentationString().Encode()
 		builder.ScalarTypes[string(ScalarDuration)] = *durationScalar
 
-		decimalScalar := schema.NewScalarType()
-		decimalScalar.Representation = schema.NewTypeRepresentationFloat64().Encode()
-		builder.ScalarTypes[string(ScalarDecimal)] = *decimalScalar
-
 		builder.ScalarTypes[string(ScalarString)].ComparisonOperators[In] = schema.NewComparisonOperatorIn().
 			Encode()
 	} else {
@@ -151,7 +147,11 @@ func (scb *connectorSchemaBuilder) buildHistogramMetrics(
 		}
 	}
 
-	// add quantile collection.
+	if !scb.Configuration.Runtime.PromptQL {
+		return nil
+	}
+
+	// add quantile collection for promptql.
 	quantileCollectionName := name + "_" + string(Quantile)
 	scb.Collections[quantileCollectionName] = schema.CollectionInfo{
 		Name:                  quantileCollectionName,
@@ -244,6 +244,7 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 
 func (scb *connectorSchemaBuilder) checkDuplicatedOperation(name string) error {
 	err := fmt.Errorf("duplicated operation name: %s", name)
+
 	if _, ok := scb.Functions[name]; ok {
 		return err
 	}

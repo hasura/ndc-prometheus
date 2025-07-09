@@ -60,9 +60,7 @@ func (qce *QueryCollectionExecutor) Execute(
 	}
 
 	flat := qce.Runtime.IsFlat(nullableFlat)
-	results := &schema.RowSet{
-		Aggregates: schema.RowSetAggregates{},
-	}
+	results := &schema.RowSet{}
 
 	if explainResult.QueryString != "" {
 		rawResults, err := qce.query(ctx, explainResult.QueryString, explainResult.Request, flat)
@@ -76,6 +74,11 @@ func (qce *QueryCollectionExecutor) Execute(
 		}
 
 		results.Rows = rows
+	}
+
+	results.Aggregates, err = qce.queryAggregates(ctx, explainResult)
+	if err != nil {
+		return nil, err
 	}
 
 	results.Groups, err = qce.queryGroupAggregates(ctx, explainResult)

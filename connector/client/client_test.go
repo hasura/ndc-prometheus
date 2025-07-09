@@ -30,7 +30,6 @@ func createTestClient(t *testing.T) *Client {
 }
 
 func TestNewClient(t *testing.T) {
-
 	gcpCred := `{
 	"type": "service_account",
   "project_id": "some-test-account",

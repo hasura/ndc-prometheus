@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -102,6 +103,8 @@ type RuntimeSettings struct {
 	PromptQL bool `json:"promptql"                         yaml:"promptql"`
 	// Disable native Prometheus APIs.
 	DisablePrometheusAPI bool `json:"disable_prometheus_api,omitempty" yaml:"disable_prometheus_api,omitempty"`
+	// Default quantile ratio is enabled if the promptql mode is true. Default is 0.95
+	DefaultQuantile *float64 `json:"default_quantile,omitempty"       yaml:"default_quantile,omitempty"       jsonschema:"default=0.95,min=0,max=1"`
 	// Flatten value points to the root array.
 	// If the PromptQL mode is on the result is always flat.
 	Flat bool `json:"flat"                             yaml:"flat"`
@@ -110,7 +113,19 @@ type RuntimeSettings struct {
 	// The serialization format for response fields.
 	Format RuntimeFormatSettings `json:"format"                           yaml:"format"`
 	// The concurrency limit of queries if there are many variables in a single query.
-	ConcurrencyLimit int `json:"concurrency_limit,omitempty"      yaml:"concurrency_limit,omitempty"`
+	ConcurrencyLimit int `json:"concurrency_limit,omitempty"      yaml:"concurrency_limit,omitempty"      jsonschema:"min=0"`
+}
+
+// Validate checks if the settings is valid.
+func (rs RuntimeSettings) Validate() error {
+	if rs.DefaultQuantile != nil && (*rs.DefaultQuantile < 0 || *rs.DefaultQuantile > 1) {
+		return fmt.Errorf(
+			"default quantile ratio must be in between 0 and 1, got %f",
+			*rs.DefaultQuantile,
+		)
+	}
+
+	return nil
 }
 
 // IsFlat gets the flat setting.

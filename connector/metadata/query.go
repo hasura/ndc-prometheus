@@ -93,11 +93,13 @@ func createQueryResultValuesObjectFields() schema.ObjectTypeFields {
 
 func createCollectionArguments(promptql bool) schema.CollectionInfoArguments {
 	arguments := schema.CollectionInfoArguments{}
-	keys := []string{ArgumentKeyStep, ArgumentKeyTimeout, ArgumentKeyOffset}
-
-	if !promptql {
-		keys = append(keys, ArgumentKeyFlat)
+	// PromptQL does not work well with arguments.
+	// Arguments are temporarily disabled.
+	if promptql {
+		return arguments
 	}
+
+	keys := []string{ArgumentKeyStep, ArgumentKeyTimeout, ArgumentKeyOffset, ArgumentKeyFlat}
 
 	for _, key := range keys {
 		arguments[key] = defaultArgumentInfos[key]

@@ -67,6 +67,10 @@ func (c *PrometheusConnector) ParseConfiguration(
 		)
 	}
 
+	if err := config.Runtime.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid runtime configuration: %w", err)
+	}
+
 	c.metadata = &config.Metadata
 	c.runtime = &config.Runtime
 

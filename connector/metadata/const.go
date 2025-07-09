@@ -114,7 +114,7 @@ var defaultScalars = map[string]schema.ScalarType{
 			GreaterOrEqual: schema.NewComparisonOperatorGreaterThanOrEqual().
 				Encode(),
 		},
-		Representation: schema.NewTypeRepresentationTimestamp().Encode(),
+		Representation: schema.NewTypeRepresentationTimestampTZ().Encode(),
 	},
 	string(ScalarLabelSet): {
 		AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
@@ -368,7 +368,8 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 
 var (
 	CounterRangeVectorFunctions = []PromQLFunctionName{Increase, Rate, IRate}
-	RangeVectorFunctions        = append(CounterRangeVectorFunctions,
+	RangeVectorFunctions        = append(
+		CounterRangeVectorFunctions,
 		AbsentOverTime,
 		Changes,
 		Derivative,

@@ -20,6 +20,7 @@ var testCases = []struct {
 	ErrorMsg    string
 	IsEmpty     bool
 	Groups      *QueryCollectionGroupingExplainResult
+	Aggregates  map[string]string
 	Functions   []KeyValue
 }{
 	{
@@ -90,6 +91,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `limitk(2, sort_by_label_desc(abs(max(sum by (job) (go_gc_duration_seconds{instance=~"localhost:9090|node-exporter:9100",job="node"} offset 5m0s))), "job")) >= 0.000000`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_empty",
@@ -167,6 +169,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job="node"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_in",
@@ -206,6 +209,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job=~"node|localhost:9090"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_nin",
@@ -242,6 +246,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job!~"localhost:9090|node|prometheus"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_regex",
@@ -276,6 +281,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job=~"node.*"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_nregex",
@@ -310,6 +316,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job!~"node.*"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_in_string",
@@ -338,6 +345,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job=~"ndc-prometheus|node|prometheus"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_eq_neq",
@@ -432,6 +440,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job="ndc-prometheus"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_in_regex",
@@ -462,6 +471,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `go_gc_duration_seconds{job="ndc-prometheus"}`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "label_expressions_in_eq_regex",
@@ -541,6 +551,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `histogram_fraction(0.100000, 0.200000, clamp(round(quantile(0.100000, go_gc_duration_seconds offset 5m0s), 0.200000), 1.000000, 2.000000))`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "aggregation_holt_winters",
@@ -570,6 +581,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `holt_winters(go_gc_duration_seconds[1m], 0.100000, 0.200000)`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "aggregation_predict_linear",
@@ -597,6 +609,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `predict_linear(go_gc_duration_seconds[1m], 0.100000)`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "aggregation_quantile_over_time",
@@ -636,6 +649,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `label_join(quantile_over_time(0.100000, go_gc_duration_seconds[1m]), "dest", "-", "job", "instance")`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "aggregation_label_replace",
@@ -667,6 +681,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `label_replace(go_gc_duration_seconds, "dest", "", "job", ".+")`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "aggregation_clamp_max",
@@ -688,6 +703,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `clamp_max(go_gc_duration_seconds, 1.000000)`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "aggregation_count_values",
@@ -709,6 +725,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `count_values("job", go_gc_duration_seconds)`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "aggregation_irate",
@@ -730,6 +747,7 @@ var testCases = []struct {
 			},
 		},
 		QueryString: `irate(go_gc_duration_seconds[1m])`,
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name: "invalid_function",
@@ -805,6 +823,7 @@ var testCases = []struct {
 				"count": "count by (job, instance) (ndc_prometheus_query_total)",
 			},
 		},
+		Aggregates: map[string]string{},
 	},
 	{
 		Name:       "counter_increase",
@@ -848,6 +867,7 @@ var testCases = []struct {
 			Groups:           &Grouping{},
 		},
 		QueryString: "increase(ndc_prometheus_query_total[5m])",
+		Aggregates:  map[string]string{},
 	},
 	{
 		Name:       "counter_sum_increase",
@@ -910,6 +930,28 @@ var testCases = []struct {
 				"sum": "sum by (job, instance) (increase(ndc_prometheus_query_total[5m]))",
 			},
 		},
+		Aggregates: map[string]string{},
+	},
+	{
+		Name:       "aggregate_count",
+		MetricName: "process_cpu_seconds_total",
+		Request: schema.QueryRequest{
+			Collection: "process_cpu_seconds_total",
+			Query: schema.Query{
+				Aggregates: schema.QueryAggregates{
+					"value__count": schema.NewAggregateColumnCount("value", false).Encode(),
+				},
+			},
+			Arguments:               schema.QueryRequestArguments{},
+			CollectionRelationships: schema.QueryRequestCollectionRelationships{},
+		},
+		Predicate: CollectionRequest{
+			CollectionValidatedArguments: CollectionValidatedArguments{},
+			LabelExpressions:             map[string]*LabelExpression{},
+		},
+		Aggregates: map[string]string{
+			"value__count": "count(process_cpu_seconds_total)",
+		},
 	},
 }
 
@@ -951,6 +993,7 @@ func TestCollectionQueryExplain(t *testing.T) {
 			assert.DeepEqual(t, tc.Predicate.Timeout, result.Request.Timeout)
 			assert.Equal(t, tc.QueryString, result.QueryString)
 			assert.Equal(t, !tc.IsEmpty, result.OK)
+			assert.DeepEqual(t, tc.Aggregates, result.Aggregates)
 
 			if tc.Groups != nil {
 				assert.DeepEqual(t, tc.Groups, result.Groups)

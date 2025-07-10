@@ -1,6 +1,6 @@
 # Prometheus Data Connector
 
-The Hasura Prometheus Connector allows for connecting to a Prometheus database giving you an instant GraphQL API on top of your Prometheus data.
+The Hasura Prometheus Connector allows for connecting to a Prometheus database, giving you an instant GraphQL API on top of your Prometheus data.
 
 This connector is built using the [Go Data Connector SDK](https://github.com/hasura/ndc-sdk-go) and implements the [Data Connector Spec](https://github.com/hasura/ndc-spec).
 
@@ -10,7 +10,7 @@ This connector is built using the [Go Data Connector SDK](https://github.com/has
 
 #### How it works
 
-The connector can introspect and automatically transform available metrics on the Prometheus server to collection queries. Each metric has a common structure:
+The connector can introspect and automatically transform available metrics on the Prometheus server into collection queries. Each metric has a common structure:
 
 ```gql
 {
@@ -65,13 +65,13 @@ The connector can detect if you want to request an instant query or range query 
 - `_eq`: instant query at the exact timestamp.
 - `_gt` < `_lt`: range query.
 
-The range query mode is default If none of the timestamp operators is set.
+The range query mode is the default if none of the timestamp operators is set.
 
 The `timestamp` and `value` fields are the result of the instant query. If the request is a range query, `timestamp` and `value` are picked as the last item of the `values` series.
 
 #### Common arguments
 
-- `step`: the query resolution step width in duration format or float number of seconds. The step should be explicitly set for range queries. Even though the connector can estimate the approximate step width the result may be empty due to too far interval.
+- `step`: the query resolution step width in duration format or float number of seconds. The step should be explicitly set for range queries. Even though the connector can estimate the approximate step width, the result may be empty due to too large an interval.
 - `offset`: the offset modifier allows changing the time offset for individual instant and range vectors in a query.
 - `timeout`: the evaluation timeout of the request.
 - `fn`: the array of composable PromQL functions.
@@ -151,7 +151,7 @@ The native query is exposed as a read-only function with 2 required fields `job`
 > Labels aren't automatically added. You need to define them manually.
 
 > [!NOTE]
-> Label and value boolean expressions in `where` are used to filter results after the query was executed.
+> Label and value boolean expressions in `where` are used to filter results after the query is executed.
 
 ### Prometheus APIs
 
@@ -232,7 +232,7 @@ connection_settings:
 
 #### Google Cloud
 
-The configuration accepts either the Google application credentials JSON string or file path. If the object is empty the client automatically loads the credential file from the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
+The configuration accepts either the Google application credentials JSON string or a file path. If the object is empty, the client automatically loads the credential file from the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
 
 ```yaml
 connection_settings:
@@ -264,11 +264,11 @@ By default, values are grouped by the label set. If you want to flatten out the 
 
 #### Unix timestamp's unit
 
-If you use integer values for duration and timestamp fields the connector will transform them with this unix timestamp unit. Accept second (`s`) and millisecond (`ms`). The default unit is second.
+If you use integer values for duration and timestamp fields, the connector will transform them with this unix timestamp unit. Accept second (`s`) and millisecond (`ms`). The default unit is seconds.
 
 #### Response Format
 
-These settings specify the format of response timestamp and value.
+These settings specify the format of the response timestamp and value.
 
 ## PromptQL Mode (experiment)
 
@@ -277,9 +277,9 @@ These settings specify the format of response timestamp and value.
 The PromptQL mode, if enabled, transforms the connector schema to be compatible with PromptQL:
 
 - Support aggregate functions and aggregate grouping.
-- Disable arguments: PromptQL has some push-down issue with aggregations if the model has arguments.
+- Disable arguments: PromptQL has some push-down issues with aggregations if the model has arguments.
 - Instead, new prepared models are added for range functions: `rate`, `irate`, `increase`, `quantile`.
-- The quantile ratio is fixed that is configured in the runtime config.
+- The quantile ratio is fixed, which is configured in the runtime config.
 
 ### Examples
 

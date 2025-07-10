@@ -81,6 +81,10 @@ var defaultScalars = map[string]schema.ScalarType{
 				Encode(),
 			string(Avg): schema.NewAggregateFunctionDefinitionAverage(string(ScalarDecimal)).
 				Encode(),
+			string(Stddev): schema.NewAggregateFunctionDefinitionCustom(schema.NewNullableNamedType(string(ScalarDecimal))).
+				Encode(),
+			string(Stdvar): schema.NewAggregateFunctionDefinitionCustom(schema.NewNullableNamedType(string(ScalarDecimal))).
+				Encode(),
 		},
 		ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
 			Equal: schema.NewComparisonOperatorEqual().Encode(),

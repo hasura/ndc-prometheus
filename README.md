@@ -248,6 +248,9 @@ connection_settings:
 
 ```yaml
 runtime:
+  promptql: false
+  disable_prometheus_api: false # disable native REST Prometheus APIs 
+  default_quantile: 0.95
   flat: false
   unix_time_unit: s # enum: s, ms
   format:
@@ -266,6 +269,27 @@ If you use integer values for duration and timestamp fields the connector will t
 #### Response Format
 
 These settings specify the format of response timestamp and value.
+
+## PromptQL Mode (experiment)
+
+### How it works
+
+The PromptQL mode, if enabled, transforms the connector schema to be compatible with PromptQL:
+
+- Support aggregate functions and aggregate grouping.
+- Disable arguments: PromptQL has some push-down issue with aggregations if the model has arguments.
+- Instead, new prepared models are added for range functions: `rate`, `irate`, `increase`, `quantile`.
+- The quantile ratio is fixed that is configured in the runtime config.
+
+### Examples
+
+```
+Calculate the aggregate sum of process CPU seconds rate in the last 1 hour, group by timestamp, job, instance. Timestamp must be converted to UTC timezone.
+```
+
+```
+Calculate the sum of go gc heap allocs quantile in the last 1 hour,  group by timestamp, job, instance. Timestamps must be converted to UTC timezone.
+```
 
 ## Development
 

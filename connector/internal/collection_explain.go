@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -37,22 +36,16 @@ func (qcer QueryCollectionExplainResult) ToExplainResponse() (*schema.ExplainRes
 		result.Details["query"] = qcer.QueryString
 	}
 
-	if len(qcer.Aggregates) > 0 {
-		aggregateBytes, err := json.Marshal(qcer.Aggregates)
-		if err != nil {
-			return nil, err
-		}
-
-		result.Details["aggregates"] = string(aggregateBytes)
+	for key, agg := range qcer.Aggregates {
+		aggKey := fmt.Sprintf("aggregates[%s]", key)
+		result.Details[aggKey] = agg
 	}
 
 	if qcer.Groups != nil {
-		groups, err := json.Marshal(qcer.Groups)
-		if err != nil {
-			return nil, err
+		for key, agg := range qcer.Groups.AggregateQueries {
+			aggKey := fmt.Sprintf("group_aggregates[%s]", key)
+			result.Details[aggKey] = agg
 		}
-
-		result.Details["groups"] = string(groups)
 	}
 
 	return result, nil
@@ -72,10 +65,9 @@ func (qce *QueryCollectionExecutor) Explain(
 		query, ok, err := qce.buildCollectionPredicateQuery(expressions)
 		if err != nil {
 			return nil, schema.UnprocessableContentError(
-				"failed to evaluate the predicate query",
+				"failed to evaluate the predicate query: "+err.Error(),
 				map[string]any{
 					"collection": qce.Request.Collection,
-					"error":      err.Error(),
 				},
 			)
 		}
@@ -92,10 +84,9 @@ func (qce *QueryCollectionExecutor) Explain(
 	collectionQuery, err := qce.buildQueryString(expressions, collectionQuery)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
-			"failed to evaluate the query",
+			"failed to evaluate the query: "+err.Error(),
 			map[string]any{
 				"collection": qce.Request.Collection,
-				"error":      err.Error(),
 			},
 		)
 	}
@@ -103,10 +94,9 @@ func (qce *QueryCollectionExecutor) Explain(
 	result.Aggregates, err = qce.explainAggregates(expressions.Aggregates, collectionQuery)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
-			"failed to evaluate aggregates",
+			"failed to evaluate aggregates:"+err.Error(),
 			map[string]any{
 				"collection": qce.Request.Collection,
-				"error":      err.Error(),
 			},
 		)
 	}
@@ -114,10 +104,9 @@ func (qce *QueryCollectionExecutor) Explain(
 	result.Groups, err = qce.explainGrouping(expressions.Groups, collectionQuery)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
-			"failed to evaluate grouping",
+			"failed to evaluate grouping: "+err.Error(),
 			map[string]any{
 				"collection": qce.Request.Collection,
-				"error":      err.Error(),
 			},
 		)
 	}
@@ -152,10 +141,9 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 	collectionQuery, ok, err := qce.buildCollectionPredicateQuery(expressions)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
-			"failed to evaluate the predicate query",
+			"failed to evaluate the predicate query: "+err.Error(),
 			map[string]any{
 				"collection": qce.Request.Collection,
-				"error":      err.Error(),
 			},
 		)
 	}
@@ -171,10 +159,9 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 	collectionQuery, err = qce.buildQueryString(expressions, collectionQuery)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
-			"failed to evaluate the query",
+			"failed to evaluate the query: "+err.Error(),
 			map[string]any{
 				"collection": qce.Request.Collection,
-				"error":      err.Error(),
 			},
 		)
 	}
@@ -202,10 +189,9 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 		)
 		if err != nil {
 			return nil, schema.UnprocessableContentError(
-				"failed to evaluate histogram quantile",
+				"failed to evaluate histogram quantile: "+err.Error(),
 				map[string]any{
 					"collection": qce.Request.Collection,
-					"error":      err.Error(),
 				},
 			)
 		}
@@ -235,10 +221,9 @@ func (qce *QueryCollectionExecutor) explainHistogramQuantileGrouping(
 	result.Groups, err = qce.explainGrouping(expressions.Groups, collectionQuery)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
-			"failed to evaluate grouping",
+			"failed to evaluate grouping: "+err.Error(),
 			map[string]any{
 				"collection": qce.Request.Collection,
-				"error":      err.Error(),
 			},
 		)
 	}
@@ -252,10 +237,9 @@ func (qce *QueryCollectionExecutor) explainHistogramQuantileGrouping(
 		)
 		if err != nil {
 			return nil, schema.UnprocessableContentError(
-				"failed to evaluate grouping",
+				"failed to evaluate grouping: "+err.Error(),
 				map[string]any{
 					"collection": qce.Request.Collection,
-					"error":      err.Error(),
 				},
 			)
 		}
@@ -746,7 +730,7 @@ func (qce *QueryCollectionExecutor) explainGroupingAggregateQuery(
 		return fmt.Sprintf("count by (%s) (%s)", agg.Column, query), nil
 	case *schema.AggregateSingleColumn:
 		switch agg.Function {
-		case string(metadata.Sum), string(metadata.Min), string(metadata.Max), string(metadata.Avg):
+		case string(metadata.Sum), string(metadata.Min), string(metadata.Max), string(metadata.Avg), string(metadata.Stddev), string(metadata.Stdvar):
 			if agg.Column != metadata.ValueKey {
 				return "", errors.New("support aggregation for the `value` column only")
 			}

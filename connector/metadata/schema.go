@@ -108,6 +108,10 @@ func (scb *connectorSchemaBuilder) buildCounterMetrics(
 		return err
 	}
 
+	if !scb.Configuration.Runtime.PromptQL {
+		return nil
+	}
+
 	// add range vector collections.
 	for _, functionName := range CounterRangeVectorFunctions {
 		collectionName := name + "_" + string(functionName)

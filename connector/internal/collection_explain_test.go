@@ -895,7 +895,7 @@ var testCases = []struct {
 				).Encode(),
 				Groups: &schema.Grouping{
 					Aggregates: schema.GroupingAggregates{
-						"sum": schema.NewAggregateSingleColumn("sum", "sum").Encode(),
+						"sum": schema.NewAggregateSingleColumn("value", "sum").Encode(),
 					},
 					Dimensions: []schema.Dimension{
 						schema.NewDimensionColumn("job", nil).Encode(),
@@ -920,7 +920,7 @@ var testCases = []struct {
 			Groups: &Grouping{
 				Dimensions: []string{"job", "instance"},
 				Aggregates: schema.GroupingAggregates{
-					"sum": schema.NewAggregateSingleColumn("sum", "sum").Encode(),
+					"sum": schema.NewAggregateSingleColumn("value", "sum").Encode(),
 				},
 			},
 		},
@@ -1052,7 +1052,7 @@ func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
 					).Encode(),
 					Groups: &schema.Grouping{
 						Aggregates: schema.GroupingAggregates{
-							"sum": schema.NewAggregateSingleColumn("sum", "sum").Encode(),
+							"sum": schema.NewAggregateSingleColumn("value", "sum").Encode(),
 						},
 						Dimensions: []schema.Dimension{
 							schema.NewDimensionColumn("job", nil).Encode(),

@@ -9,13 +9,13 @@ definition:
     - name: job
       type: String!
     - name: labels
-      type: LabelSet!
+      type: json!
       description: Labels of the metric
     - name: timestamp
-      type: Timestamp!
+      type: timestamptz!
       description: An instant timestamp or the last timestamp of a range query result
     - name: value
-      type: Decimal!
+      type: float64!
       description: Value of the instant query or the last value of a range query
     - name: values
       type: "[QueryResultValue!]!"
@@ -71,8 +71,55 @@ definition:
     typeName: ServiceUp_bool_exp
 
 ---
-kind: Model
+kind: AggregateExpression
 version: v1
+definition:
+  name: ServiceUp_agg_exp
+  operand:
+    object:
+      aggregatedType: ServiceUp
+      aggregatableFields:
+        - fieldName: instance
+          aggregateExpression: String_agg_exp
+        - fieldName: job
+          aggregateExpression: String_agg_exp
+        - fieldName: labels
+          aggregateExpression: LabelSet_agg_exp
+        - fieldName: timestamp
+          aggregateExpression: Timestamp_agg_exp
+        - fieldName: value
+          aggregateExpression: Decimal_agg_exp
+  count:
+    enable: true
+  graphql:
+    selectTypeName: ServiceUp_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ServiceUp_order_by_exp
+  operand:
+    object:
+      orderedType: ServiceUp
+      orderableFields:
+        - fieldName: instance
+          orderByExpression: String_order_by_exp
+        - fieldName: job
+          orderByExpression: String_order_by_exp
+        - fieldName: labels
+          orderByExpression: json_order_by_exp
+        - fieldName: timestamp
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: value
+          orderByExpression: float64_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ServiceUp_order_by_exp
+
+---
+kind: Model
+version: v2
 definition:
   name: service_up
   objectType: ServiceUp
@@ -85,41 +132,38 @@ definition:
     - name: job
       type: String!
     - name: offset
-      type: Duration
-      description: The offset modifier allows changing the time offset for individual
-        instant and range vectors in a query
+      type: json
+      description: Optional offset modifier allows changing the time offset for
+        individual instant and range vectors in a query. Do not set this value
+        unless users explicitly require it
     - name: step
-      type: Duration
-      description: Query resolution step width in duration format or float number of seconds
+      type: json
+      description: Optional query resolution step width in duration format. The
+        connector automatically estimates the interval by the timestamp range.
+        Prometheus limits the maximum resolution of 11000 points per
+        time-series. Do not set this value if you don't know the exact time
+        range
     - name: timeout
-      type: Duration
-      description: Evaluation timeout
+      type: json
+      description: The optional evaluation timeout
   source:
     dataConnectorName: prometheus
     collection: service_up
   filterExpressionType: ServiceUp_bool_exp
-  orderableFields:
-    - fieldName: instance
-      orderByDirections:
-        enableAll: true
-    - fieldName: job
-      orderByDirections:
-        enableAll: true
-    - fieldName: labels
-      orderByDirections:
-        enableAll: true
-    - fieldName: timestamp
-      orderByDirections:
-        enableAll: true
-    - fieldName: value
-      orderByDirections:
-        enableAll: true
+  aggregateExpression: ServiceUp_agg_exp
+  orderByExpression: ServiceUp_order_by_exp
   graphql:
     selectMany:
       queryRootField: service_up
+      subscription:
+        rootField: service_up
     selectUniques: []
     argumentsInputType: service_up_arguments
-    orderByExpressionType: service_up_order_by
+    filterInputTypeName: service_up_filter_input
+    aggregate:
+      queryRootField: service_up_aggregate
+      subscription:
+        rootField: service_up_aggregate
 
 ---
 kind: ModelPermissions
@@ -130,4 +174,5 @@ definition:
     - role: admin
       select:
         filter: null
+        allowSubscriptions: true
 

@@ -36,7 +36,6 @@
       "type": "literal",
       "value": [{ "increase": "1m" }, { "sum": ["job"] }, { "avg": ["job"] }]
     },
-    "step": { "type": "literal", "value": "5m" },
     "timeout": { "type": "literal", "value": "1m" },
     "flat": { "type": "literal", "value": false }
   },

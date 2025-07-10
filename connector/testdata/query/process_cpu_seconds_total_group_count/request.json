@@ -1,0 +1,65 @@
+{
+  "collection": "process_cpu_seconds_total",
+  "query": {
+    "predicate": {
+      "type": "and",
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "timestamp"
+          },
+          "operator": "_gte",
+          "value": {
+            "type": "scalar",
+            "value": "2025-06-25T00:00:00+00:00"
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "timestamp"
+          },
+          "operator": "_lte",
+          "value": {
+            "type": "scalar",
+            "value": "2025-06-25T23:59:59+00:00"
+          }
+        }
+      ]
+    },
+    "groups": {
+      "dimensions": [
+        {
+          "type": "column",
+          "path": [],
+          "column_name": "instance",
+          "field_path": null,
+          "extraction": null
+        },
+        {
+          "type": "column",
+          "path": [],
+          "column_name": "job",
+          "field_path": null,
+          "extraction": null
+        }
+      ],
+      "aggregates": {
+        "count(Int64(1))": {
+          "type": "star_count"
+        },
+        "sum(app.process_cpu_seconds_total.value)": {
+          "type": "single_column",
+          "column": "value",
+          "field_path": null,
+          "function": "sum"
+        }
+      }
+    }
+  },
+  "arguments": {},
+  "collection_relationships": {}
+}

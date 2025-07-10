@@ -1,0 +1,45 @@
+{
+    "collection": "process_cpu_seconds_total",
+    "query": {
+        "aggregates": {
+            "value_max": {
+                "type": "single_column",
+                "column": "value",
+                "field_path": null,
+                "function": "max"
+            },
+            "value_min": {
+                "type": "single_column",
+                "column": "value",
+                "field_path": null,
+                "function": "min"
+            },
+            "value_sum": {
+                "type": "single_column",
+                "column": "value",
+                "field_path": null,
+                "function": "sum"
+            },
+            "value_avg": {
+                "type": "single_column",
+                "column": "value",
+                "field_path": null,
+                "function": "avg"
+            },
+            "value__count_distinct": {
+                "type": "column_count",
+                "column": "value",
+                "field_path": null,
+                "distinct": true
+            },
+            "value__count": {
+                "type": "column_count",
+                "column": "value",
+                "field_path": null,
+                "distinct": false
+            }
+        }
+    },
+    "arguments": {},
+    "collection_relationships": {}
+}

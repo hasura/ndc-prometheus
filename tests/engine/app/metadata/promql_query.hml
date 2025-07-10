@@ -6,13 +6,13 @@ definition:
   description: A general query result with values and labels
   fields:
     - name: labels
-      type: LabelSet!
+      type: json!
       description: Labels of the metric
     - name: timestamp
-      type: Timestamp!
+      type: timestamptz!
       description: An instant timestamp or the last timestamp of a range query result
     - name: value
-      type: Decimal!
+      type: float64!
       description: Value of the instant query or the last value of a range query
     - name: values
       type: "[QueryResultValue!]!"
@@ -46,28 +46,31 @@ definition:
   outputType: "[QueryResultValues!]!"
   arguments:
     - name: end
-      type: Timestamp
+      type: timestamptz
       description: End timestamp. Use this argument if you want to run an range query
+    - name: flat
+      type: Boolean
+      description: Flatten grouped values out the root array
     - name: query
       type: String!
       description: The raw promQL query
     - name: start
-      type: Timestamp
+      type: timestamptz
       description: Start timestamp. Use this argument if you want to run an range query
     - name: step
-      type: Duration
-      description: Query resolution step width in duration format or float number of
-        seconds.
+      type: json
+      description: Optional query resolution step width in duration format. The
+        connector automatically estimates the interval by the timestamp range.
+        Prometheus limits the maximum resolution of 11000 points per
+        time-series. Do not set this value if you don't know the exact time
+        range
     - name: time
-      type: Timestamp
+      type: timestamptz
       description: Evaluation timestamp. Use this argument if you want to run an
         instant query
     - name: timeout
-      type: Duration
-      description: Evaluation timeout
-    - name: flat
-      type: Boolean
-      description: Flatten nested the values group to the root array
+      type: json
+      description: The optional evaluation timeout
   source:
     dataConnectorName: prometheus
     dataConnectorCommand:

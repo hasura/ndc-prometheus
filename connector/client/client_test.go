@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hasura/ndc-prometheus/connector/types"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"
@@ -18,11 +17,11 @@ import (
 
 func createTestClient(t *testing.T) *Client {
 	c, err := NewClient(context.TODO(), ClientSettings{
-		URL: types.NewEnvironmentValue("http://localhost:9090"),
+		URL: utils.NewEnvStringValue("http://localhost:9090"),
 		Authentication: &AuthConfig{
 			BasicAuth: &BasicAuthConfig{
-				Username: types.NewEnvironmentValue("admin"),
-				Password: types.NewEnvironmentValue("test"),
+				Username: utils.NewEnvStringValue("admin"),
+				Password: utils.NewEnvStringValue("test"),
 			},
 		},
 	})
@@ -31,7 +30,6 @@ func createTestClient(t *testing.T) *Client {
 }
 
 func TestNewClient(t *testing.T) {
-
 	gcpCred := `{
 	"type": "service_account",
   "project_id": "some-test-account",
@@ -59,58 +57,58 @@ func TestNewClient(t *testing.T) {
 		{
 			Name:     "empty_url",
 			Config:   ClientSettings{},
-			ErrorMsg: "invalid Prometheus URL: require either value or valueFromEnv",
+			ErrorMsg: "invalid Prometheus URL: require either value or env",
 		},
 		{
 			Name: "empty_url_2",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue(""),
+				URL: utils.NewEnvStringValue(""),
 			},
 			ErrorMsg: errEndpointRequired.Error(),
 		},
 		{
 			Name: "invalid_port",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:abc"),
+				URL: utils.NewEnvStringValue("http://localhost:abc"),
 			},
 			ErrorMsg: "invalid Prometheus URL: parse \"http://localhost:abc\": invalid port \":abc\" after host",
 		},
 		{
 			Name: "no_auth",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 			},
 		},
 		{
 			Name: "basic_auth_empty_username",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					BasicAuth: &BasicAuthConfig{},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: basic auth username: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: basic auth username: require either value or env",
 		},
 		{
 			Name: "basic_auth_empty_password",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					BasicAuth: &BasicAuthConfig{
-						Username: types.NewEnvironmentValue("admin"),
+						Username: utils.NewEnvStringValue("admin"),
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: basic auth password: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: basic auth password: require either value or env",
 		},
 		{
 			Name: "http_auth",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					Authorization: &AuthorizationConfig{
-						Type:        types.NewEnvironmentValue("Bearer"),
-						Credentials: types.NewEnvironmentValue("abc"),
+						Type:        utils.NewEnvStringValue("Bearer"),
+						Credentials: utils.NewEnvStringValue("abc"),
 					},
 				},
 				Timeout:     defaultClientOptions.timeout,
@@ -129,33 +127,33 @@ func TestNewClient(t *testing.T) {
 		{
 			Name: "http_auth_empty_type",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					Authorization: &AuthorizationConfig{},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: authorization type: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: authorization type: require either value or env",
 		},
 		{
 			Name: "http_auth_empty_credentials",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					Authorization: &AuthorizationConfig{
-						Type: types.NewEnvironmentValue("Bearer"),
+						Type: utils.NewEnvStringValue("Bearer"),
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: authorization credentials: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: authorization credentials: require either value or env",
 		},
 		{
 			Name: "gcp_auth",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					Google: &GoogleAuthConfig{
 						Encoding:    utils.ToPtr(CredentialsEncodingBase64),
-						Credentials: utils.ToPtr(types.NewEnvironmentValue(gcpCredBase64)),
+						Credentials: utils.ToPtr(utils.NewEnvStringValue(gcpCredBase64)),
 					},
 				},
 			},
@@ -163,10 +161,10 @@ func TestNewClient(t *testing.T) {
 		{
 			Name: "gcp_auth_file",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					Google: &GoogleAuthConfig{
-						CredentialsFile: utils.ToPtr(types.NewEnvironmentValue(gcpCredPath)),
+						CredentialsFile: utils.ToPtr(utils.NewEnvStringValue(gcpCredPath)),
 					},
 				},
 			},
@@ -174,12 +172,12 @@ func TestNewClient(t *testing.T) {
 		{
 			Name: "oauth",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					OAuth2: &OAuth2Config{
-						ClientID:     types.NewEnvironmentValue("client-id"),
-						ClientSecret: types.NewEnvironmentValue("client-secret"),
-						TokenURL:     types.NewEnvironmentValue("http://localhost:4444/oauth2/token"),
+						ClientID:     utils.NewEnvStringValue("client-id"),
+						ClientSecret: utils.NewEnvStringValue("client-secret"),
+						TokenURL:     utils.NewEnvStringValue("http://localhost:4444/oauth2/token"),
 						ProxyConfig: &ProxyConfig{
 							NoProxy: "test",
 						},
@@ -190,43 +188,43 @@ func TestNewClient(t *testing.T) {
 		{
 			Name: "oauth_empty",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					OAuth2: &OAuth2Config{},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_id: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_id: require either value or env",
 		},
 		{
 			Name: "oauth_client_secret_empty",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					OAuth2: &OAuth2Config{
-						ClientID: types.NewEnvironmentValue("client-id"),
+						ClientID: utils.NewEnvStringValue("client-id"),
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_secret: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: oauth2 client_secret: require either value or env",
 		},
 		{
 			Name: "oauth_token_url_empty",
 			Config: ClientSettings{
-				URL: types.NewEnvironmentValue("http://localhost:9090"),
+				URL: utils.NewEnvStringValue("http://localhost:9090"),
 				Authentication: &AuthConfig{
 					OAuth2: &OAuth2Config{
-						ClientID:     types.NewEnvironmentValue("client-id"),
-						ClientSecret: types.NewEnvironmentValue("client-secret"),
+						ClientID:     utils.NewEnvStringValue("client-id"),
+						ClientSecret: utils.NewEnvStringValue("client-secret"),
 					},
 				},
 			},
-			ErrorMsg: "failed to initialize the prometheus client config: oauth2 token_url: require either value or valueFromEnv",
+			ErrorMsg: "failed to initialize the prometheus client config: oauth2 token_url: require either value or env",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			_, err := NewClient(context.TODO(), tc.Config, WithTimeout(utils.ToPtr(model.Duration(time.Minute))), WithUnixTimeUnit(UnixTimeSecond))
+			_, err := NewClient(context.TODO(), tc.Config, WithTimeout(utils.ToPtr(model.Duration(time.Minute))))
 			if tc.ErrorMsg == "" {
 				assert.NilError(t, err)
 			} else {

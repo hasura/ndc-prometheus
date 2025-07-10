@@ -1,94 +1,20 @@
 ---
-kind: ScalarType
+kind: DataConnectorScalarRepresentation
 version: v1
 definition:
-  name: NetConntrackDialerConnAttemptedTotalLabel
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Boolean
+  representation: Boolean
   graphql:
-    typeName: NetConntrackDialerConnAttemptedTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NetConntrackDialerConnAttemptedTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: NetConntrackDialerConnAttemptedTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NetConntrackDialerConnAttemptedTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NetConntrackDialerConnAttemptedTotalLabel_bool_exp
+    comparisonExpressionTypeName: Boolean_comparison_exp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: Int64
+  name: json
   graphql:
-    typeName: Int64
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: Int64_bool_exp
-  operand:
-    scalar:
-      type: Int64
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: Int64
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: Int64_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: Float64
-  graphql:
-    typeName: Float64
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: Float64_bool_exp
-  operand:
-    scalar:
-      type: Float64
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: Float64
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: Float64_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: Duration
-  graphql:
-    typeName: Duration
+    typeName: json
 
 ---
 kind: BooleanExpressionType
@@ -97,7 +23,7 @@ definition:
   name: Duration_bool_exp
   operand:
     scalar:
-      type: Duration
+      type: json
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
@@ -111,818 +37,22 @@ definition:
     typeName: Duration_bool_exp
 
 ---
-kind: ScalarType
+kind: DataConnectorScalarRepresentation
 version: v1
 definition:
-  name: LabelSet
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Duration
+  representation: json
   graphql:
-    typeName: LabelSet
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: LabelSet_bool_exp
-  operand:
-    scalar:
-      type: LabelSet
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: LabelSet
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: LabelSet_bool_exp
+    comparisonExpressionTypeName: json_comparison_exp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: Timestamp
+  name: enum
   graphql:
-    typeName: Timestamp
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: Timestamp_bool_exp
-  operand:
-    scalar:
-      type: Timestamp
-      comparisonOperators:
-        - name: _eq
-          argumentType: Timestamp!
-        - name: _gt
-          argumentType: Timestamp!
-        - name: _lt
-          argumentType: Timestamp!
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: Timestamp
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: Timestamp_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: Decimal
-  graphql:
-    typeName: Decimal
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: Decimal_bool_exp
-  operand:
-    scalar:
-      type: Decimal
-      comparisonOperators:
-        - name: _eq
-          argumentType: Decimal!
-        - name: _gt
-          argumentType: Decimal!
-        - name: _gte
-          argumentType: Decimal!
-        - name: _lt
-          argumentType: Decimal!
-        - name: _lte
-          argumentType: Decimal!
-        - name: _neq
-          argumentType: Decimal!
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: Decimal
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: Decimal_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: JSON
-  graphql:
-    typeName: JSON
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: JSON_bool_exp
-  operand:
-    scalar:
-      type: JSON
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: JSON
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: JSON_bool_exp
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: String_bool_exp
-  operand:
-    scalar:
-      type: String
-      comparisonOperators:
-        - name: _eq
-          argumentType: String!
-        - name: _in
-          argumentType: JSON!
-        - name: _neq
-          argumentType: String!
-        - name: _nin
-          argumentType: "[String!]!"
-        - name: _nregex
-          argumentType: String!
-        - name: _regex
-          argumentType: String!
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: String
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: String_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: NetConntrackDialerConnClosedTotalLabel
-  graphql:
-    typeName: NetConntrackDialerConnClosedTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NetConntrackDialerConnClosedTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: NetConntrackDialerConnClosedTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NetConntrackDialerConnClosedTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NetConntrackDialerConnClosedTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: NetConntrackDialerConnEstablishedTotalLabel
-  graphql:
-    typeName: NetConntrackDialerConnEstablishedTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NetConntrackDialerConnEstablishedTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: NetConntrackDialerConnEstablishedTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NetConntrackDialerConnEstablishedTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NetConntrackDialerConnEstablishedTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: NetConntrackDialerConnFailedTotalLabel
-  graphql:
-    typeName: NetConntrackDialerConnFailedTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NetConntrackDialerConnFailedTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: NetConntrackDialerConnFailedTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NetConntrackDialerConnFailedTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NetConntrackDialerConnFailedTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessCpuSecondsTotalLabel
-  graphql:
-    typeName: ProcessCpuSecondsTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessCpuSecondsTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessCpuSecondsTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessCpuSecondsTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessCpuSecondsTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessMaxFdsLabel
-  graphql:
-    typeName: ProcessMaxFdsLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessMaxFdsLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessMaxFdsLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessMaxFdsLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessMaxFdsLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessNetworkReceiveBytesTotalLabel
-  graphql:
-    typeName: ProcessNetworkReceiveBytesTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessNetworkReceiveBytesTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessNetworkReceiveBytesTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessNetworkReceiveBytesTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessNetworkReceiveBytesTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessNetworkTransmitBytesTotalLabel
-  graphql:
-    typeName: ProcessNetworkTransmitBytesTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessNetworkTransmitBytesTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessNetworkTransmitBytesTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessNetworkTransmitBytesTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessNetworkTransmitBytesTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessOpenFdsLabel
-  graphql:
-    typeName: ProcessOpenFdsLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessOpenFdsLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessOpenFdsLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessOpenFdsLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessOpenFdsLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessResidentMemoryBytesLabel
-  graphql:
-    typeName: ProcessResidentMemoryBytesLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessResidentMemoryBytesLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessResidentMemoryBytesLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessResidentMemoryBytesLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessResidentMemoryBytesLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessStartTimeSecondsLabel
-  graphql:
-    typeName: ProcessStartTimeSecondsLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessStartTimeSecondsLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessStartTimeSecondsLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessStartTimeSecondsLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessStartTimeSecondsLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessVirtualMemoryBytesLabel
-  graphql:
-    typeName: ProcessVirtualMemoryBytesLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessVirtualMemoryBytesLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessVirtualMemoryBytesLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessVirtualMemoryBytesLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessVirtualMemoryBytesLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: ProcessVirtualMemoryMaxBytesLabel
-  graphql:
-    typeName: ProcessVirtualMemoryMaxBytesLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: ProcessVirtualMemoryMaxBytesLabel_bool_exp
-  operand:
-    scalar:
-      type: ProcessVirtualMemoryMaxBytesLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: ProcessVirtualMemoryMaxBytesLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: ProcessVirtualMemoryMaxBytesLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: PromhttpMetricHandlerErrorsTotalLabel
-  graphql:
-    typeName: PromhttpMetricHandlerErrorsTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: PromhttpMetricHandlerErrorsTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: PromhttpMetricHandlerErrorsTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: PromhttpMetricHandlerErrorsTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: PromhttpMetricHandlerErrorsTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: PromhttpMetricHandlerRequestsInFlightLabel
-  graphql:
-    typeName: PromhttpMetricHandlerRequestsInFlightLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: PromhttpMetricHandlerRequestsInFlightLabel_bool_exp
-  operand:
-    scalar:
-      type: PromhttpMetricHandlerRequestsInFlightLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: PromhttpMetricHandlerRequestsInFlightLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: PromhttpMetricHandlerRequestsInFlightLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: PromhttpMetricHandlerRequestsTotalLabel
-  graphql:
-    typeName: PromhttpMetricHandlerRequestsTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: PromhttpMetricHandlerRequestsTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: PromhttpMetricHandlerRequestsTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: PromhttpMetricHandlerRequestsTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: PromhttpMetricHandlerRequestsTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: TargetInfoLabel
-  graphql:
-    typeName: TargetInfoLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: TargetInfoLabel_bool_exp
-  operand:
-    scalar:
-      type: TargetInfoLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: TargetInfoLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: TargetInfoLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: TimestampTZ
-  graphql:
-    typeName: TimestampTZ
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: TimestampTZ_bool_exp
-  operand:
-    scalar:
-      type: TimestampTZ
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: TimestampTZ
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: TimestampTZ_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: AlertState
-  graphql:
-    typeName: AlertState
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: AlertState_bool_exp
-  operand:
-    scalar:
-      type: AlertState
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: AlertState
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: AlertState_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalLabel
-  graphql:
-    typeName: NdcPrometheusQueryTotalLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalLabel_bool_exp
-  operand:
-    scalar:
-      type: NdcPrometheusQueryTotalLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NdcPrometheusQueryTotalLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NdcPrometheusQueryTotalLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalTimeBucketLabel
-  graphql:
-    typeName: NdcPrometheusQueryTotalTimeBucketLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalTimeBucketLabel_bool_exp
-  operand:
-    scalar:
-      type: NdcPrometheusQueryTotalTimeBucketLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NdcPrometheusQueryTotalTimeBucketLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NdcPrometheusQueryTotalTimeBucketLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalTimeCountLabel
-  graphql:
-    typeName: NdcPrometheusQueryTotalTimeCountLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalTimeCountLabel_bool_exp
-  operand:
-    scalar:
-      type: NdcPrometheusQueryTotalTimeCountLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NdcPrometheusQueryTotalTimeCountLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NdcPrometheusQueryTotalTimeCountLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalTimeSumLabel
-  graphql:
-    typeName: NdcPrometheusQueryTotalTimeSumLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: NdcPrometheusQueryTotalTimeSumLabel_bool_exp
-  operand:
-    scalar:
-      type: NdcPrometheusQueryTotalTimeSumLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: NdcPrometheusQueryTotalTimeSumLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: NdcPrometheusQueryTotalTimeSumLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: OtelScopeInfoLabel
-  graphql:
-    typeName: OtelScopeInfoLabel
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: OtelScopeInfoLabel_bool_exp
-  operand:
-    scalar:
-      type: OtelScopeInfoLabel
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: prometheus
-          dataConnectorScalarType: OtelScopeInfoLabel
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: OtelScopeInfoLabel_bool_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: HttpClientDurationMillisecondsBucketLabel
-  graphql:
-    typeName: HttpClientDurationMillisecondsBucketLabel
+    typeName: enum
 
 ---
 kind: BooleanExpressionType
@@ -931,7 +61,7 @@ definition:
   name: HttpClientDurationMillisecondsBucketLabel_bool_exp
   operand:
     scalar:
-      type: HttpClientDurationMillisecondsBucketLabel
+      type: enum
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
@@ -945,12 +75,450 @@ definition:
     typeName: HttpClientDurationMillisecondsBucketLabel_bool_exp
 
 ---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: HttpClientDurationMillisecondsBucketLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp
+
+---
 kind: ScalarType
 version: v1
 definition:
-  name: HttpClientDurationMillisecondsCountLabel
+  name: int64
   graphql:
-    typeName: HttpClientDurationMillisecondsCountLabel
+    typeName: int64
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: Int64_bool_exp
+  operand:
+    scalar:
+      type: int64
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: Int64
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: Int64_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Int64
+  representation: int64
+  graphql:
+    comparisonExpressionTypeName: int64_comparison_exp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: float64
+  graphql:
+    typeName: float64
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: Float64_bool_exp
+  operand:
+    scalar:
+      type: float64
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: Float64
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: Float64_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Float64
+  representation: float64
+  graphql:
+    comparisonExpressionTypeName: float64_comparison_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: String
+  representation: String
+  graphql:
+    comparisonExpressionTypeName: String_comparison_exp
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LabelSet_bool_exp
+  operand:
+    scalar:
+      type: json
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: LabelSet
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LabelSet_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: LabelSet
+  representation: json
+  graphql:
+    comparisonExpressionTypeName: json_comparison_exp_1
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: timestamptz
+  graphql:
+    typeName: timestamptz
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: Timestamp_bool_exp
+  operand:
+    scalar:
+      type: timestamptz
+      comparisonOperators:
+        - name: _eq
+          argumentType: timestamptz!
+        - name: _gt
+          argumentType: timestamptz!
+        - name: _gte
+          argumentType: timestamptz!
+        - name: _lt
+          argumentType: timestamptz!
+        - name: _lte
+          argumentType: timestamptz!
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: Timestamp
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: Timestamp_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Timestamp
+  representation: timestamptz
+  graphql:
+    comparisonExpressionTypeName: timestamptz_comparison_exp
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: Decimal_bool_exp
+  operand:
+    scalar:
+      type: float64
+      comparisonOperators:
+        - name: _eq
+          argumentType: float64!
+        - name: _gt
+          argumentType: float64!
+        - name: _gte
+          argumentType: float64!
+        - name: _lt
+          argumentType: float64!
+        - name: _lte
+          argumentType: float64!
+        - name: _neq
+          argumentType: float64!
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: Decimal
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: Decimal_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: Decimal
+  representation: float64
+  graphql:
+    comparisonExpressionTypeName: float64_comparison_exp_1
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: JSON_bool_exp
+  operand:
+    scalar:
+      type: json
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: JSON
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: JSON_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: JSON
+  representation: json
+  graphql:
+    comparisonExpressionTypeName: json_comparison_exp_2
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: String_bool_exp
+  operand:
+    scalar:
+      type: String
+      comparisonOperators:
+        - name: _contains
+          argumentType: String!
+        - name: _ends_with
+          argumentType: String!
+        - name: _eq
+          argumentType: String!
+        - name: _icontains
+          argumentType: String!
+        - name: _iends_with
+          argumentType: String!
+        - name: _in
+          argumentType: json!
+        - name: _istarts_with
+          argumentType: String!
+        - name: _neq
+          argumentType: String!
+        - name: _nin
+          argumentType: "[String!]!"
+        - name: _nregex
+          argumentType: String!
+        - name: _regex
+          argumentType: String!
+        - name: _starts_with
+          argumentType: String!
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: String
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: String_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: String_agg_exp
+  operand:
+    scalar:
+      aggregatedType: String
+      aggregationFunctions: []
+      dataConnectorAggregationFunctionMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: String
+          functionMapping: {}
+  count:
+    enable: true
+  countDistinct:
+    enable: true
+  graphql:
+    selectTypeName: String_agg_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LabelSet_agg_exp
+  operand:
+    scalar:
+      aggregatedType: json
+      aggregationFunctions: []
+      dataConnectorAggregationFunctionMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: LabelSet
+          functionMapping: {}
+  count:
+    enable: true
+  countDistinct:
+    enable: true
+  graphql:
+    selectTypeName: LabelSet_agg_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: Timestamp_agg_exp
+  operand:
+    scalar:
+      aggregatedType: timestamptz
+      aggregationFunctions: []
+      dataConnectorAggregationFunctionMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: Timestamp
+          functionMapping: {}
+  count:
+    enable: true
+  countDistinct:
+    enable: true
+  graphql:
+    selectTypeName: Timestamp_agg_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: Decimal_agg_exp
+  operand:
+    scalar:
+      aggregatedType: float64
+      aggregationFunctions:
+        - name: avg
+          returnType: float64
+        - name: max
+          returnType: float64
+        - name: min
+          returnType: float64
+        - name: stddev
+          returnType: float64
+        - name: stdvar
+          returnType: float64
+        - name: sum
+          returnType: float64
+      dataConnectorAggregationFunctionMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: Decimal
+          functionMapping:
+            avg:
+              name: avg
+            max:
+              name: max
+            min:
+              name: min
+            stddev:
+              name: stddev
+            stdvar:
+              name: stdvar
+            sum:
+              name: sum
+  count:
+    enable: true
+  countDistinct:
+    enable: true
+  graphql:
+    selectTypeName: Decimal_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: String_order_by_exp
+  operand:
+    scalar:
+      orderedType: String
+      enableOrderByDirections:
+        enableAll: true
+  graphql:
+    expressionTypeName: String_order_by_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: json_order_by_exp
+  operand:
+    scalar:
+      orderedType: json
+      enableOrderByDirections:
+        enableAll: true
+  graphql:
+    expressionTypeName: json_order_by_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: timestamptz_order_by_exp
+  operand:
+    scalar:
+      orderedType: timestamptz
+      enableOrderByDirections:
+        enableAll: true
+  graphql:
+    expressionTypeName: timestamptz_order_by_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: float64_order_by_exp
+  operand:
+    scalar:
+      orderedType: float64
+      enableOrderByDirections:
+        enableAll: true
+  graphql:
+    expressionTypeName: float64_order_by_exp
 
 ---
 kind: BooleanExpressionType
@@ -959,7 +527,7 @@ definition:
   name: HttpClientDurationMillisecondsCountLabel_bool_exp
   operand:
     scalar:
-      type: HttpClientDurationMillisecondsCountLabel
+      type: enum
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
@@ -973,12 +541,14 @@ definition:
     typeName: HttpClientDurationMillisecondsCountLabel_bool_exp
 
 ---
-kind: ScalarType
+kind: DataConnectorScalarRepresentation
 version: v1
 definition:
-  name: HttpClientDurationMillisecondsSumLabel
+  dataConnectorName: prometheus
+  dataConnectorScalarType: HttpClientDurationMillisecondsCountLabel
+  representation: enum
   graphql:
-    typeName: HttpClientDurationMillisecondsSumLabel
+    comparisonExpressionTypeName: enum_comparison_exp_1
 
 ---
 kind: BooleanExpressionType
@@ -987,7 +557,7 @@ definition:
   name: HttpClientDurationMillisecondsSumLabel_bool_exp
   operand:
     scalar:
-      type: HttpClientDurationMillisecondsSumLabel
+      type: enum
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
@@ -1001,12 +571,14 @@ definition:
     typeName: HttpClientDurationMillisecondsSumLabel_bool_exp
 
 ---
-kind: ScalarType
+kind: DataConnectorScalarRepresentation
 version: v1
 definition:
-  name: HttpClientRequestSizeBytesTotalLabel
+  dataConnectorName: prometheus
+  dataConnectorScalarType: HttpClientDurationMillisecondsSumLabel
+  representation: enum
   graphql:
-    typeName: HttpClientRequestSizeBytesTotalLabel
+    comparisonExpressionTypeName: enum_comparison_exp_2
 
 ---
 kind: BooleanExpressionType
@@ -1015,7 +587,7 @@ definition:
   name: HttpClientRequestSizeBytesTotalLabel_bool_exp
   operand:
     scalar:
-      type: HttpClientRequestSizeBytesTotalLabel
+      type: enum
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
@@ -1029,12 +601,14 @@ definition:
     typeName: HttpClientRequestSizeBytesTotalLabel_bool_exp
 
 ---
-kind: ScalarType
+kind: DataConnectorScalarRepresentation
 version: v1
 definition:
-  name: HttpClientResponseSizeBytesTotalLabel
+  dataConnectorName: prometheus
+  dataConnectorScalarType: HttpClientRequestSizeBytesTotalLabel
+  representation: enum
   graphql:
-    typeName: HttpClientResponseSizeBytesTotalLabel
+    comparisonExpressionTypeName: enum_comparison_exp_3
 
 ---
 kind: BooleanExpressionType
@@ -1043,7 +617,7 @@ definition:
   name: HttpClientResponseSizeBytesTotalLabel_bool_exp
   operand:
     scalar:
-      type: HttpClientResponseSizeBytesTotalLabel
+      type: enum
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
@@ -1061,38 +635,728 @@ kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: prometheus
-  dataConnectorScalarType: Timestamp
-  representation: Timestamp
+  dataConnectorScalarType: HttpClientResponseSizeBytesTotalLabel
+  representation: enum
   graphql:
-    comparisonExpressionTypeName: Timestamp_comparison_exp
+    comparisonExpressionTypeName: enum_comparison_exp_4
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalLabel_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: prometheus
-  dataConnectorScalarType: Decimal
-  representation: Decimal
+  dataConnectorScalarType: NdcPrometheusQueryTotalLabel
+  representation: enum
   graphql:
-    comparisonExpressionTypeName: Decimal_comparison_exp
+    comparisonExpressionTypeName: enum_comparison_exp_5
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeBucketLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalTimeBucketLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeBucketLabel_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: prometheus
-  dataConnectorScalarType: JSON
-  representation: JSON
+  dataConnectorScalarType: NdcPrometheusQueryTotalTimeBucketLabel
+  representation: enum
   graphql:
-    comparisonExpressionTypeName: JSON_comparison_exp
+    comparisonExpressionTypeName: enum_comparison_exp_6
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeCountLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalTimeCountLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeCountLabel_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: prometheus
-  dataConnectorScalarType: String
-  representation: String
+  dataConnectorScalarType: NdcPrometheusQueryTotalTimeCountLabel
+  representation: enum
   graphql:
-    comparisonExpressionTypeName: String_comparison_exp
+    comparisonExpressionTypeName: enum_comparison_exp_7
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NdcPrometheusQueryTotalTimeSumLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NdcPrometheusQueryTotalTimeSumLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NdcPrometheusQueryTotalTimeSumLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: NdcPrometheusQueryTotalTimeSumLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_8
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NetConntrackDialerConnAttemptedTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NetConntrackDialerConnAttemptedTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NetConntrackDialerConnAttemptedTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: NetConntrackDialerConnAttemptedTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_9
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NetConntrackDialerConnClosedTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NetConntrackDialerConnClosedTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NetConntrackDialerConnClosedTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: NetConntrackDialerConnClosedTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_10
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NetConntrackDialerConnEstablishedTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NetConntrackDialerConnEstablishedTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NetConntrackDialerConnEstablishedTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: NetConntrackDialerConnEstablishedTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_11
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NetConntrackDialerConnFailedTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: NetConntrackDialerConnFailedTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NetConntrackDialerConnFailedTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: NetConntrackDialerConnFailedTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_12
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OtelScopeInfoLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: OtelScopeInfoLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OtelScopeInfoLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: OtelScopeInfoLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_13
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessCpuSecondsTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessCpuSecondsTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessCpuSecondsTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessCpuSecondsTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_14
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessMaxFdsLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessMaxFdsLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessMaxFdsLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessMaxFdsLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_15
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessNetworkReceiveBytesTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessNetworkReceiveBytesTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessNetworkReceiveBytesTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessNetworkReceiveBytesTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_16
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessNetworkTransmitBytesTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessNetworkTransmitBytesTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessNetworkTransmitBytesTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessNetworkTransmitBytesTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_17
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessOpenFdsLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessOpenFdsLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessOpenFdsLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessOpenFdsLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_18
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessResidentMemoryBytesLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessResidentMemoryBytesLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessResidentMemoryBytesLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessResidentMemoryBytesLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_19
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessStartTimeSecondsLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessStartTimeSecondsLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessStartTimeSecondsLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessStartTimeSecondsLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_20
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessVirtualMemoryBytesLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessVirtualMemoryBytesLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessVirtualMemoryBytesLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessVirtualMemoryBytesLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_21
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProcessVirtualMemoryMaxBytesLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: ProcessVirtualMemoryMaxBytesLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProcessVirtualMemoryMaxBytesLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: ProcessVirtualMemoryMaxBytesLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_22
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PromhttpMetricHandlerErrorsTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: PromhttpMetricHandlerErrorsTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PromhttpMetricHandlerErrorsTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: PromhttpMetricHandlerErrorsTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_23
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PromhttpMetricHandlerRequestsInFlightLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: PromhttpMetricHandlerRequestsInFlightLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PromhttpMetricHandlerRequestsInFlightLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: PromhttpMetricHandlerRequestsInFlightLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_24
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PromhttpMetricHandlerRequestsTotalLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: PromhttpMetricHandlerRequestsTotalLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PromhttpMetricHandlerRequestsTotalLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: PromhttpMetricHandlerRequestsTotalLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_25
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TargetInfoLabel_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: TargetInfoLabel
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TargetInfoLabel_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: TargetInfoLabel
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_26
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TimestampTZ_bool_exp
+  operand:
+    scalar:
+      type: timestamptz
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: TimestampTZ
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TimestampTZ_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: TimestampTZ
+  representation: timestamptz
+  graphql:
+    comparisonExpressionTypeName: timestamptz_comparison_exp_1
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AlertState_bool_exp
+  operand:
+    scalar:
+      type: enum
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: prometheus
+          dataConnectorScalarType: AlertState
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AlertState_bool_exp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: prometheus
+  dataConnectorScalarType: AlertState
+  representation: enum
+  graphql:
+    comparisonExpressionTypeName: enum_comparison_exp_27
 

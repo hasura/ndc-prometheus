@@ -5,7 +5,7 @@ trap 'docker compose down' EXIT
 
 mkdir -p ./tmp
 
-NDC_TEST_VERSION=v0.2.0
+NDC_TEST_VERSION=v0.2.4
 NDC_TEST_PATH=./tmp/ndc-test
 
 if [ ! -f "$NDC_TEST_PATH" ]; then

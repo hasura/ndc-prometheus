@@ -24,10 +24,10 @@
     "AuthorizationConfig": {
       "properties": {
         "type": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         },
         "credentials": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         }
       },
       "additionalProperties": false,
@@ -40,10 +40,10 @@
     "BasicAuthConfig": {
       "properties": {
         "username": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         },
         "password": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         }
       },
       "additionalProperties": false,
@@ -55,8 +55,20 @@
     },
     "ClientSettings": {
       "properties": {
+        "proxy_url": {
+          "type": "string"
+        },
+        "no_proxy": {
+          "type": "string"
+        },
+        "proxy_from_environment": {
+          "type": "boolean"
+        },
+        "proxy_connect_header": {
+          "$ref": "#/$defs/ProxyHeader"
+        },
         "url": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         },
         "authentication": {
           "$ref": "#/$defs/AuthConfig"
@@ -75,18 +87,6 @@
         },
         "http_headers": {
           "$ref": "#/$defs/Header"
-        },
-        "proxy_url": {
-          "type": "string"
-        },
-        "no_proxy": {
-          "type": "string"
-        },
-        "proxy_from_environment": {
-          "type": "boolean"
-        },
-        "proxy_connect_header": {
-          "$ref": "#/$defs/ProxyHeader"
         }
       },
       "additionalProperties": false,
@@ -119,8 +119,8 @@
         "runtime"
       ]
     },
-    "EnvironmentValue": {
-      "oneOf": [
+    "EnvString": {
+      "anyOf": [
         {
           "required": [
             "value"
@@ -187,10 +187,10 @@
           "default": "plaintext"
         },
         "credentials": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         },
         "credentials_file": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         }
       },
       "additionalProperties": false,
@@ -368,14 +368,26 @@
     },
     "OAuth2Config": {
       "properties": {
+        "proxy_url": {
+          "type": "string"
+        },
+        "no_proxy": {
+          "type": "string"
+        },
+        "proxy_from_environment": {
+          "type": "boolean"
+        },
+        "proxy_connect_header": {
+          "$ref": "#/$defs/ProxyHeader"
+        },
         "client_id": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         },
         "client_secret": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         },
         "token_url": {
-          "$ref": "#/$defs/EnvironmentValue"
+          "$ref": "#/$defs/EnvString"
         },
         "scopes": {
           "items": {
@@ -391,18 +403,6 @@
         },
         "TLSConfig": {
           "$ref": "#/$defs/TLSConfig"
-        },
-        "proxy_url": {
-          "type": "string"
-        },
-        "no_proxy": {
-          "type": "string"
-        },
-        "proxy_from_environment": {
-          "type": "boolean"
-        },
-        "proxy_connect_header": {
-          "$ref": "#/$defs/ProxyHeader"
         }
       },
       "additionalProperties": false,
@@ -496,6 +496,16 @@
     },
     "RuntimeSettings": {
       "properties": {
+        "promptql": {
+          "type": "boolean"
+        },
+        "disable_prometheus_api": {
+          "type": "boolean"
+        },
+        "default_quantile": {
+          "type": "number",
+          "default": 0.95
+        },
         "flat": {
           "type": "boolean"
         },
@@ -519,6 +529,7 @@
       "additionalProperties": false,
       "type": "object",
       "required": [
+        "promptql",
         "flat",
         "unix_time_unit",
         "format"

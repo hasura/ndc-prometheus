@@ -2,76 +2,6 @@
 kind: ObjectType
 version: v1
 definition:
-  name: ValueBoundaryInput
-  description: Boundary input arguments
-  fields:
-    - name: max
-      type: Float64!
-      description: The upper limit of values
-    - name: min
-      type: Float64!
-      description: The lower limit of values
-  graphql:
-    typeName: ValueBoundaryInput
-    inputTypeName: ValueBoundaryInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: ValueBoundaryInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: ValueBoundaryInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - max
-          - min
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: HoltWintersInput
-  description: Input arguments for the holt_winters function
-  fields:
-    - name: range
-      type: Duration!
-      description: The range value
-    - name: sf
-      type: Float64!
-      description: The lower the smoothing factor sf, the more importance is given to
-        old data. Must be between 0 and 1
-    - name: tf
-      type: Float64!
-      description: The higher the trend factor tf, the more trends in the data is
-        considered. Must be between 0 and 1
-  graphql:
-    typeName: HoltWintersInput
-    inputTypeName: HoltWintersInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: HoltWintersInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: HoltWintersInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - range
-          - sf
-          - tf
-
----
-kind: ObjectType
-version: v1
-definition:
   name: NetConntrackDialerConnAttemptedTotalLabelJoinInput
   description: Input arguments for the label_join function
   fields:
@@ -82,7 +12,7 @@ definition:
       type: String!
       description: The separator between source labels
     - name: source_labels
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]!"
+      type: "[enum!]!"
       description: Source labels
   graphql:
     typeName: NetConntrackDialerConnAttemptedTotalLabelJoinInput
@@ -121,7 +51,7 @@ definition:
       type: String!
       description: The replacement value
     - name: source_label
-      type: NetConntrackDialerConnAttemptedTotalLabel!
+      type: enum!
       description: Source label
   graphql:
     typeName: NetConntrackDialerConnAttemptedTotalLabelReplaceInput
@@ -148,70 +78,6 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: PredictLinearInput
-  description: Input arguments for the predict_linear function
-  fields:
-    - name: range
-      type: Duration!
-      description: The range value
-    - name: t
-      type: Float64!
-      description: Number of seconds from now
-  graphql:
-    typeName: PredictLinearInput
-    inputTypeName: PredictLinearInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: PredictLinearInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: PredictLinearInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - range
-          - t
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: QuantileOverTimeInput
-  description: Input arguments for the quantile_over_time function
-  fields:
-    - name: quantile
-      type: Float64!
-      description: The φ-quantile (0 ≤ φ ≤ 1) of the values
-    - name: range
-      type: Duration!
-      description: The range value
-  graphql:
-    typeName: QuantileOverTimeInput
-    inputTypeName: QuantileOverTimeInput_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: QuantileOverTimeInput
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: QuantileOverTimeInput
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - quantile
-          - range
-
----
-kind: ObjectType
-version: v1
-definition:
   name: NetConntrackDialerConnAttemptedTotalFunctions
   fields:
     - name: abs
@@ -224,7 +90,7 @@ definition:
         (floats or native histograms) and a 1-element vector with the value 1 if
         the vector passed to it has no elements
     - name: absent_over_time
-      type: Duration
+      type: json
       description: Returns an empty vector if the range vector passed to it has any
         elements (floats or native histograms) and a 1-element vector with the
         value 1 if the range vector passed to it has no elements
@@ -247,19 +113,19 @@ definition:
       type: Boolean
       description: Calculates the inverse hyperbolic tangent of all elements in v
     - name: avg
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: avg_over_time
-      type: Duration
+      type: json
       description: The average value of all points in the specified interval
     - name: bottomk
-      type: Int64
+      type: int64
       description: Smallest k elements by sample value
     - name: ceil
       type: Boolean
       description: Rounds the sample values of all elements in v up to the nearest
         integer value greater than or equal to v
     - name: changes
-      type: Duration
+      type: json
       description: Returns the number of times its value has changed within the
         provided time range as an instant vector
     - name: clamp
@@ -267,11 +133,11 @@ definition:
       description: Clamps the sample values of all elements in v to have a lower limit
         of min and an upper limit of max
     - name: clamp_max
-      type: Float64
+      type: float64
       description: Clamps the sample values of all elements in v to have an upper
         limit of max
     - name: clamp_min
-      type: Float64
+      type: float64
       description: Clamps the sample values of all elements in v to have a lower limit
         of min
     - name: cos
@@ -281,22 +147,22 @@ definition:
       type: Boolean
       description: Calculates the hyperbolic cosine of all elements in v
     - name: count
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: count_over_time
-      type: Duration
+      type: json
       description: The count of all values in the specified interval
     - name: count_values
-      type: NetConntrackDialerConnAttemptedTotalLabel
+      type: enum
     - name: deg
       type: Boolean
       description: Converts radians to degrees for all elements in v
     - name: delta
-      type: Duration
+      type: json
       description: Calculates the difference between the first and last value of each
         time series element in a range vector v, returning an instant vector
         with the given deltas and equivalent labels
     - name: deriv
-      type: Duration
+      type: json
       description: Calculates the per-second derivative of the time series in a range
         vector v, using simple linear regression
     - name: exp
@@ -307,7 +173,7 @@ definition:
       description: Rounds the sample values of all elements in v down to the nearest
         integer value smaller than or equal to v
     - name: group
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: histogram_avg
       type: Boolean
       description: Returns the arithmetic average of observed values stored in a
@@ -324,7 +190,7 @@ definition:
         lower and upper values. Samples that are not native histograms are
         ignored and do not show up in the returned vector
     - name: histogram_quantile
-      type: Float64
+      type: float64
       description: Calculates the φ-quantile (0 ≤ φ ≤ 1) from a classic histogram or
         from a native histogram
     - name: histogram_stddev
@@ -344,17 +210,17 @@ definition:
       type: HoltWintersInput
       description: Produces a smoothed value for time series based on the range in v
     - name: idelta
-      type: Duration
+      type: json
       description: Calculates the difference between the last two samples in the range
         vector v, returning an instant vector with the given deltas and
         equivalent labels
     - name: increase
-      type: Duration
+      type: json
       description: Calculates the increase in the time series in the range vector.
         Breaks in monotonicity (such as counter resets due to target restarts)
         are automatically adjusted for
     - name: irate
-      type: Duration
+      type: json
       description: Calculates the per-second instant rate of increase of the time
         series in the range vector. This is based on the last two data points
     - name: label_join
@@ -369,14 +235,14 @@ definition:
         returned timeseries will be the expansion of replacement, together with
         the original labels in the input
     - name: last_over_time
-      type: Duration
+      type: json
       description: The most recent point value in the specified interval
     - name: limit_ratio
-      type: Float64
+      type: float64
       description: Sample elements with approximately 𝑟 ratio if 𝑟 > 0, and the
         complement of such samples if 𝑟 = -(1.0 - 𝑟))
     - name: limitk
-      type: Int64
+      type: int64
       description: Limit sample n elements
     - name: ln
       type: Boolean
@@ -388,27 +254,27 @@ definition:
       type: Boolean
       description: Calculates the decimal logarithm for all elements in v
     - name: mad_over_time
-      type: Duration
+      type: json
       description: The median absolute deviation of all points in the specified interval
     - name: max
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: max_over_time
-      type: Duration
+      type: json
       description: The maximum value of all points in the specified interval
     - name: min
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: min_over_time
-      type: Duration
+      type: json
       description: The minimum value of all points in the specified interval
     - name: predict_linear
       type: PredictLinearInput
       description: Predicts the value of time series t seconds from now, based on the
         range vector v, using simple linear regression
     - name: present_over_time
-      type: Duration
+      type: json
       description: The value 1 for any series in the specified interval
     - name: quantile
-      type: Float64
+      type: float64
       description: Calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions
     - name: quantile_over_time
       type: QuantileOverTimeInput
@@ -417,15 +283,15 @@ definition:
       type: Boolean
       description: Converts degrees to radians for all elements in v
     - name: rate
-      type: Duration
+      type: json
       description: Calculates the per-second average rate of increase of the time
         series in the range vector
     - name: resets
-      type: Duration
+      type: json
       description: Returns the number of counter resets within the provided time range
         as an instant vector
     - name: round
-      type: Float64
+      type: float64
       description: Rounds the sample values of all elements in v to the nearest integer
     - name: scalar
       type: Boolean
@@ -446,11 +312,11 @@ definition:
       description: Returns vector elements sorted by their sample values, in ascending
         order. Native histograms are sorted by their sum of observations
     - name: sort_by_label
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
       description: Returns vector elements sorted by their label values and sample
         value in case of label values being equal, in ascending order
     - name: sort_by_label_desc
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
       description: Same as sort_by_label, but sorts in descending order
     - name: sort_desc
       type: Boolean
@@ -459,19 +325,19 @@ definition:
       type: Boolean
       description: Calculates the square root of all elements in v
     - name: stddev
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: stddev_over_time
-      type: Duration
+      type: json
       description: The population standard deviation of the values in the specified interval
     - name: stdvar
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: stdvar_over_time
-      type: Duration
+      type: json
       description: The population standard variance of the values in the specified interval
     - name: sum
-      type: "[NetConntrackDialerConnAttemptedTotalLabel!]"
+      type: "[enum!]"
     - name: sum_over_time
-      type: Duration
+      type: json
       description: The sum of all values in the specified interval
     - name: tan
       type: Boolean
@@ -485,7 +351,7 @@ definition:
         the number of seconds since January 1, 1970 UTC. It also works with
         histogram samples
     - name: topk
-      type: Int64
+      type: int64
       description: Largest k elements by sample value
   graphql:
     typeName: NetConntrackDialerConnAttemptedTotalFunctions
@@ -587,38 +453,6 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: QueryResultValue
-  description: A value of the query result
-  fields:
-    - name: timestamp
-      type: Timestamp!
-      description: The timestamp when the value is calculated
-    - name: value
-      type: Decimal!
-      description: The metric value
-  graphql:
-    typeName: QueryResultValue
-    inputTypeName: QueryResultValue_input
-  dataConnectorTypeMapping:
-    - dataConnectorName: prometheus
-      dataConnectorObjectType: QueryResultValue
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: QueryResultValue
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - timestamp
-          - value
-
----
-kind: ObjectType
-version: v1
-definition:
   name: NetConntrackDialerConnAttemptedTotal
   fields:
     - name: instance
@@ -626,13 +460,13 @@ definition:
     - name: job
       type: String!
     - name: labels
-      type: LabelSet!
+      type: json!
       description: Labels of the metric
     - name: timestamp
-      type: Timestamp!
+      type: timestamptz!
       description: An instant timestamp or the last timestamp of a range query result
     - name: value
-      type: Decimal!
+      type: float64!
       description: Value of the instant query or the last value of a range query
     - name: values
       type: "[QueryResultValue!]!"
@@ -688,56 +522,99 @@ definition:
     typeName: NetConntrackDialerConnAttemptedTotal_bool_exp
 
 ---
-kind: Model
+kind: AggregateExpression
 version: v1
+definition:
+  name: NetConntrackDialerConnAttemptedTotal_agg_exp
+  operand:
+    object:
+      aggregatedType: NetConntrackDialerConnAttemptedTotal
+      aggregatableFields:
+        - fieldName: instance
+          aggregateExpression: String_agg_exp
+        - fieldName: job
+          aggregateExpression: String_agg_exp
+        - fieldName: labels
+          aggregateExpression: LabelSet_agg_exp
+        - fieldName: timestamp
+          aggregateExpression: Timestamp_agg_exp
+        - fieldName: value
+          aggregateExpression: Decimal_agg_exp
+  count:
+    enable: true
+  graphql:
+    selectTypeName: NetConntrackDialerConnAttemptedTotal_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NetConntrackDialerConnAttemptedTotal_order_by_exp
+  operand:
+    object:
+      orderedType: NetConntrackDialerConnAttemptedTotal
+      orderableFields:
+        - fieldName: instance
+          orderByExpression: String_order_by_exp
+        - fieldName: job
+          orderByExpression: String_order_by_exp
+        - fieldName: labels
+          orderByExpression: json_order_by_exp
+        - fieldName: timestamp
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: value
+          orderByExpression: float64_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: NetConntrackDialerConnAttemptedTotal_order_by_exp
+
+---
+kind: Model
+version: v2
 definition:
   name: net_conntrack_dialer_conn_attempted_total
   objectType: NetConntrackDialerConnAttemptedTotal
   arguments:
+    - name: flat
+      type: Boolean
+      description: Flatten grouped values out the root array
     - name: fn
       type: "[NetConntrackDialerConnAttemptedTotalFunctions!]"
       description: PromQL aggregation operators and functions for
         net_conntrack_dialer_conn_attempted_total
     - name: offset
-      type: Duration
-      description: The offset modifier allows changing the time offset for individual
-        instant and range vectors in a query.
+      type: json
+      description: Optional offset modifier allows changing the time offset for
+        individual instant and range vectors in a query. Do not set this value
+        unless users explicitly require it
     - name: step
-      type: Duration
-      description: Query resolution step width in duration format or float number of
-        seconds.
+      type: json
+      description: Optional query resolution step width in duration format. The
+        connector automatically estimates the interval by the timestamp range.
+        Prometheus limits the maximum resolution of 11000 points per
+        time-series. Do not set this value if you don't know the exact time
+        range
     - name: timeout
-      type: Duration
-      description: Evaluation timeout
-    - name: flat
-      type: Boolean
-      description: Flatten nested the values group to the root array
+      type: json
+      description: The optional evaluation timeout
   source:
     dataConnectorName: prometheus
     collection: net_conntrack_dialer_conn_attempted_total
   filterExpressionType: NetConntrackDialerConnAttemptedTotal_bool_exp
-  orderableFields:
-    - fieldName: instance
-      orderByDirections:
-        enableAll: true
-    - fieldName: job
-      orderByDirections:
-        enableAll: true
-    - fieldName: labels
-      orderByDirections:
-        enableAll: true
-    - fieldName: timestamp
-      orderByDirections:
-        enableAll: true
-    - fieldName: value
-      orderByDirections:
-        enableAll: true
+  aggregateExpression: NetConntrackDialerConnAttemptedTotal_agg_exp
+  orderByExpression: NetConntrackDialerConnAttemptedTotal_order_by_exp
   graphql:
     selectMany:
       queryRootField: net_conntrack_dialer_conn_attempted_total
+      subscription:
+        rootField: net_conntrack_dialer_conn_attempted_total
     selectUniques: []
     argumentsInputType: net_conntrack_dialer_conn_attempted_total_arguments
-    orderByExpressionType: net_conntrack_dialer_conn_attempted_total_order_by
+    filterInputTypeName: net_conntrack_dialer_conn_attempted_total_filter_input
+    aggregate:
+      queryRootField: net_conntrack_dialer_conn_attempted_total_aggregate
+      subscription:
+        rootField: net_conntrack_dialer_conn_attempted_total_aggregate
   description: Total number of connections attempted by the given dialer a given name.
 
 ---
@@ -749,4 +626,5 @@ definition:
     - role: admin
       select:
         filter: null
+        allowSubscriptions: true
 

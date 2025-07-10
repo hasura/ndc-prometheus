@@ -1,0 +1,59 @@
+{
+  "collection": "process_cpu_seconds_total_rate",
+  "query": {
+    "fields": {
+      "job": {
+        "type": "column",
+        "column": "job",
+        "fields": null
+      },
+      "timestamp": {
+        "type": "column",
+        "column": "timestamp",
+        "fields": null
+      },
+      "value": {
+        "type": "column",
+        "column": "value",
+        "fields": null
+      }
+    },
+    "limit": 1,
+    "order_by": {
+      "elements": [
+        {
+          "order_direction": "desc",
+          "target": {
+            "type": "column",
+            "name": "job",
+            "path": []
+          }
+        }
+      ]
+    },
+    "predicate": {
+      "type": "binary_comparison_operator",
+      "column": {
+        "type": "column",
+        "name": "timestamp",
+        "path": []
+      },
+      "operator": "_gt",
+      "value": {
+        "type": "scalar",
+        "value": "2025-06-25T00:00:00Z"
+      }
+    }
+  },
+  "arguments": {
+    "timeout": {
+      "type": "literal",
+      "value": "1m"
+    },
+    "flat": {
+      "type": "literal",
+      "value": true
+    }
+  },
+  "collection_relationships": {}
+}

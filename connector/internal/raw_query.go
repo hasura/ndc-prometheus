@@ -3,21 +3,21 @@ package internal
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"go.opentelemetry.io/otel/trace"
 )
 
 // rawQueryParameters the structured arguments which is evaluated from the raw expression.
 type rawQueryParameters struct {
-	Timestamp any
-	Start     any
-	End       any
-	Timeout   any
-	Step      any
+	Timestamp *time.Time
+	Range     *v1.Range
+	Timeout   time.Duration
 }
 
 type RawQueryExecutor struct {
@@ -38,18 +38,37 @@ func (nqe *RawQueryExecutor) Explain(ctx context.Context) (*rawQueryParameters, 
 
 	var queryString string
 
+	var start, end *time.Time
+
+	var step time.Duration
+
 	for key, arg := range nqe.Arguments {
 		switch key {
 		case metadata.ArgumentKeyStart:
-			params.Start = arg
+			start, err = nqe.Runtime.ParseTimestamp(arg)
+			if err != nil {
+				return nil, "", err
+			}
 		case metadata.ArgumentKeyEnd:
-			params.End = arg
+			end, err = nqe.Runtime.ParseTimestamp(arg)
+			if err != nil {
+				return nil, "", err
+			}
 		case metadata.ArgumentKeyStep:
-			params.Step = arg
+			step, err = nqe.Runtime.ParseDuration(arg)
+			if err != nil {
+				return nil, "", err
+			}
 		case metadata.ArgumentKeyTime:
-			params.Timestamp = arg
+			params.Timestamp, err = nqe.Runtime.ParseTimestamp(arg)
+			if err != nil {
+				return nil, "", err
+			}
 		case metadata.ArgumentKeyTimeout:
-			params.Timeout = arg
+			params.Timeout, err = nqe.Runtime.ParseDuration(arg)
+			if err != nil {
+				return nil, "", err
+			}
 		case metadata.ArgumentKeyQuery:
 			queryString, err = utils.DecodeString(arg)
 			if err != nil {
@@ -62,6 +81,13 @@ func (nqe *RawQueryExecutor) Explain(ctx context.Context) (*rawQueryParameters, 
 					nil,
 				)
 			}
+		}
+	}
+
+	if start != nil || end != nil {
+		params.Range, err = metadata.NewRange(start, end, step)
+		if err != nil {
+			return nil, "", schema.UnprocessableContentError(err.Error(), nil)
 		}
 	}
 
@@ -93,7 +119,7 @@ func (nqe *RawQueryExecutor) execute(
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	flat, err := utils.DecodeNullableBoolean(nqe.Arguments[metadata.ArgumentKeyFlat])
+	nullableFlat, err := utils.DecodeNullableBoolean(nqe.Arguments[metadata.ArgumentKeyFlat])
 	if err != nil {
 		return nil, schema.UnprocessableContentError(
 			fmt.Sprintf("expected boolean type for the flat field, got: %v", err),
@@ -103,16 +129,14 @@ func (nqe *RawQueryExecutor) execute(
 		)
 	}
 
-	if flat == nil {
-		flat = &nqe.Runtime.Flat
-	}
+	flat := nqe.Runtime.IsFlat(nullableFlat)
 
 	var rawResults []map[string]any
 
-	if _, ok := nqe.Arguments[metadata.ArgumentKeyTime]; ok {
-		rawResults, err = nqe.queryInstant(ctx, queryString, params, *flat)
+	if params.Range != nil {
+		rawResults, err = nqe.queryRange(ctx, queryString, params, flat)
 	} else {
-		rawResults, err = nqe.queryRange(ctx, queryString, params, *flat)
+		rawResults, err = nqe.queryInstant(ctx, queryString, params, flat)
 	}
 
 	if err != nil {
@@ -164,9 +188,7 @@ func (nqe *RawQueryExecutor) queryRange(
 	matrix, _, err := nqe.Client.QueryRange(
 		ctx,
 		queryString,
-		params.Start,
-		params.End,
-		params.Step,
+		*params.Range,
 		params.Timeout,
 	)
 	if err != nil {

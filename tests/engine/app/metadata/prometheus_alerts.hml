@@ -5,16 +5,16 @@ definition:
   name: Alert
   description: models an active alert.
   fields:
-    - name: activeAt
-      type: TimestampTZ!
+    - name: active_at
+      type: timestamptz!
     - name: annotations
-      type: JSON!
+      type: json!
     - name: labels
-      type: JSON!
+      type: json!
     - name: state
-      type: AlertState!
+      type: enum!
     - name: value
-      type: Decimal!
+      type: float64!
   graphql:
     typeName: Alert
     inputTypeName: Alert_input
@@ -31,7 +31,7 @@ definition:
     - role: admin
       output:
         allowedFields:
-          - activeAt
+          - active_at
           - annotations
           - labels
           - state

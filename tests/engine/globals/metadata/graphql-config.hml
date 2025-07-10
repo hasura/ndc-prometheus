@@ -26,5 +26,11 @@ definition:
             - Asc
             - Desc
           typeName: OrderBy
+    aggregate:
+      filterInputFieldName: filter_input
+      countFieldName: count
+      countDistinctFieldName: count_distinct
   mutation:
     rootOperationTypeName: Mutation
+  subscription:
+    rootOperationTypeName: Subscription

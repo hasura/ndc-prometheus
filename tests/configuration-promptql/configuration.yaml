@@ -1,0 +1,229 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-prometheus/main/jsonschema/configuration.json
+connection_settings:
+  url:
+    env: CONNECTION_URL
+  authentication:
+    basic:
+      username:
+        env: PROMETHEUS_USERNAME
+      password:
+        env: PROMETHEUS_PASSWORD
+generator:
+  metrics:
+    enabled: true
+    behavior: merge
+    include: []
+    exclude:
+      - ^prometheus_+
+      - ^go_+
+      - ^node_+
+    exclude_labels:
+      - pattern: ^net_.+
+        labels:
+          - dialer_name
+    start_at: 2024-09-01T00:00:00Z
+metadata:
+  metrics:
+    http_client_duration_milliseconds:
+      type: histogram
+      description: Measures the duration of outbound HTTP requests.
+      labels:
+        http_method: {}
+        http_status_code: {}
+        instance: {}
+        job: {}
+        net_peer_name: {}
+        net_peer_port: {}
+        otel_scope_name: {}
+        otel_scope_version: {}
+    http_client_request_size_bytes_total:
+      type: counter
+      description: Measures the size of HTTP request messages.
+      labels:
+        http_method: {}
+        http_status_code: {}
+        instance: {}
+        job: {}
+        net_peer_name: {}
+        net_peer_port: {}
+        otel_scope_name: {}
+        otel_scope_version: {}
+    http_client_response_size_bytes_total:
+      type: counter
+      description: Measures the size of HTTP response messages.
+      labels:
+        http_method: {}
+        http_status_code: {}
+        instance: {}
+        job: {}
+        net_peer_name: {}
+        net_peer_port: {}
+        otel_scope_name: {}
+        otel_scope_version: {}
+    ndc_prometheus_query_total:
+      type: counter
+      description: Total number of query requests
+      labels:
+        collection: {}
+        http_status: {}
+        instance: {}
+        job: {}
+        otel_scope_name: {}
+        status: {}
+    ndc_prometheus_query_total_time:
+      type: histogram
+      description: Total time taken to plan and execute a query, in seconds
+      labels:
+        collection: {}
+        instance: {}
+        job: {}
+        otel_scope_name: {}
+    net_conntrack_dialer_conn_attempted_total:
+      type: counter
+      description: Total number of connections attempted by the given dialer a given name.
+      labels:
+        instance: {}
+        job: {}
+    net_conntrack_dialer_conn_closed_total:
+      type: counter
+      description: Total number of connections closed which originated from the dialer of a given name.
+      labels:
+        instance: {}
+        job: {}
+    net_conntrack_dialer_conn_established_total:
+      type: counter
+      description: Total number of connections successfully established by the given dialer a given name.
+      labels:
+        instance: {}
+        job: {}
+    net_conntrack_dialer_conn_failed_total:
+      type: counter
+      description: Total number of connections failed to dial by the dialer a given name.
+      labels:
+        instance: {}
+        job: {}
+        reason: {}
+    otel_scope_info:
+      type: gauge
+      description: Instrumentation Scope metadata
+      labels:
+        instance: {}
+        job: {}
+        otel_scope_name: {}
+    process_cpu_seconds_total:
+      type: counter
+      description: Total user and system CPU time spent in seconds.
+      labels:
+        instance: {}
+        job: {}
+    process_max_fds:
+      type: gauge
+      description: Maximum number of open file descriptors.
+      labels:
+        instance: {}
+        job: {}
+    process_network_receive_bytes_total:
+      type: counter
+      description: Number of bytes received by the process over the network.
+      labels:
+        instance: {}
+        job: {}
+    process_network_transmit_bytes_total:
+      type: counter
+      description: Number of bytes sent by the process over the network.
+      labels:
+        instance: {}
+        job: {}
+    process_open_fds:
+      type: gauge
+      description: Number of open file descriptors.
+      labels:
+        instance: {}
+        job: {}
+    process_resident_memory_bytes:
+      type: gauge
+      description: Resident memory size in bytes.
+      labels:
+        instance: {}
+        job: {}
+    process_start_time_seconds:
+      type: gauge
+      description: Start time of the process since unix epoch in seconds.
+      labels:
+        instance: {}
+        job: {}
+    process_virtual_memory_bytes:
+      type: gauge
+      description: Virtual memory size in bytes.
+      labels:
+        instance: {}
+        job: {}
+    process_virtual_memory_max_bytes:
+      type: gauge
+      description: Maximum amount of virtual memory available in bytes.
+      labels:
+        instance: {}
+        job: {}
+    promhttp_metric_handler_errors_total:
+      type: counter
+      description: Total number of internal errors encountered by the promhttp metric handler.
+      labels:
+        cause: {}
+        instance: {}
+        job: {}
+    promhttp_metric_handler_requests_in_flight:
+      type: gauge
+      description: Current number of scrapes being served.
+      labels:
+        instance: {}
+        job: {}
+    promhttp_metric_handler_requests_total:
+      type: counter
+      description: Total number of scrapes by HTTP status code.
+      labels:
+        code: {}
+        instance: {}
+        job: {}
+    target_info:
+      type: gauge
+      description: Target metadata
+      labels:
+        instance: {}
+        job: {}
+        service_name: {}
+        service_version: {}
+        telemetry_sdk_language: {}
+        telemetry_sdk_name: {}
+        telemetry_sdk_version: {}
+  native_operations:
+    queries:
+      ndc_prometheus_query_latency_avg:
+        query: sum by (collection)(rate(ndc_prometheus_query_total_time_sum{job="${job}"}[${interval}])) / sum by (collection)(rate(ndc_prometheus_query_total_time_count{job="${job}"}[${interval}]))
+        labels:
+          collection: {}
+        arguments:
+          interval:
+            type: Duration
+          job:
+            type: String
+      service_up:
+        query: up{job="${job}", instance="${instance}"}
+        labels:
+          instance: {}
+          job: {}
+        arguments:
+          instance:
+            type: String
+          job:
+            type: String
+runtime:
+  promptql: true
+  disable_prometheus_api: true
+  unix_time_unit: s
+  format:
+    timestamp: rfc3339
+    value: float64
+    nan: null
+    inf: "+Inf"
+    negative_inf: "-Inf"
+  concurrency_limit: 3

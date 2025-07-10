@@ -10,13 +10,8 @@ import (
 
 // NativeQueryRequest the structured native request which is evaluated from the raw expression.
 type NativeQueryRequest struct {
-	Timestamp       any
-	Start           any
-	End             any
-	Timeout         any
-	Step            any
-	OrderBy         []ColumnOrder
-	Variables       map[string]any
+	CollectionValidatedArguments
+
 	Expression      schema.Expression
 	HasValueBoolExp bool
 }
@@ -26,10 +21,15 @@ func EvalNativeQueryRequest(
 	request *schema.QueryRequest,
 	arguments map[string]any,
 	variables map[string]any,
+	runtime *metadata.RuntimeSettings,
 ) (*NativeQueryRequest, error) {
 	result := &NativeQueryRequest{
-		Variables: variables,
+		CollectionValidatedArguments: CollectionValidatedArguments{
+			variables: variables,
+			runtime:   runtime,
+		},
 	}
+
 	if len(request.Query.Predicate) > 0 {
 		newExpr, err := result.evalQueryPredicate(request.Query.Predicate)
 		if err != nil {
@@ -49,10 +49,6 @@ func EvalNativeQueryRequest(
 	result.OrderBy = orderBy
 
 	return result, nil
-}
-
-func (pr *NativeQueryRequest) getComparisonValue(input schema.ComparisonValue) (any, error) {
-	return getComparisonValue(input, pr.Variables)
 }
 
 func (pr *NativeQueryRequest) evalQueryPredicate(
@@ -126,7 +122,7 @@ func (pr *NativeQueryRequest) evalExpressionBinaryComparisonOperatorColumn(
 				return nil, errors.New("unsupported multiple equality for the timestamp")
 			}
 
-			ts, err := pr.getComparisonValue(expr.Value)
+			ts, err := pr.getComparisonTimestamp(expr.Value)
 			if err != nil {
 				return nil, err
 			}
@@ -134,30 +130,30 @@ func (pr *NativeQueryRequest) evalExpressionBinaryComparisonOperatorColumn(
 			pr.Timestamp = ts
 
 			return nil, nil
-		case metadata.Least:
-			if pr.End != nil {
+		case metadata.Least, metadata.LeastOrEqual:
+			if pr.end != nil {
 				return nil, errors.New("unsupported multiple _lt expressions for the timestamp")
 			}
 
-			end, err := pr.getComparisonValue(expr.Value)
+			end, err := pr.getComparisonTimestamp(expr.Value)
 			if err != nil {
 				return nil, err
 			}
 
-			pr.End = end
+			pr.end = end
 
 			return nil, nil
-		case metadata.Greater:
-			if pr.Start != nil {
+		case metadata.Greater, metadata.GreaterOrEqual:
+			if pr.start != nil {
 				return nil, errors.New("unsupported multiple _gt expressions for the timestamp")
 			}
 
-			start, err := pr.getComparisonValue(expr.Value)
+			start, err := pr.getComparisonTimestamp(expr.Value)
 			if err != nil {
 				return nil, err
 			}
 
-			pr.Start = start
+			pr.start = start
 
 			return nil, nil
 		default:

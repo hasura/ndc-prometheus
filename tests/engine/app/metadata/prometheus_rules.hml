@@ -7,11 +7,11 @@ definition:
     - name: file
       type: String!
     - name: interval
-      type: Float64!
+      type: float64!
     - name: name
       type: String!
     - name: rules
-      type: "[JSON!]!"
+      type: "[json!]!"
   graphql:
     typeName: RuleGroup
     inputTypeName: RuleGroup_input
@@ -72,7 +72,7 @@ definition:
   graphql:
     rootFieldName: prometheus_rules
     rootFieldKind: Query
-  description: return a list of all active alerts
+  description: return a list of all active alerts.
 
 ---
 kind: CommandPermissions

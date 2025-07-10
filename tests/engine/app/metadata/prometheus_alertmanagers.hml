@@ -67,7 +67,7 @@ definition:
     rootFieldName: prometheus_alertmanagers
     rootFieldKind: Query
   description: return an overview of the current state of the Prometheus
-    alertmanager discovery
+    alertmanager discovery.
 
 ---
 kind: CommandPermissions

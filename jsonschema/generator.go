@@ -25,10 +25,6 @@ func jsonSchemaConfiguration() error {
 		return err
 	}
 
-	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/types", "../connector/types"); err != nil {
-		return err
-	}
-
 	reflectSchema := r.Reflect(&metadata.Configuration{})
 
 	schemaBytes, err := json.MarshalIndent(reflectSchema, "", "  ")

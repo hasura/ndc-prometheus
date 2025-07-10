@@ -21,29 +21,26 @@ import (
 func (c *Client) Query(
 	ctx context.Context,
 	queryString string,
-	timestamp any,
-	timeout any,
+	ts *time.Time,
+	timeout time.Duration,
 ) (model.Vector, v1.Warnings, error) {
-	ctx, span := clientTracer.Start(ctx, "Query")
+	ctx, span := clientTracer.Start(ctx, "PrometheusQuery")
 	defer span.End()
+
+	if ts == nil {
+		t := time.Now()
+		ts = &t
+	}
 
 	c.setQuerySpanAttributes(span, queryString)
 	span.SetAttributes(
-		attribute.String("timestamp", fmt.Sprint(timestamp)),
-		attribute.String("timeout", fmt.Sprint(timeout)),
+		attribute.String("timestamp", ts.String()),
+		attribute.String("timeout", timeout.String()),
 	)
 
 	opts, err := c.ApplyOptions(span, timeout)
 	if err != nil {
 		return nil, nil, err
-	}
-
-	ts, err := ParseTimestamp(timestamp, c.unixTimeUnit)
-	if err != nil {
-		span.SetStatus(codes.Error, "failed to decode time")
-		span.RecordError(err)
-
-		return nil, nil, fmt.Errorf("failed to decode time: %w", err)
 	}
 
 	if ts == nil {
@@ -80,39 +77,25 @@ func (c *Client) Query(
 func (c *Client) QueryRange(
 	ctx context.Context,
 	queryString string,
-	start any,
-	end any,
-	step any,
-	timeout any,
+	timeRange v1.Range,
+	timeout time.Duration,
 ) (model.Matrix, v1.Warnings, error) {
-	ctx, span := clientTracer.Start(ctx, "QueryRange")
+	ctx, span := clientTracer.Start(ctx, "PrometheusQueryRange")
 	defer span.End()
 
 	c.setQuerySpanAttributes(span, queryString)
-	span.SetAttributes(attribute.String("start", fmt.Sprint(start)))
-	span.SetAttributes(attribute.String("end", fmt.Sprint(end)))
-	span.SetAttributes(attribute.String("step", fmt.Sprint(step)))
-	span.SetAttributes(attribute.String("timeout", fmt.Sprint(timeout)))
+	span.SetAttributes(attribute.String("start", timeRange.Start.String()))
+	span.SetAttributes(attribute.String("end", timeRange.End.String()))
+	span.SetAttributes(attribute.String("step", timeRange.Step.String()))
+	span.SetAttributes(attribute.String("timeout", timeout.String()))
 
 	opts, err := c.ApplyOptions(span, timeout)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	r, err := c.getRange(start, end, step)
-	if err != nil {
-		span.SetStatus(codes.Error, "failed to parse range")
-		span.RecordError(err)
-
-		return nil, nil, err
-	}
-
-	span.SetAttributes(attribute.String("start", r.Start.String()))
-	span.SetAttributes(attribute.String("end", r.End.String()))
-	span.SetAttributes(attribute.String("step", r.Step.String()))
-
 	// execute query
-	result, warnings, err := c.API.QueryRange(ctx, queryString, *r, opts...)
+	result, warnings, err := c.API.QueryRange(ctx, queryString, timeRange, opts...)
 	if len(warnings) > 0 {
 		span.SetAttributes(attribute.StringSlice("warnings", warnings))
 	}
@@ -132,43 +115,6 @@ func (c *Client) QueryRange(
 
 		return nil, warnings, err
 	}
-}
-
-func (c *Client) getRange(start any, end any, step any) (*v1.Range, error) {
-	result := v1.Range{
-		End: time.Now(),
-	}
-
-	startTime, err := ParseTimestamp(start, c.unixTimeUnit)
-	if err != nil {
-		return nil, err
-	}
-
-	if startTime != nil {
-		result.Start = *startTime
-	}
-
-	// If the user provided an end value, parse it to a time struct and override the default
-	endTime, err := ParseTimestamp(end, c.unixTimeUnit)
-	if err != nil {
-		return nil, err
-	}
-
-	if endTime != nil {
-		result.End = *endTime
-	}
-
-	// Set up defaults for the step value
-	result.Step, err = ParseDuration(step, c.unixTimeUnit)
-	if err != nil {
-		return nil, fmt.Errorf("unable to parse step: %w", err)
-	}
-
-	if result.Step == 0 {
-		result.Step = evalStepFromRange(result.Start, result.End)
-	}
-
-	return &result, nil
 }
 
 type formatQueryResult struct {

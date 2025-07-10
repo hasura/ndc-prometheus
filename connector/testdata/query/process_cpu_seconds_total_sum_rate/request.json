@@ -1,0 +1,69 @@
+{
+  "collection": "process_cpu_seconds_total_rate",
+  "query": {
+    "predicate": {
+      "type": "and",
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "timestamp"
+          },
+          "operator": "_gte",
+          "value": {
+            "type": "scalar",
+            "value": "2025-06-25T23:00:00Z"
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "timestamp"
+          },
+          "operator": "_lte",
+          "value": {
+            "type": "scalar",
+            "value": "2025-06-26T00:00:00Z"
+          }
+        }
+      ]
+    },
+    "groups": {
+      "dimensions": [
+        {
+          "type": "column",
+          "path": [],
+          "column_name": "timestamp",
+          "field_path": null,
+          "extraction": null
+        },
+        {
+          "type": "column",
+          "path": [],
+          "column_name": "job",
+          "field_path": null,
+          "extraction": null
+        },
+        {
+          "type": "column",
+          "path": [],
+          "column_name": "instance",
+          "field_path": null,
+          "extraction": null
+        }
+      ],
+      "aggregates": {
+        "sum(app.process_cpu_seconds_total_rate.value)": {
+          "type": "single_column",
+          "column": "value",
+          "field_path": null,
+          "function": "sum"
+        }
+      }
+    }
+  },
+  "arguments": {},
+  "collection_relationships": {}
+}

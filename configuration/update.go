@@ -17,7 +17,7 @@ import (
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-prometheus/connector/types"
+	"github.com/hasura/ndc-sdk-go/utils"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"golang.org/x/sync/errgroup"
@@ -64,6 +64,7 @@ type updateCommand struct {
 func (uc *updateCommand) SetMetadataMetric(key string, info metadata.MetricInfo) {
 	uc.lock.Lock()
 	defer uc.lock.Unlock()
+
 	uc.Config.Metadata.Metrics[key] = info
 	uc.existedMetrics[key] = true
 }
@@ -72,6 +73,7 @@ func (uc *updateCommand) SetMetadataMetric(key string, info metadata.MetricInfo)
 func (uc *updateCommand) MetricExists(key string) bool {
 	uc.lock.Lock()
 	defer uc.lock.Unlock()
+
 	_, ok := uc.existedMetrics[key]
 
 	return ok
@@ -81,6 +83,7 @@ func (uc *updateCommand) MetricExists(key string) bool {
 func (uc *updateCommand) SetMetricExists(key string) {
 	uc.lock.Lock()
 	defer uc.lock.Unlock()
+
 	uc.existedMetrics[key] = true
 }
 
@@ -389,8 +392,8 @@ func (uc *updateCommand) validateNativeQueries(ctx context.Context) error {
 
 func (uc *updateCommand) checkAPIFormatQueryExist(ctx context.Context) {
 	_, err := uc.Client.FormatQuery(ctx, "up")
-	uc.apiFormatExists = err == nil
 
+	uc.apiFormatExists = err == nil
 	if err != nil {
 		slog.Debug(
 			"failed to request /api/v1/format_query endpoint",
@@ -406,13 +409,15 @@ func (uc *updateCommand) validateQuery(ctx context.Context, query string) error 
 		return err
 	}
 
-	_, _, err := uc.Client.Query(ctx, query, "now", "30s")
+	now := time.Now()
+	_, _, err := uc.Client.Query(ctx, query, &now, 30*time.Second)
 
 	return err
 }
 
 func (uc *updateCommand) writeConfigFile() error {
 	var buf bytes.Buffer
+
 	writer := bufio.NewWriter(&buf)
 
 	_, _ = writer.WriteString(
@@ -528,7 +533,7 @@ func (uc *updateCommand) formatNativeQueryVariables(
 
 var defaultConfiguration = metadata.Configuration{
 	ConnectionSettings: client.ClientSettings{
-		URL: types.NewEnvironmentVariable("CONNECTION_URL"),
+		URL: utils.NewEnvStringValue("CONNECTION_URL"),
 	},
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{
@@ -545,9 +550,11 @@ var defaultConfiguration = metadata.Configuration{
 		NativeOperations: metadata.NativeOperations{},
 	},
 	Runtime: metadata.RuntimeSettings{
-		Flat:             false,
-		UnixTimeUnit:     client.UnixTimeSecond,
-		ConcurrencyLimit: 5,
+		PromptQL:             false,
+		Flat:                 false,
+		DisablePrometheusAPI: false,
+		UnixTimeUnit:         metadata.UnixTimeSecond,
+		ConcurrencyLimit:     5,
 		Format: metadata.RuntimeFormatSettings{
 			Timestamp:   metadata.TimestampUnix,
 			Value:       metadata.ValueFloat64,

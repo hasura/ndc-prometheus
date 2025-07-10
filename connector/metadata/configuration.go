@@ -1,10 +1,12 @@
 package metadata
 
 import (
+	"fmt"
 	"os"
 	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -97,14 +99,70 @@ type RuntimeFormatSettings struct {
 
 // RuntimeSettings contain settings for the runtime engine.
 type RuntimeSettings struct {
-	// Flatten value points to the root array
-	Flat bool `json:"flat"                        yaml:"flat"`
-	// The default unit for unix timestamp
-	UnixTimeUnit client.UnixTimeUnit `json:"unix_time_unit"              yaml:"unix_time_unit"              jsonschema:"enum=s,enum=ms,enum=us,enum=ns,default=s"`
-	// The serialization format for response fields
-	Format RuntimeFormatSettings `json:"format"                      yaml:"format"`
-	// The concurrency limit of queries if there are many variables in a single query
-	ConcurrencyLimit int `json:"concurrency_limit,omitempty" yaml:"concurrency_limit,omitempty"`
+	// Enable PromptQL-compatible mode.
+	PromptQL bool `json:"promptql"                         yaml:"promptql"`
+	// Disable native Prometheus APIs.
+	DisablePrometheusAPI bool `json:"disable_prometheus_api,omitempty" yaml:"disable_prometheus_api,omitempty"`
+	// Default quantile ratio is enabled if the promptql mode is true. Default is 0.95
+	DefaultQuantile *float64 `json:"default_quantile,omitempty"       yaml:"default_quantile,omitempty"       jsonschema:"default=0.95,min=0,max=1"`
+	// Flatten value points to the root array.
+	// If the PromptQL mode is on the result is always flat.
+	Flat bool `json:"flat"                             yaml:"flat"`
+	// The default unit for unix timestamp.
+	UnixTimeUnit UnixTimeUnit `json:"unix_time_unit"                   yaml:"unix_time_unit"                   jsonschema:"enum=s,enum=ms,enum=us,enum=ns,default=s"`
+	// The serialization format for response fields.
+	Format RuntimeFormatSettings `json:"format"                           yaml:"format"`
+	// The concurrency limit of queries if there are many variables in a single query.
+	ConcurrencyLimit int `json:"concurrency_limit,omitempty"      yaml:"concurrency_limit,omitempty"      jsonschema:"min=0"`
+}
+
+// Validate checks if the settings is valid.
+func (rs RuntimeSettings) Validate() error {
+	if rs.DefaultQuantile != nil && (*rs.DefaultQuantile < 0 || *rs.DefaultQuantile > 1) {
+		return fmt.Errorf(
+			"default quantile ratio must be in between 0 and 1, got %f",
+			*rs.DefaultQuantile,
+		)
+	}
+
+	return nil
+}
+
+// IsFlat gets the flat setting.
+func (rs RuntimeSettings) IsFlat(flat *bool) bool {
+	if rs.PromptQL {
+		return true
+	}
+
+	if flat != nil {
+		return *flat
+	}
+
+	return rs.Flat
+}
+
+// GetUnixTimeUnit gets the unix time unit setting.
+func (rs RuntimeSettings) GetUnixTimeUnit() UnixTimeUnit {
+	if rs.UnixTimeUnit == "" {
+		return UnixTimeSecond
+	}
+
+	return rs.UnixTimeUnit
+}
+
+// ParseTimestamp parses timestamp from an unknown value.
+func (rs RuntimeSettings) ParseTimestamp(s any) (*time.Time, error) {
+	return utils.DecodeNullableDateTime(s, utils.WithBaseUnix(rs.GetUnixTimeUnit().Duration()))
+}
+
+// ParseDuration parses duration from an unknown value.
+func (rs RuntimeSettings) ParseDuration(value any) (time.Duration, error) {
+	return ParseDuration(value, rs.GetUnixTimeUnit())
+}
+
+// ParseRangeResolution parses the range resolution from a string.
+func (rs RuntimeSettings) ParseRangeResolution(value any) (*RangeResolution, error) {
+	return ParseRangeResolution(value, rs.GetUnixTimeUnit())
 }
 
 // ReadConfiguration reads the configuration from file.

@@ -14,7 +14,7 @@ definition:
     - name: state
       type: enum!
     - name: value
-      type: bigdecimal!
+      type: float64!
   graphql:
     typeName: Alert
     inputTypeName: Alert_input

@@ -465,10 +465,10 @@ definition:
     - name: otel_scope_name
       type: String!
     - name: timestamp
-      type: timestamp!
+      type: timestamptz!
       description: An instant timestamp or the last timestamp of a range query result
     - name: value
-      type: bigdecimal!
+      type: float64!
       description: Value of the instant query or the last value of a range query
     - name: values
       type: "[QueryResultValue!]!"
@@ -570,9 +570,9 @@ definition:
         - fieldName: otel_scope_name
           orderByExpression: String_order_by_exp
         - fieldName: timestamp
-          orderByExpression: timestamp_order_by_exp
+          orderByExpression: timestamptz_order_by_exp
         - fieldName: value
-          orderByExpression: bigdecimal_order_by_exp
+          orderByExpression: float64_order_by_exp
       orderableRelationships: []
   graphql:
     expressionTypeName: OtelScopeInfo_order_by_exp
@@ -592,14 +592,19 @@ definition:
       description: PromQL aggregation operators and functions for otel_scope_info
     - name: offset
       type: json
-      description: The offset modifier allows changing the time offset for individual
-        instant and range vectors in a query
+      description: Optional offset modifier allows changing the time offset for
+        individual instant and range vectors in a query. Do not set this value
+        unless users explicitly require it
     - name: step
       type: json
-      description: Query resolution step width in duration format or float number of seconds
+      description: Optional query resolution step width in duration format. The
+        connector automatically estimates the interval by the timestamp range.
+        Prometheus limits the maximum resolution of 11000 points per
+        time-series. Do not set this value if you don't know the exact time
+        range
     - name: timeout
       type: json
-      description: Evaluation timeout
+      description: The optional evaluation timeout
   source:
     dataConnectorName: prometheus
     collection: otel_scope_info

@@ -31,21 +31,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -73,21 +73,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -115,21 +115,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -157,21 +157,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -199,21 +199,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -240,21 +240,21 @@ definition:
                 name: String
                 type: named
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -281,21 +281,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -323,21 +323,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -365,21 +365,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -407,21 +407,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -449,21 +449,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -491,21 +491,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -533,21 +533,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -575,21 +575,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -617,21 +617,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -659,21 +659,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -701,21 +701,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -743,21 +743,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -785,21 +785,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -827,21 +827,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -869,21 +869,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -911,21 +911,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -953,21 +953,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -995,21 +995,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -1037,21 +1037,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -1079,21 +1079,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -1121,21 +1121,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -1162,21 +1162,21 @@ definition:
                 name: String
                 type: named
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -1203,21 +1203,21 @@ definition:
                     type: named
                   type: array
             offset:
-              description: The offset modifier allows changing the time offset for individual instant and range vectors in a query
+              description: Optional offset modifier allows changing the time offset for individual instant and range vectors in a query. Do not set this value unless users explicitly require it
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
                   name: Duration
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -1407,7 +1407,7 @@ definition:
                   name: Timestamp
                   type: named
             step:
-              description: Query resolution step width in duration format or float number of seconds
+              description: Optional query resolution step width in duration format. The connector automatically estimates the interval by the timestamp range. Prometheus limits the maximum resolution of 11000 points per time-series. Do not set this value if you don't know the exact time range
               type:
                 type: nullable
                 underlying_type:
@@ -1421,7 +1421,7 @@ definition:
                   name: Timestamp
                   type: named
             timeout:
-              description: Evaluation timeout
+              description: The optional evaluation timeout
               type:
                 type: nullable
                 underlying_type:
@@ -19492,105 +19492,45 @@ definition:
             avg:
               result_type: Decimal
               type: average
-            avg_increase:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
-            avg_irate:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
-            avg_rate:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
             max:
               type: max
-            max_increase:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
-            max_irate:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
-            max_rate:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
             min:
               type: min
-            min_increase:
+            stddev:
               result_type:
-                name: Decimal
-                type: named
+                type: nullable
+                underlying_type:
+                  name: Decimal
+                  type: named
               type: custom
-            min_irate:
+            stdvar:
               result_type:
-                name: Decimal
-                type: named
-              type: custom
-            min_rate:
-              result_type:
-                name: Decimal
-                type: named
+                type: nullable
+                underlying_type:
+                  name: Decimal
+                  type: named
               type: custom
             sum:
               result_type: Decimal
               type: sum
-            sum_increase:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
-            sum_irate:
-              result_type:
-                name: Decimal
-                type: named
-              type: custom
-            sum_rate:
-              result_type:
-                element_type:
-                  name: QueryResultValue
-                  type: named
-                type: array
-              type: custom
           comparison_operators:
             _eq:
               type: equal
             _gt:
-              argument_type:
-                name: Decimal
-                type: named
-              type: custom
+              type: greater_than
             _gte:
-              argument_type:
-                name: Decimal
-                type: named
-              type: custom
+              type: greater_than_or_equal
             _lt:
-              argument_type:
-                name: Decimal
-                type: named
-              type: custom
+              type: less_than
             _lte:
-              argument_type:
-                name: Decimal
-                type: named
-              type: custom
+              type: less_than_or_equal
             _neq:
               argument_type:
                 name: Decimal
                 type: named
               type: custom
           representation:
-            type: bigdecimal
+            type: float64
         Duration:
           aggregate_functions: {}
           comparison_operators: {}
@@ -19873,13 +19813,23 @@ definition:
         String:
           aggregate_functions: {}
           comparison_operators:
+            _contains:
+              type: contains
+            _ends_with:
+              type: ends_with
             _eq:
               type: equal
+            _icontains:
+              type: contains_insensitive
+            _iends_with:
+              type: ends_with_insensitive
             _in:
               argument_type:
                 name: JSON
                 type: named
               type: custom
+            _istarts_with:
+              type: starts_with_insensitive
             _neq:
               argument_type:
                 name: String
@@ -19902,6 +19852,8 @@ definition:
                 name: String
                 type: named
               type: custom
+            _starts_with:
+              type: starts_with
           representation:
             type: string
         TargetInfoLabel:
@@ -19923,27 +19875,15 @@ definition:
             _eq:
               type: equal
             _gt:
-              argument_type:
-                name: Timestamp
-                type: named
-              type: custom
+              type: greater_than
             _gte:
-              argument_type:
-                name: Timestamp
-                type: named
-              type: custom
+              type: greater_than_or_equal
             _lt:
-              argument_type:
-                name: Timestamp
-                type: named
-              type: custom
+              type: less_than
             _lte:
-              argument_type:
-                name: Timestamp
-                type: named
-              type: custom
+              type: less_than_or_equal
           representation:
-            type: timestamp
+            type: timestamptz
         TimestampTZ:
           aggregate_functions: {}
           comparison_operators: {}
@@ -19954,7 +19894,6 @@ definition:
         mutation: {}
         query:
           aggregates:
-            filter_by: {}
             group_by: {}
           exists: {}
           explain: {}

@@ -204,9 +204,9 @@ definition:
 kind: ScalarType
 version: v1
 definition:
-  name: timestamp
+  name: timestamptz
   graphql:
-    typeName: timestamp
+    typeName: timestamptz
 
 ---
 kind: BooleanExpressionType
@@ -215,18 +215,18 @@ definition:
   name: Timestamp_bool_exp
   operand:
     scalar:
-      type: timestamp
+      type: timestamptz
       comparisonOperators:
         - name: _eq
-          argumentType: timestamp!
+          argumentType: timestamptz!
         - name: _gt
-          argumentType: timestamp!
+          argumentType: timestamptz!
         - name: _gte
-          argumentType: timestamp!
+          argumentType: timestamptz!
         - name: _lt
-          argumentType: timestamp!
+          argumentType: timestamptz!
         - name: _lte
-          argumentType: timestamp!
+          argumentType: timestamptz!
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
           dataConnectorScalarType: Timestamp
@@ -244,17 +244,9 @@ version: v1
 definition:
   dataConnectorName: prometheus
   dataConnectorScalarType: Timestamp
-  representation: timestamp
+  representation: timestamptz
   graphql:
-    comparisonExpressionTypeName: timestamp_comparison_exp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: bigdecimal
-  graphql:
-    typeName: bigdecimal
+    comparisonExpressionTypeName: timestamptz_comparison_exp
 
 ---
 kind: BooleanExpressionType
@@ -263,20 +255,20 @@ definition:
   name: Decimal_bool_exp
   operand:
     scalar:
-      type: bigdecimal
+      type: float64
       comparisonOperators:
         - name: _eq
-          argumentType: bigdecimal!
+          argumentType: float64!
         - name: _gt
-          argumentType: bigdecimal!
+          argumentType: float64!
         - name: _gte
-          argumentType: bigdecimal!
+          argumentType: float64!
         - name: _lt
-          argumentType: bigdecimal!
+          argumentType: float64!
         - name: _lte
-          argumentType: bigdecimal!
+          argumentType: float64!
         - name: _neq
-          argumentType: bigdecimal!
+          argumentType: float64!
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
           dataConnectorScalarType: Decimal
@@ -294,9 +286,9 @@ version: v1
 definition:
   dataConnectorName: prometheus
   dataConnectorScalarType: Decimal
-  representation: bigdecimal
+  representation: float64
   graphql:
-    comparisonExpressionTypeName: bigdecimal_comparison_exp
+    comparisonExpressionTypeName: float64_comparison_exp_1
 
 ---
 kind: BooleanExpressionType
@@ -337,10 +329,20 @@ definition:
     scalar:
       type: String
       comparisonOperators:
+        - name: _contains
+          argumentType: String!
+        - name: _ends_with
+          argumentType: String!
         - name: _eq
+          argumentType: String!
+        - name: _icontains
+          argumentType: String!
+        - name: _iends_with
           argumentType: String!
         - name: _in
           argumentType: json!
+        - name: _istarts_with
+          argumentType: String!
         - name: _neq
           argumentType: String!
         - name: _nin
@@ -348,6 +350,8 @@ definition:
         - name: _nregex
           argumentType: String!
         - name: _regex
+          argumentType: String!
+        - name: _starts_with
           argumentType: String!
       dataConnectorOperatorMapping:
         - dataConnectorName: prometheus
@@ -407,7 +411,7 @@ definition:
   name: Timestamp_agg_exp
   operand:
     scalar:
-      aggregatedType: timestamp
+      aggregatedType: timestamptz
       aggregationFunctions: []
       dataConnectorAggregationFunctionMapping:
         - dataConnectorName: prometheus
@@ -427,76 +431,36 @@ definition:
   name: Decimal_agg_exp
   operand:
     scalar:
-      aggregatedType: bigdecimal
+      aggregatedType: float64
       aggregationFunctions:
         - name: avg
-          returnType: bigdecimal
-        - name: avg_rate
-          returnType: bigdecimal!
+          returnType: float64
         - name: max
-          returnType: bigdecimal
-        - name: max_rate
-          returnType: bigdecimal!
+          returnType: float64
         - name: min
-          returnType: bigdecimal
-        - name: min_rate
-          returnType: bigdecimal!
+          returnType: float64
+        - name: stddev
+          returnType: float64
+        - name: stdvar
+          returnType: float64
         - name: sum
-          returnType: bigdecimal
-        - name: sum_rate
-          returnType: "[QueryResultValue!]!"
-        - name: avg_increase
-          returnType: bigdecimal!
-        - name: avg_irate
-          returnType: bigdecimal!
-        - name: max_increase
-          returnType: bigdecimal!
-        - name: max_irate
-          returnType: bigdecimal!
-        - name: min_increase
-          returnType: bigdecimal!
-        - name: min_irate
-          returnType: bigdecimal!
-        - name: sum_increase
-          returnType: bigdecimal!
-        - name: sum_irate
-          returnType: bigdecimal!
+          returnType: float64
       dataConnectorAggregationFunctionMapping:
         - dataConnectorName: prometheus
           dataConnectorScalarType: Decimal
           functionMapping:
             avg:
               name: avg
-            avg_rate:
-              name: avg_rate
             max:
               name: max
-            max_rate:
-              name: max_rate
             min:
               name: min
-            min_rate:
-              name: min_rate
+            stddev:
+              name: stddev
+            stdvar:
+              name: stdvar
             sum:
               name: sum
-            sum_rate:
-              name: sum_rate
-            avg_increase:
-              name: avg_increase
-            avg_irate:
-              name: avg_irate
-            max_increase:
-              name: max_increase
-            max_irate:
-              name: max_irate
-            min_increase:
-              name: min_increase
-            min_irate:
-              name: min_irate
-            sum_increase:
-              name: sum_increase
-            sum_irate:
-              name: sum_irate
   count:
     enable: true
   countDistinct:
@@ -534,27 +498,27 @@ definition:
 kind: OrderByExpression
 version: v1
 definition:
-  name: timestamp_order_by_exp
+  name: timestamptz_order_by_exp
   operand:
     scalar:
-      orderedType: timestamp
+      orderedType: timestamptz
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: timestamp_order_by_exp
+    expressionTypeName: timestamptz_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: bigdecimal_order_by_exp
+  name: float64_order_by_exp
   operand:
     scalar:
-      orderedType: bigdecimal
+      orderedType: float64
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: bigdecimal_order_by_exp
+    expressionTypeName: float64_order_by_exp
 
 ---
 kind: BooleanExpressionType
@@ -1337,14 +1301,6 @@ definition:
     comparisonExpressionTypeName: enum_comparison_exp_26
 
 ---
-kind: ScalarType
-version: v1
-definition:
-  name: timestamptz
-  graphql:
-    typeName: timestamptz
-
----
 kind: BooleanExpressionType
 version: v1
 definition:
@@ -1372,7 +1328,7 @@ definition:
   dataConnectorScalarType: TimestampTZ
   representation: timestamptz
   graphql:
-    comparisonExpressionTypeName: timestamptz_comparison_exp
+    comparisonExpressionTypeName: timestamptz_comparison_exp_1
 
 ---
 kind: BooleanExpressionType

@@ -1017,7 +1017,8 @@ func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
 			Request: schema.QueryRequest{
 				Collection: "hasura_graphql_execution_time_seconds_bucket",
 				Arguments: schema.QueryRequestArguments{
-					"offset": schema.NewArgumentLiteral("5m").Encode(),
+					"offset":   schema.NewArgumentLiteral("5m").Encode(),
+					"quantile": schema.NewArgumentLiteral(0.9).Encode(),
 				},
 				Query: schema.Query{
 					Predicate: schema.NewExpressionAnd(
@@ -1031,14 +1032,15 @@ func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
 					).Encode(),
 				},
 			},
-			QueryString: `histogram_quantile(0.950000, rate(hasura_graphql_execution_time_seconds_bucket{instance=~"localhost:9090|node-exporter:9100",job="node"}[5m] offset 5m0s) >= 0.000000)`,
+			QueryString: `histogram_quantile(0.900000, rate(hasura_graphql_execution_time_seconds_bucket{instance=~"localhost:9090|node-exporter:9100",job="node"}[5m] offset 5m0s) >= 0.000000)`,
 		},
 		{
 			Name: "histogram_quantile_sum",
 			Request: schema.QueryRequest{
 				Collection: "hasura_graphql_execution_time_seconds_bucket",
 				Arguments: schema.QueryRequestArguments{
-					"offset": schema.NewArgumentLiteral("5m").Encode(),
+					"offset":   schema.NewArgumentLiteral("5m").Encode(),
+					"quantile": schema.NewArgumentLiteral(0.95).Encode(),
 				},
 				Query: schema.Query{
 					Predicate: schema.NewExpressionAnd(

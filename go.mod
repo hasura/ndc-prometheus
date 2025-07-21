@@ -3,7 +3,7 @@ module github.com/hasura/ndc-prometheus
 go 1.24
 
 require (
-	github.com/alecthomas/kong v1.12.0
+	github.com/alecthomas/kong v1.12.1
 	github.com/go-viper/mapstructure/v2 v2.4.0
 	github.com/hasura/ndc-sdk-go v1.9.2-0.20250707085456-4f7a8c4b27ef
 	github.com/iancoleman/strcase v0.3.0

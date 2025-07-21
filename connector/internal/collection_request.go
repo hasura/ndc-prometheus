@@ -170,7 +170,10 @@ func (pr *CollectionRequest) evalArguments(arguments map[string]any) (time.Durat
 		}
 
 		if quantile < 0 || quantile > 1 {
-			return 0, fmt.Errorf("invalid quantile argument: the ratio must be between 0 and 1, got %f", quantile)
+			return 0, fmt.Errorf(
+				"invalid quantile argument: the ratio must be between 0 and 1, got %f",
+				quantile,
+			)
 		}
 
 		pr.Quantile = &quantile

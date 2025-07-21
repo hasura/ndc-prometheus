@@ -34,6 +34,7 @@ type Grouping struct {
 type CollectionValidatedArguments struct {
 	Timestamp  *time.Time
 	Range      *v1.Range
+	Quantile   *float64
 	OrderBy    []ColumnOrder
 	Timeout    time.Duration
 	Offset     time.Duration
@@ -159,6 +160,23 @@ func (pr *CollectionRequest) evalArguments(arguments map[string]any) (time.Durat
 		}
 
 		pr.Offset = offset
+	}
+
+	rawQuantile, ok := arguments[metadata.ArgumentKeyQuantile]
+	if ok {
+		quantile, err := utils.DecodeFloat[float64](rawQuantile)
+		if err != nil {
+			return 0, fmt.Errorf("invalid quantile argument `%v`", rawQuantile)
+		}
+
+		if quantile < 0 || quantile > 1 {
+			return 0, fmt.Errorf(
+				"invalid quantile argument: the ratio must be between 0 and 1, got %f",
+				quantile,
+			)
+		}
+
+		pr.Quantile = &quantile
 	}
 
 	var step time.Duration

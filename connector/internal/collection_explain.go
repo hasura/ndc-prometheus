@@ -131,6 +131,15 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 		expressions = &CollectionRequest{}
 	}
 
+	if expressions.Quantile == nil {
+		return nil, schema.UnprocessableContentError(
+			"failed to evaluate the predicate query: quantile argument is required",
+			map[string]any{
+				"collection": qce.Request.Collection,
+			},
+		)
+	}
+
 	expressions.Functions = []KeyValue{
 		{
 			Key:   string(metadata.Rate),
@@ -166,12 +175,7 @@ func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 		)
 	}
 
-	quantile := 0.95
-
-	if qce.Runtime.DefaultQuantile != nil {
-		quantile = *qce.Runtime.DefaultQuantile
-	}
-
+	quantile := *expressions.Quantile
 	histogramQuantileFunc := KeyValue{
 		Key:   string(metadata.HistogramQuantile),
 		Value: quantile,

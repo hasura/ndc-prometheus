@@ -88,8 +88,12 @@ func (scb *connectorSchemaBuilder) buildMetrics() error {
 			if err := scb.buildHistogramMetrics(name, info); err != nil {
 				return err
 			}
-		default:
+		case model.MetricTypeCounter:
 			if err := scb.buildCounterMetrics(name, info, info.Labels); err != nil {
+				return err
+			}
+		default:
+			if _, err := scb.buildMetricsItem(name, info, info.Labels); err != nil {
 				return err
 			}
 		}
@@ -157,10 +161,13 @@ func (scb *connectorSchemaBuilder) buildHistogramMetrics(
 
 	// add quantile collection for promptql.
 	quantileCollectionName := name + "_" + string(Quantile)
+	arguments := createCollectionArguments(scb.Configuration.Runtime.PromptQL)
+	arguments[ArgumentKeyQuantile] = defaultArgumentInfos[ArgumentKeyQuantile]
+
 	scb.Collections[quantileCollectionName] = schema.CollectionInfo{
 		Name:                  quantileCollectionName,
 		Type:                  sumCollection.Type,
-		Arguments:             createCollectionArguments(scb.Configuration.Runtime.PromptQL),
+		Arguments:             arguments,
 		Description:           info.Description,
 		UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
 	}

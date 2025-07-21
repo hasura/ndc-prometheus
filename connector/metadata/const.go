@@ -326,6 +326,7 @@ const (
 	ArgumentKeyStep      = "step"
 	ArgumentKeyOffset    = "offset"
 	ArgumentKeyQuery     = "query"
+	ArgumentKeyQuantile  = "quantile"
 	ArgumentKeyFunctions = "fn"
 )
 
@@ -367,6 +368,12 @@ var defaultArgumentInfos = map[string]schema.ArgumentInfo{
 	ArgumentKeyFlat: {
 		Description: utils.ToPtr("Flatten grouped values out the root array"),
 		Type:        schema.NewNullableNamedType(string(ScalarBoolean)).Encode(),
+	},
+	ArgumentKeyQuantile: {
+		Description: utils.ToPtr(
+			"Quantile ratio must be in between 0 and 1",
+		),
+		Type: schema.NewNamedType(string(ScalarDecimal)).Encode(),
 	},
 }
 

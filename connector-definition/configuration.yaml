@@ -16,7 +16,9 @@ metadata:
     queries: {}
 runtime:
   flat: false
+  promptql: false
   unix_time_unit: s
+  disable_prometheus_api: false
   format:
     timestamp: unix
     value: float64

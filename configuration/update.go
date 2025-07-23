@@ -394,7 +394,6 @@ func (uc *updateCommand) checkAPIFormatQueryExist(ctx context.Context) {
 	_, err := uc.Client.FormatQuery(ctx, "up")
 
 	uc.apiFormatExists = err == nil
-
 	if err != nil {
 		slog.Debug(
 			"failed to request /api/v1/format_query endpoint",

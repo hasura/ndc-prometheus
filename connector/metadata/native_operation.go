@@ -8,7 +8,7 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
-	"github.com/iancoleman/strcase"
+	"github.com/huandu/xstrings"
 )
 
 // The variable syntax for native queries is ${<name>} which is compatible with Grafana.
@@ -101,10 +101,10 @@ func (scb *connectorSchemaBuilder) buildNativeQuery(name string, query *NativeQu
 		}
 	}
 
-	objectName := strcase.ToCamel(name)
+	objectName := xstrings.ToPascalCase(strings.ReplaceAll(name, ":", " "))
 
 	if _, ok := scb.ObjectTypes[objectName]; ok {
-		objectName = strcase.ToCamel(name) + "Result"
+		objectName += "Result"
 	}
 
 	scb.ObjectTypes[objectName] = resultType

@@ -185,6 +185,7 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 
 			if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) ||
 				validateRegularExpressions(uc.Exclude, key) {
+
 				continue
 			}
 

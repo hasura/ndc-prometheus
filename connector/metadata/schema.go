@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"maps"
 	"slices"
+	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
-	"github.com/iancoleman/strcase"
+	"github.com/huandu/xstrings"
 	"github.com/prometheus/common/model"
 )
 
@@ -195,7 +196,7 @@ func (scb *connectorSchemaBuilder) buildMetricsItem(
 		}
 	}
 
-	objectName := strcase.ToCamel(name)
+	objectName := xstrings.ToPascalCase(strings.ReplaceAll(name, ":", " "))
 	scb.ObjectTypes[objectName] = objectType
 	arguments := createCollectionArguments(scb.Configuration.Runtime.PromptQL)
 

@@ -79,12 +79,12 @@ jobs:
           interval: 10
           retries: 8
 
-#       - name: Upload Trivy report as artifact
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: trivy-report
-#           path: /tmp/trivy-report-*.json
-# 
+      - name: Upload Trivy report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: /tmp/trivy-report-*.json
+
       - name: Push docker image
         uses: docker/build-push-action@v6
         with:

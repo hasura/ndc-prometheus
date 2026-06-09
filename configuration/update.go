@@ -194,24 +194,35 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 
 	uc.Config.Metadata.Metrics = make(map[string]metadata.MetricInfo)
 
-	var eg errgroup.Group
+	// If the metadata API returned empty results (common with remote-write sources
+	// like OpenTelemetry Collector), fall back to discovering metrics via
+	// /api/v1/label/__name__/values and infer types from metric name conventions.
+	if len(metricsInfo) == 0 {
+		slog.Info("metadata API returned empty results, falling back to label values discovery")
 
-	eg.SetLimit(uc.coroutines)
+		if err := uc.updateMetricsFromLabelValues(ctx); err != nil {
+			return err
+		}
+	} else {
+		var eg errgroup.Group
 
-	for key, metricInfos := range metricsInfo {
-		if len(metricInfos) == 0 {
-			continue
+		eg.SetLimit(uc.coroutines)
+
+		for key, metricInfos := range metricsInfo {
+			if len(metricInfos) == 0 {
+				continue
+			}
+
+			func(k string, infos []v1.Metadata) {
+				eg.Go(func() error {
+					return uc.introspectMetric(ctx, k, infos)
+				})
+			}(key, metricInfos)
 		}
 
-		func(k string, infos []v1.Metadata) {
-			eg.Go(func() error {
-				return uc.introspectMetric(ctx, k, infos)
-			})
-		}(key, metricInfos)
-	}
-
-	if err := eg.Wait(); err != nil {
-		return err
+		if err := eg.Wait(); err != nil {
+			return err
+		}
 	}
 
 	// merge existing metrics
@@ -224,6 +235,151 @@ func (uc *updateCommand) updateMetricsMetadata(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// updateMetricsFromLabelValues discovers metrics by querying /api/v1/label/__name__/values
+// and infers metric types from naming conventions. This is the fallback path when
+// /api/v1/metadata returns empty (e.g. metrics ingested via remote write).
+func (uc *updateCommand) updateMetricsFromLabelValues(ctx context.Context) error {
+	metricNames, warnings, err := uc.Client.GetLabelValues(
+		ctx,
+		"__name__",
+		nil,
+		uc.Config.Generator.Metrics.StartAt,
+		time.Now(),
+		0,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to fetch metric names via label values: %w", err)
+	}
+
+	if len(warnings) > 0 {
+		slog.Debug("warnings when fetching __name__ label values", slog.Any("warnings", warnings))
+	}
+
+	// Filter out sub-metric names that are part of histograms (e.g. _bucket, _sum, _count)
+	// so we only introspect the base metric name for histograms.
+	nameSet := make(map[string]bool, len(metricNames))
+	for _, name := range metricNames {
+		nameSet[string(name)] = true
+	}
+
+	var eg errgroup.Group
+
+	eg.SetLimit(uc.coroutines)
+
+	for _, name := range metricNames {
+		metricName := string(name)
+
+		// Skip histogram sub-metrics if the base histogram exists.
+		if isHistogramSubMetric(metricName, nameSet) {
+			continue
+		}
+
+		func(key string) {
+			eg.Go(func() error {
+				return uc.introspectMetricFromName(ctx, key)
+			})
+		}(metricName)
+	}
+
+	return eg.Wait()
+}
+
+// introspectMetricFromName introspects a single metric discovered via label values,
+// inferring its type from naming conventions and fetching its labels.
+func (uc *updateCommand) introspectMetricFromName(ctx context.Context, key string) error {
+	if (len(uc.Include) > 0 && !validateRegularExpressions(uc.Include, key)) ||
+		validateRegularExpressions(uc.Exclude, key) {
+		return nil
+	}
+
+	metricType := inferMetricType(key)
+	if !slices.Contains(allowedMetricTypes, metricType) {
+		return nil
+	}
+
+	if uc.MetricExists(key) {
+		slog.Warn(fmt.Sprintf("metric %s exists", key))
+		return nil
+	}
+
+	switch metricType {
+	case model.MetricTypeGauge, model.MetricTypeGaugeHistogram:
+		for _, suffix := range []string{"sum", "bucket", "count"} {
+			uc.SetMetricExists(fmt.Sprintf("%s_%s", key, suffix))
+		}
+	case model.MetricTypeHistogram:
+		for _, suffix := range []string{"sum", "bucket", "count"} {
+			uc.SetMetricExists(fmt.Sprintf("%s_%s", key, suffix))
+		}
+	default:
+	}
+
+	slog.Info(key, slog.String("type", string(metricType)), slog.String("source", "label_values"))
+
+	// Build a synthetic v1.Metadata to reuse getAllLabelsOfMetric
+	syntheticMeta := v1.Metadata{
+		Type: v1.MetricType(metricType),
+		Help: "",
+	}
+
+	labels, err := uc.getAllLabelsOfMetric(ctx, key, syntheticMeta)
+	if err != nil {
+		return fmt.Errorf("error when fetching labels for metric `%s`: %w", key, err)
+	}
+
+	emptyDesc := ""
+	uc.SetMetadataMetric(key, metadata.MetricInfo{
+		Type:        metricType,
+		Description: &emptyDesc,
+		Labels:      labels,
+	})
+
+	return nil
+}
+
+// inferMetricType infers the Prometheus metric type from the metric name
+// using standard naming conventions.
+func inferMetricType(name string) model.MetricType {
+	switch {
+	case strings.HasSuffix(name, "_total"):
+		return model.MetricTypeCounter
+	case strings.HasSuffix(name, "_bucket"):
+		return model.MetricTypeHistogram
+	case strings.HasSuffix(name, "_sum") || strings.HasSuffix(name, "_count"):
+		// These could be histogram sub-metrics or standalone counters.
+		// Default to gauge since they'll be filtered as histogram sub-metrics
+		// if the base histogram exists.
+		return model.MetricTypeGauge
+	case strings.HasSuffix(name, "_info"):
+		return model.MetricTypeGauge
+	case strings.HasSuffix(name, "_created"):
+		return model.MetricTypeGauge
+	default:
+		// Default to gauge for metrics without a recognizable suffix
+		return model.MetricTypeGauge
+	}
+}
+
+// isHistogramSubMetric checks if a metric name is a sub-metric of a histogram
+// (i.e. _bucket, _sum, or _count) where the base histogram metric also exists.
+func isHistogramSubMetric(name string, nameSet map[string]bool) bool {
+	for _, suffix := range []string{"_bucket", "_sum", "_count"} {
+		if strings.HasSuffix(name, suffix) {
+			base := strings.TrimSuffix(name, suffix)
+			// If the base+_bucket exists, this is part of a histogram
+			if suffix != "_bucket" && nameSet[base+"_bucket"] {
+				return true
+			}
+			// _bucket itself is the indicator; check if _sum or _count also exist
+			if suffix == "_bucket" {
+				return false // _bucket is the canonical histogram metric we keep
+			}
+		}
+	}
+
+	return false
 }
 
 func (uc *updateCommand) introspectMetric(

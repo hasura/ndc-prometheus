@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/gotel"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	clientTracer        = connector.NewTracer("PrometheusClient")
+	clientTracer        = gotel.NewTracer("PrometheusClient")
 	errEndpointRequired = errors.New("the endpoint setting is empty")
 )
 
@@ -211,7 +211,9 @@ func (ac *httpClient) Do(ctx context.Context, req *http.Request) (*http.Response
 			attrs = append(attrs, slog.String("error", err.Error()))
 		}
 
-		slog.Debug(fmt.Sprintf("%s %s", strings.ToUpper(req.Method), req.URL.String()), attrs...)
+		slog.Debug( //nolint:gosec
+			fmt.Sprintf("%s %s", strings.ToUpper(req.Method), req.URL.String()),
+			attrs...)
 	}
 
 	return r, bs, err

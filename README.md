@@ -2,7 +2,7 @@
 
 The Hasura Prometheus Connector allows for connecting to a Prometheus database, giving you an instant GraphQL API on top of your Prometheus data.
 
-This connector is built using the [Go Data Connector SDK](https://github.com/hasura/ndc-sdk-go) and implements the [Data Connector Spec](https://github.com/hasura/ndc-spec).
+This connector is built using the [Go Data Connector SDK](https://github.com/hasura/ndc-sdk-go/v2) and implements the [Data Connector Spec](https://github.com/hasura/ndc-spec).
 
 ## Features
 

@@ -4,7 +4,7 @@ package main
 
 import (
 	prom "github.com/hasura/ndc-prometheus/connector"
-	"github.com/hasura/ndc-sdk-go/connector"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
 )
 
 func main() {

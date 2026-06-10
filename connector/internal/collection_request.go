@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 )
 
@@ -256,7 +256,10 @@ func (pr *CollectionRequest) evalExpressionBinaryComparisonOperator(
 			}
 		case metadata.ValueKey:
 			if pr.Value != nil {
-				return schema.UnprocessableContentError("unsupported multiple comparisons for the value", nil)
+				return schema.UnprocessableContentError(
+					"unsupported multiple comparisons for the value",
+					nil,
+				)
 			}
 
 			pr.Value = expr
@@ -318,12 +321,12 @@ func (pr *CollectionRequest) evalGroups(grouping *schema.Grouping) error {
 	}
 
 	for i, dim := range grouping.Dimensions {
-		column, err := dim.AsColumn()
-		if err != nil {
-			return fmt.Errorf("invalid grouping dimension %d: %w", i, err)
+		switch d := dim.Interface().(type) {
+		case *schema.DimensionColumn:
+			group.Dimensions[i] = d.ColumnName
+		default:
+			return fmt.Errorf("invalid grouping dimension %d: expected column, got %q", i, d.Type())
 		}
-
-		group.Dimensions[i] = column.ColumnName
 	}
 
 	pr.Groups = &group

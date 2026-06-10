@@ -15,9 +15,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hasura/goenvconf"
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/utils"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"golang.org/x/sync/errgroup"
@@ -301,6 +301,7 @@ func (uc *updateCommand) introspectMetricFromName(ctx context.Context, key strin
 
 	if uc.MetricExists(key) {
 		slog.Warn(fmt.Sprintf("metric %s exists", key))
+
 		return nil
 	}
 
@@ -366,8 +367,8 @@ func inferMetricType(name string) model.MetricType {
 // (i.e. _bucket, _sum, or _count) where the base histogram metric also exists.
 func isHistogramSubMetric(name string, nameSet map[string]bool) bool {
 	for _, suffix := range []string{"_bucket", "_sum", "_count"} {
-		if strings.HasSuffix(name, suffix) {
-			base := strings.TrimSuffix(name, suffix)
+		if before, ok := strings.CutSuffix(name, suffix); ok {
+			base := before
 			// If the base+_bucket exists, this is part of a histogram
 			if suffix != "_bucket" && nameSet[base+"_bucket"] {
 				return true
@@ -550,6 +551,7 @@ func (uc *updateCommand) checkAPIFormatQueryExist(ctx context.Context) {
 	_, err := uc.Client.FormatQuery(ctx, "up")
 
 	uc.apiFormatExists = err == nil
+
 	if err != nil {
 		slog.Debug(
 			"failed to request /api/v1/format_query endpoint",
@@ -689,7 +691,7 @@ func (uc *updateCommand) formatNativeQueryVariables(
 
 var defaultConfiguration = metadata.Configuration{
 	ConnectionSettings: client.ClientSettings{
-		URL: utils.NewEnvStringValue("CONNECTION_URL"),
+		URL: goenvconf.NewEnvStringValue("CONNECTION_URL"),
 	},
 	Generator: metadata.GeneratorSettings{
 		Metrics: metadata.MetricsGeneratorSettings{

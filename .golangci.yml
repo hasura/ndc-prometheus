@@ -16,6 +16,9 @@ linters:
     - recvcheck
     - noinlineerr
     - tagalign
+    - gomodguard
+    - goconst
+    - wsl
   settings:
     tagliatelle:
       # Checks the struct tag name case.

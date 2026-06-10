@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/huandu/xstrings"
 	"github.com/prometheus/common/model"
 )

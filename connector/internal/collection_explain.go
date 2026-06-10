@@ -7,11 +7,11 @@ import (
 
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
-// QueryCollectionExplainResult holds the result of collection group planning.
+// QueryCollectionGroupingExplainResult holds the result of collection group planning.
 type QueryCollectionGroupingExplainResult struct {
 	Dimensions       []string          `json:"dimensions"`
 	AggregateQueries map[string]string `json:"aggregate_queries"`
@@ -118,7 +118,7 @@ func (qce *QueryCollectionExecutor) Explain(
 	return result, nil
 }
 
-// Explain explains the histogram quantile query request with grouping.
+// ExplainHistogramQuantile explains the histogram quantile query request with grouping.
 func (qce *QueryCollectionExecutor) ExplainHistogramQuantile(
 	expressions *CollectionRequest,
 ) (*QueryCollectionExplainResult, error) {
@@ -734,7 +734,12 @@ func (qce *QueryCollectionExecutor) explainGroupingAggregateQuery(
 		return fmt.Sprintf("count by (%s) (%s)", agg.Column, query), nil
 	case *schema.AggregateSingleColumn:
 		switch agg.Function {
-		case string(metadata.Sum), string(metadata.Min), string(metadata.Max), string(metadata.Avg), string(metadata.Stddev), string(metadata.Stdvar):
+		case string(metadata.Sum),
+			string(metadata.Min),
+			string(metadata.Max),
+			string(metadata.Avg),
+			string(metadata.Stddev),
+			string(metadata.Stdvar):
 			if agg.Column != metadata.ValueKey {
 				return "", errors.New("support aggregation for the `value` column only")
 			}

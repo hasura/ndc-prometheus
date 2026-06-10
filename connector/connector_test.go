@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/hasura/ndc-sdk-go/ndctest"
+	"github.com/hasura/ndc-sdk-go/v2/ndctest"
 )
 
 func TestConnector(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"go.opentelemetry.io/otel/codes"
@@ -24,7 +24,7 @@ type Alert struct {
 	Value       Decimal        `json:"value"`
 }
 
-// FunctionPrometheusRules return a list of all active alerts.
+// FunctionPrometheusAlerts return a list of all active alerts.
 func FunctionPrometheusAlerts(ctx context.Context, state *metadata.State) ([]Alert, error) {
 	ctx, span := state.Tracer.Start(ctx, "Prometheus Alerts")
 	defer span.End()

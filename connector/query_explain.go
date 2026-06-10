@@ -7,8 +7,8 @@ import (
 
 	"github.com/hasura/ndc-prometheus/connector/internal"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 // QueryExplain explains a query by creating an execution plan.
@@ -29,7 +29,7 @@ func (c *PrometheusConnector) QueryExplain(
 		}, nil
 	}
 
-	arguments, err := utils.ResolveArgumentVariables(request.Arguments, requestVars[0])
+	arguments, err := utils.ResolveArguments(request.Arguments, requestVars[0])
 	if err != nil {
 		return nil, err
 	}
@@ -163,8 +163,8 @@ func (c *PrometheusConnector) explainQueryCollection(
 
 	// try to evaluate the quantile metric
 	quantileSuffix := "_" + string(metadata.Quantile)
-	if strings.HasSuffix(request.Collection, quantileSuffix) {
-		metricName := strings.TrimSuffix(request.Collection, quantileSuffix)
+	if before, ok := strings.CutSuffix(request.Collection, quantileSuffix); ok {
+		metricName := before
 		bucketMetricName := metricName + "_bucket"
 
 		collection, ok := c.metadata.Metrics[metricName]

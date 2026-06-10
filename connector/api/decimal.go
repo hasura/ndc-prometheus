@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 // Decimal represents a decimal number string.
@@ -35,7 +35,7 @@ func NewDecimalValue[T int | int8 | int16 | int32 | int64 | uint | uint8 | uint1
 	return Decimal{value: &v}
 }
 
-// ScalarName get the schema name of the scalar.
+// IsNil checks if the value is null.
 func (bd Decimal) IsNil() bool {
 	return bd.raw == nil
 }
@@ -65,7 +65,7 @@ func (bd Decimal) Value() any {
 	return *bd.value
 }
 
-// Stringer implements fmt.Stringer interface.
+// String implements fmt.Stringer interface.
 func (bd Decimal) String() string {
 	v := bd.Value()
 	if v == nil {

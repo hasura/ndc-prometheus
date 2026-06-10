@@ -7,8 +7,8 @@ import (
 
 	"github.com/hasura/ndc-prometheus/connector/internal"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"go.opentelemetry.io/otel/codes"
 	"golang.org/x/sync/errgroup"
 )
@@ -97,7 +97,7 @@ func (c *PrometheusConnector) execQuery(
 	ctx, span := state.Tracer.Start(ctx, fmt.Sprintf("Execute Query %d", index))
 	defer span.End()
 
-	arguments, err := utils.ResolveArgumentVariables(request.Arguments, variables)
+	arguments, err := utils.ResolveArguments(request.Arguments, variables)
 	if err != nil {
 		errorMsg := "failed to resolve argument variables"
 		span.SetStatus(codes.Error, errorMsg)

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/client"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -14,11 +14,11 @@ type Configuration struct {
 	// Connection settings to connect the Prometheus server
 	ConnectionSettings client.ClientSettings `json:"connection_settings" yaml:"connection_settings"`
 	// Settings to generate metrics metadata
-	Generator GeneratorSettings `json:"generator"           yaml:"generator"`
+	Generator GeneratorSettings `json:"generator" yaml:"generator"`
 	// The metadata of metrics and native queries
-	Metadata Metadata `json:"metadata"            yaml:"metadata"`
+	Metadata Metadata `json:"metadata" yaml:"metadata"`
 	// Runtime settings
-	Runtime RuntimeSettings `json:"runtime"             yaml:"runtime"`
+	Runtime RuntimeSettings `json:"runtime" yaml:"runtime"`
 }
 
 // MetricsGenerationBehavior the behavior of metrics generation.
@@ -32,17 +32,17 @@ const (
 // MetricsGeneratorSettings contain settings for the metrics generation.
 type MetricsGeneratorSettings struct {
 	// Enable the metrics generation
-	Enabled  bool                      `json:"enabled"        yaml:"enabled"`
-	Behavior MetricsGenerationBehavior `json:"behavior"       yaml:"behavior"       jsonschema:"enum=merge,enum=replace"`
+	Enabled  bool                      `json:"enabled"  yaml:"enabled"`
+	Behavior MetricsGenerationBehavior `json:"behavior" yaml:"behavior" jsonschema:"enum=merge,enum=replace"`
 	// Include metrics with regular expression matching. Include all metrics by default
-	Include []string `json:"include"        yaml:"include"`
+	Include []string `json:"include" yaml:"include"`
 	// Exclude metrics with regular expression matching.
 	// Note: exclude is higher priority than include
-	Exclude []string `json:"exclude"        yaml:"exclude"`
+	Exclude []string `json:"exclude" yaml:"exclude"`
 	// Exclude unnecessary labels
 	ExcludeLabels []ExcludeLabelsSetting `json:"exclude_labels" yaml:"exclude_labels"`
 	// The minimum timestamp that the plugin uses to query metadata
-	StartAt time.Time `json:"start_at"       yaml:"start_at"`
+	StartAt time.Time `json:"start_at" yaml:"start_at"`
 }
 
 // ExcludeLabelsSetting the setting to exclude labels.
@@ -50,7 +50,7 @@ type ExcludeLabelsSetting struct {
 	// The regular expression pattern of metric names
 	Pattern string `json:"pattern" yaml:"pattern"`
 	// List of labels to be excluded
-	Labels []string `json:"labels"  yaml:"labels"`
+	Labels []string `json:"labels" yaml:"labels"`
 }
 
 // GeneratorSettings contain settings for the configuration generator.
@@ -62,15 +62,15 @@ type GeneratorSettings struct {
 type TimestampFormat string
 
 const (
-	// Represents the timestamp as a Unix timestamp in RFC3339 string.
+	// TimestampRFC3339 represents the timestamp as a Unix timestamp in RFC3339 string.
 	TimestampRFC3339 TimestampFormat = "rfc3339"
-	// Represents the timestamp as a Unix timestamp in seconds.
+	// TimestampUnix represents the timestamp as a Unix timestamp in seconds.
 	TimestampUnix TimestampFormat = "unix"
-	// Represents the timestamp as a Unix timestamp in milliseconds.
+	// TimestampUnixMilli represents the timestamp as a Unix timestamp in milliseconds.
 	TimestampUnixMilli TimestampFormat = "unix_ms"
-	// Represents the timestamp as a Unix timestamp in microseconds.
+	// TimestampUnixMicro represents the timestamp as a Unix timestamp in microseconds.
 	TimestampUnixMicro TimestampFormat = "unix_us"
-	// Represents the timestamp as a Unix timestamp in nanoseconds.
+	// TimestampUnixNano represents the timestamp as a Unix timestamp in nanoseconds.
 	TimestampUnixNano TimestampFormat = "unix_ns"
 )
 
@@ -85,32 +85,32 @@ const (
 // RuntimeFormatSettings format settings for timestamps and values in runtime.
 type RuntimeFormatSettings struct {
 	// The serialization format for timestamp
-	Timestamp TimestampFormat `json:"timestamp"    jsonschema:"enum=rfc3339,enum=unix,enum=unix_ms,enum=unix_us,enum=unix_ns,default=unix" yaml:"timestamp"`
+	Timestamp TimestampFormat `json:"timestamp" jsonschema:"enum=rfc3339,enum=unix,enum=unix_ms,enum=unix_us,enum=unix_ns,default=unix" yaml:"timestamp"`
 	// The serialization format for value
-	Value ValueFormat `json:"value"        jsonschema:"enum=string,enum=float64,default=string"                                    yaml:"value"`
+	Value ValueFormat `json:"value" jsonschema:"enum=string,enum=float64,default=string" yaml:"value"`
 	// The serialization format for not-a-number values
-	NaN any `json:"nan"          jsonschema:"oneof_type=string;number;null"                                              yaml:"nan"`
+	NaN any `json:"nan" jsonschema:"oneof_type=string;number;null" yaml:"nan"`
 	// The serialization format for infinite values
-	Inf any `json:"inf"          jsonschema:"oneof_type=string;number;null"                                              yaml:"inf"`
+	Inf any `json:"inf" jsonschema:"oneof_type=string;number;null" yaml:"inf"`
 	// The serialization format for negative infinite values
-	NegativeInf any `json:"negative_inf" jsonschema:"oneof_type=string;number;null"                                              yaml:"negative_inf"`
+	NegativeInf any `json:"negative_inf" jsonschema:"oneof_type=string;number;null" yaml:"negative_inf"`
 }
 
 // RuntimeSettings contain settings for the runtime engine.
 type RuntimeSettings struct {
 	// Enable PromptQL-compatible mode.
-	PromptQL bool `json:"promptql"                         yaml:"promptql"`
+	PromptQL bool `json:"promptql" yaml:"promptql"`
 	// Disable native Prometheus APIs.
 	DisablePrometheusAPI bool `json:"disable_prometheus_api,omitempty" yaml:"disable_prometheus_api,omitempty"`
 	// Flatten value points to the root array.
 	// If the PromptQL mode is on the result is always flat.
-	Flat bool `json:"flat"                             yaml:"flat"`
+	Flat bool `json:"flat" yaml:"flat"`
 	// The default unit for unix timestamp.
-	UnixTimeUnit UnixTimeUnit `json:"unix_time_unit"                   yaml:"unix_time_unit"                   jsonschema:"enum=s,enum=ms,enum=us,enum=ns,default=s"`
+	UnixTimeUnit UnixTimeUnit `json:"unix_time_unit" yaml:"unix_time_unit" jsonschema:"enum=s,enum=ms,enum=us,enum=ns,default=s"`
 	// The serialization format for response fields.
-	Format RuntimeFormatSettings `json:"format"                           yaml:"format"`
+	Format RuntimeFormatSettings `json:"format" yaml:"format"`
 	// The concurrency limit of queries if there are many variables in a single query.
-	ConcurrencyLimit int `json:"concurrency_limit,omitempty"      yaml:"concurrency_limit,omitempty"      jsonschema:"min=0"`
+	ConcurrencyLimit int `json:"concurrency_limit,omitempty" yaml:"concurrency_limit,omitempty" jsonschema:"min=0"`
 }
 
 // Validate checks if the settings is valid.

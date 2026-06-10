@@ -21,11 +21,11 @@ type Metadata struct {
 // MetricInfo the metadata information of a metric.
 type MetricInfo struct {
 	// A metric type
-	Type model.MetricType `json:"type"                  yaml:"type"`
+	Type model.MetricType `json:"type" yaml:"type"`
 	// Description of the metric
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Labels returned by the metric
-	Labels map[string]LabelInfo `json:"labels"                yaml:"labels"`
+	Labels map[string]LabelInfo `json:"labels" yaml:"labels"`
 }
 
 // LabelInfo the information of a Prometheus label.

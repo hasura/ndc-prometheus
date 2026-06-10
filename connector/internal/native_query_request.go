@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 )
 
 // NativeQueryRequest the structured native request which is evaluated from the raw expression.

@@ -17,11 +17,17 @@ func main() {
 
 func jsonSchemaConfiguration() error {
 	r := new(jsonschema.Reflector)
-	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/client", "../connector/client"); err != nil {
+	if err := r.AddGoComments(
+		"github.com/hasura/ndc-prometheus/connector/client",
+		"../connector/client",
+	); err != nil {
 		return err
 	}
 
-	if err := r.AddGoComments("github.com/hasura/ndc-prometheus/connector/metadata", "../connector/metadata"); err != nil {
+	if err := r.AddGoComments(
+		"github.com/hasura/ndc-prometheus/connector/metadata",
+		"../connector/metadata",
+	); err != nil {
 		return err
 	}
 

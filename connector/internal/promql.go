@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 // ValueBoundaryInput represents the lower and upper input arguments.

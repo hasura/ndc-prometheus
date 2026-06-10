@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"gotest.tools/v3/assert"
 )
@@ -793,8 +793,8 @@ var testCases = []struct {
 						"count": schema.NewAggregateStarCount().Encode(),
 					},
 					Dimensions: []schema.Dimension{
-						schema.NewDimensionColumn("job", nil).Encode(),
-						schema.NewDimensionColumn("instance", nil).Encode(),
+						schema.NewDimensionColumn("job", nil).Wrap(),
+						schema.NewDimensionColumn("instance", nil).Wrap(),
 					},
 				},
 			},
@@ -898,8 +898,8 @@ var testCases = []struct {
 						"sum": schema.NewAggregateSingleColumn("value", "sum").Encode(),
 					},
 					Dimensions: []schema.Dimension{
-						schema.NewDimensionColumn("job", nil).Encode(),
-						schema.NewDimensionColumn("instance", nil).Encode(),
+						schema.NewDimensionColumn("job", nil).Wrap(),
+						schema.NewDimensionColumn("instance", nil).Wrap(),
 					},
 				},
 			},
@@ -1003,7 +1003,7 @@ func TestCollectionQueryExplain(t *testing.T) {
 }
 
 func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
-	var hqTestCases = []struct {
+	hqTestCases := []struct {
 		Name        string
 		MetricName  string
 		Request     schema.QueryRequest
@@ -1057,8 +1057,8 @@ func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
 							"sum": schema.NewAggregateSingleColumn("value", "sum").Encode(),
 						},
 						Dimensions: []schema.Dimension{
-							schema.NewDimensionColumn("job", nil).Encode(),
-							schema.NewDimensionColumn("instance", nil).Encode(),
+							schema.NewDimensionColumn("job", nil).Wrap(),
+							schema.NewDimensionColumn("instance", nil).Wrap(),
 						},
 					},
 				},
@@ -1074,7 +1074,7 @@ func TestCollectionQueryExplainHistogramQuantile(t *testing.T) {
 
 	for _, tc := range hqTestCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			arguments, err := utils.ResolveArgumentVariables(tc.Request.Arguments, map[string]any{})
+			arguments, err := utils.ResolveArguments(tc.Request.Arguments, map[string]any{})
 			assert.NilError(t, err)
 
 			metricName := tc.MetricName

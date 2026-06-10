@@ -9,9 +9,9 @@ import (
 	"github.com/hasura/ndc-prometheus/connector/api"
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 // PrometheusConnector implements a data connector for Prometheus API.
@@ -179,4 +179,9 @@ func (c *PrometheusConnector) Mutation(
 	request *schema.MutationRequest,
 ) (*schema.MutationResponse, error) {
 	return nil, schema.NotSupportedError("unsupported mutation", nil)
+}
+
+// Close handles the graceful shutdown that cleans up the connector's state.
+func (c *PrometheusConnector) Close(*metadata.State) error {
+	return nil
 }

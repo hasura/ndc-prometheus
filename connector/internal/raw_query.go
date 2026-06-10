@@ -7,8 +7,8 @@ import (
 
 	"github.com/hasura/ndc-prometheus/connector/client"
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"go.opentelemetry.io/otel/trace"
 )

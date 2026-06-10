@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	"github.com/prometheus/common/model"
 	"gotest.tools/v3/assert"
 )

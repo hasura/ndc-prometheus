@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hasura/ndc-prometheus/connector/metadata"
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
